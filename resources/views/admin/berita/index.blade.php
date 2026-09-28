@@ -39,7 +39,15 @@
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari judul berita..." class="w-full pl-10 pr-4 py-3 bg-slate-50/60 border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-2 focus:ring-emerald-500/20 rounded-2xl text-sm transition-all text-slate-800 outline-none placeholder:text-slate-400 font-bold">
                 </div>
                 
-                <select name="status" class="px-4 py-3 bg-slate-50/60 border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-2 focus:ring-emerald-500/20 rounded-2xl text-sm font-bold text-slate-700 sm:w-48 cursor-pointer outline-none transition-all">
+                <select name="category" class="form-select-modern px-4 py-3 bg-slate-50/60 border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-4 focus:ring-emerald-500/10 rounded-2xl text-sm font-bold text-slate-700 sm:w-44 cursor-pointer outline-none transition-all">
+                    <option value="">Semua Kategori</option>
+                    <option value="Kegiatan" {{ request('category') == 'Kegiatan' ? 'selected' : '' }}>Kegiatan</option>
+                    <option value="Pengumuman" {{ request('category') == 'Pengumuman' ? 'selected' : '' }}>Pengumuman</option>
+                    <option value="Organisasi" {{ request('category') == 'Organisasi' ? 'selected' : '' }}>Organisasi</option>
+                    <option value="Sosial" {{ request('category') == 'Sosial' ? 'selected' : '' }}>Sosial</option>
+                </select>
+                
+                <select name="status" class="form-select-modern px-4 py-3 bg-slate-50/60 border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-4 focus:ring-emerald-500/10 rounded-2xl text-sm font-bold text-slate-700 sm:w-44 cursor-pointer outline-none transition-all">
                     <option value="">Semua Status</option>
                     <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>Published</option>
                     <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
@@ -57,6 +65,7 @@
                     <thead>
                         <tr class="bg-slate-50/60 border-b border-slate-100 text-[11px] text-slate-400 uppercase tracking-wider font-black">
                             <th class="px-6 py-4">Judul Berita</th>
+                            <th class="px-6 py-4">Kategori</th>
                             <th class="px-6 py-4">Status</th>
                             <th class="px-6 py-4">Tanggal</th>
                             <th class="px-6 py-4 text-right">Aksi</th>
@@ -76,6 +85,11 @@
                                         </div>
                                         <p class="text-sm font-bold text-slate-800 line-clamp-2 leading-snug">{{ $berita->title }}</p>
                                     </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/60">
+                                        {{ $berita->category ?? 'Kegiatan' }}
+                                    </span>
                                 </td>
                                 <td class="px-6 py-4">
                                     @if($berita->status === 'published')

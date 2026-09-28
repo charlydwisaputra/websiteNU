@@ -32,6 +32,38 @@
             </div>
         @endif
 
+        <!-- Filter & Search Toolbar -->
+        <div class="bg-white p-5 md:p-6 rounded-3xl border border-slate-100 shadow-sm">
+            <form action="{{ route('admin.galeri.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari keterangan galeri foto..." 
+                           class="w-full pl-10 pr-4 py-3 bg-slate-50/60 border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-2 focus:ring-emerald-500/20 rounded-2xl text-sm transition-all text-slate-800 outline-none placeholder:text-slate-400 font-bold">
+                </div>
+                
+                <select name="category" class="form-select-modern px-4 py-3 bg-slate-50/60 border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-4 focus:ring-emerald-500/10 rounded-2xl text-sm font-bold text-slate-700 sm:w-52 cursor-pointer outline-none transition-all">
+                    <option value="">Semua Kategori Banom</option>
+                    @foreach(['Muslimat', 'Fatayat', 'GP Ansor', 'IPNU', 'IPPNU', 'PMII'] as $cat)
+                        <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @endforeach
+                </select>
+                
+                <button type="submit" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-2xl transition-all shadow-sm active:scale-95">
+                    Cari Foto
+                </button>
+
+                @if(request('search') || request('category'))
+                    <a href="{{ route('admin.galeri.index') }}" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-sm rounded-2xl transition-all text-center">
+                        Reset
+                    </a>
+                @endif
+            </form>
+        </div>
+
         <!-- Grid Galeri -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @forelse ($galeris as $galeri)

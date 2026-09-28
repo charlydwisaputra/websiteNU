@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('components.theme-script')
 </head>
 <body class="font-sans antialiased text-gray-900 bg-slate-50 flex flex-col justify-center min-h-screen selection:bg-emerald-500 selection:text-white py-10">
     

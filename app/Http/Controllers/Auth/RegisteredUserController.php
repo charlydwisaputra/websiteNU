@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Anggota;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -10,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -25,7 +27,7 @@ class RegisteredUserController extends Controller
     /**
      * Handle an incoming registration request.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
@@ -34,7 +36,7 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'in:anggota,admin'],
-            
+
             // Validasi password khusus admin
             'admin_secret_code' => ['nullable', function ($attribute, $value, $fail) use ($request) {
                 if ($request->role === 'admin') {
@@ -52,6 +54,19 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+        ]);
+
+        $isAdmin = $request->role === 'admin';
+
+        // Otomatis daftarkan di tabel anggota
+        Anggota::create([
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'role' => $isAdmin ? 'Administrator' : null,
+            'wilayah' => $isAdmin ? 'Pusat Cikembulan' : null,
+            'status' => $isAdmin ? 'Aktif' : 'Pending',
+            'joined_at' => now(),
+            'is_public' => true,
         ]);
 
         event(new Registered($user));

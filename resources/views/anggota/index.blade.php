@@ -4,8 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Anggota - NU CIROYOM</title>
+    <title>Anggota - NU CIKEMBULAN</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('components.theme-script')
 </head>
 
 <body class="font-sans antialiased text-gray-900 bg-slate-50 flex flex-col min-h-screen relative overflow-x-hidden">
@@ -13,52 +16,52 @@
 
     @include('layouts.public-navigation')
 
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-32 pb-16 flex-grow w-full">
-        <div class="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#087A4B] to-[#064A32] px-6 py-10 text-white shadow-xl shadow-emerald-900/10 sm:px-10 reveal">
-            <div class="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-emerald-300/20 blur-3xl"></div>
-            <div>
-                <span class="text-emerald-200 font-bold text-xs uppercase tracking-[0.2em]">Modul Keanggotaan</span>
-                <h1 class="mt-2 text-3xl md:text-4xl font-black tracking-tight">Anggota NU Ciroyom</h1>
-                <p class="mt-3 max-w-xl text-sm leading-relaxed text-emerald-50/80">Kenali anggota aktif dari berbagai badan otonom NU Ciroyom dalam satu direktori.</p>
+    <main class="max-w-[1200px] mx-auto px-4 sm:px-6 pt-28 pb-16 flex-grow w-full">
+        <!-- Clean iOS-style Header -->
+        <div class="reveal relative overflow-hidden rounded-[2.5rem] bg-white/60 backdrop-blur-3xl border border-white/80 shadow-[0_8px_30px_rgba(0,0,0,0.03)] px-6 py-10 sm:px-10">
+            <div class="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-emerald-100/50 blur-3xl"></div>
+            <div class="relative z-10">
+                <span class="text-gray-500 font-semibold text-[11px] uppercase tracking-widest block mb-2">Modul Keanggotaan</span>
+                <h1 class="mt-2 text-3xl md:text-4xl font-black text-gray-900 tracking-tight">Anggota NU Cikembulan</h1>
+                <p class="mt-3 max-w-xl text-[15px] leading-relaxed text-gray-500">Kenali anggota aktif dari berbagai badan otonom NU Cikembulan dalam satu direktori.</p>
             </div>
         </div>
 
-        <div class="mt-8 flex flex-col gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-5">
-            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div class="mt-8 flex flex-col gap-5 rounded-[2rem] border border-white/80 bg-white/60 backdrop-blur-xl p-5 shadow-[0_8px_30px_rgba(0,0,0,0.02)] sm:p-6 reveal">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <p class="text-xs font-black uppercase tracking-wider text-gray-400">Filter Banom</p>
-                    <p class="mt-1 text-sm text-gray-500">Pilih kategori untuk melihat anggota terkait.</p>
+                    <p class="text-[11px] font-bold uppercase tracking-widest text-gray-500">Filter Banom</p>
+                    <p class="mt-1 text-[13px] text-gray-400">Pilih kategori untuk melihat anggota terkait.</p>
                 </div>
                 <form action="{{ route('anggota') }}" method="GET" class="flex w-full gap-2 md:w-auto">
-                    <input type="search" name="search" value="{{ request('search') }}" placeholder="Cari anggota..." class="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none focus:border-[#087A4B] focus:ring-2 focus:ring-emerald-500/20 md:w-56">
+                    <input type="search" name="search" value="{{ request('search') }}" placeholder="Cari anggota..." class="w-full rounded-2xl border border-gray-200/50 bg-white px-5 py-2.5 text-[14px] font-medium outline-none shadow-sm focus:border-gray-300 focus:ring-0 md:w-64">
                     <input type="hidden" name="category" value="{{ request('category') }}">
-                    <button type="submit" class="rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#087A4B]">Cari</button>
+                    <button type="submit" class="rounded-2xl bg-gray-900 px-5 py-2.5 text-[14px] font-medium text-white transition hover:bg-black shadow-[0_4px_12px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.15)] hover:scale-[1.02]">Cari</button>
                 </form>
             </div>
-            <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-                <a href="{{ route('anggota') }}" class="shrink-0 rounded-xl px-4 py-2 text-xs font-bold transition {{ request('category') ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-[#087A4B] text-white shadow-md shadow-emerald-500/20' }}">Semua</a>
+            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+                <a href="{{ route('anggota') }}" class="shrink-0 rounded-full px-5 py-2.5 text-[13px] font-medium transition-all {{ request('category') ? 'bg-black/5 text-gray-600 hover:bg-black/10 hover:text-gray-900' : 'bg-gray-900 text-white shadow-md' }}">Semua</a>
                 @foreach ($categories as $category)
-                    <a href="{{ route('anggota', ['category' => $category, 'search' => request('search')]) }}" class="shrink-0 rounded-xl px-4 py-2 text-xs font-bold transition {{ request('category') === $category ? 'bg-[#087A4B] text-white shadow-md shadow-emerald-500/20' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">{{ $category }}</a>
+                    <a href="{{ route('anggota', ['category' => $category, 'search' => request('search')]) }}" class="shrink-0 rounded-full px-5 py-2.5 text-[13px] font-medium transition-all {{ request('category') === $category ? 'bg-gray-900 text-white shadow-md' : 'bg-black/5 text-gray-600 hover:bg-black/10 hover:text-gray-900' }}">{{ $category }}</a>
                 @endforeach
             </div>
         </div>
 
         <div class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             @forelse ($anggotas as $anggota)
-                <article class="reveal group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl">
-                    <div class="h-1 bg-gradient-to-r from-emerald-400 to-[#087A4B]"></div>
+                <article class="reveal group overflow-hidden rounded-[1.5rem] border border-white/80 bg-white/70 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.02)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)]">
                     <div class="flex items-center gap-4 p-5">
                         @if ($anggota->photo)
-                            <img src="{{ asset('storage/' . $anggota->photo) }}" alt="{{ $anggota->name }}" class="h-16 w-16 rounded-2xl object-cover">
+                            <img src="{{ asset('storage/' . $anggota->photo) }}" alt="{{ $anggota->name }}" class="h-16 w-16 rounded-2xl object-cover shadow-sm transition-transform duration-300 group-hover:scale-105">
                         @else
-                            <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-lg font-black text-[#087A4B] ring-4 ring-emerald-50 transition group-hover:bg-[#087A4B] group-hover:text-white">
+                            <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gray-100 text-lg font-black text-gray-400 shadow-inner transition-colors duration-300 group-hover:bg-gray-900 group-hover:text-white">
                                 {{ strtoupper(substr($anggota->name, 0, 2)) }}
                             </div>
                         @endif
-                        <div class="min-w-0">
-                            <h2 class="truncate text-base font-bold text-gray-900">{{ $anggota->name }}</h2>
-                            <p class="mt-1 text-xs font-bold text-[#087A4B]">{{ $anggota->position }}</p>
-                            <p class="mt-1 truncate text-xs text-gray-500">{{ $anggota->region ?: 'Wilayah Pusat / Umum' }}</p>
+                        <div class="min-w-0 flex-grow">
+                            <h2 class="truncate text-[16px] font-bold text-gray-900">{{ $anggota->name }}</h2>
+                            <p class="mt-1 text-[13px] font-semibold text-[#087A4B] truncate">{{ $anggota->position }}</p>
+                            <p class="mt-0.5 truncate text-[12px] text-gray-500">{{ $anggota->region ?: 'Wilayah Pusat / Umum' }}</p>
                         </div>
                     </div>
                 </article>

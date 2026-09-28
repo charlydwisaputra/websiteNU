@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Anggota;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
-use App\Models\Anggota;
 
 class AnggotaController extends Controller
 {
@@ -40,13 +40,13 @@ class AnggotaController extends Controller
     {
         $query = Anggota::query();
 
-        // Fitur Pencarian (disesuaikan ke role)
+        // Fitur Pencarian (nama, role/position, atau wilayah/region)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('role', 'like', "%{$search}%")
-                  ->orWhere('wilayah', 'like', "%{$search}%");
+                    ->orWhere('position', 'like', "%{$search}%")
+                    ->orWhere('region', 'like', "%{$search}%");
             });
         }
 
@@ -70,7 +70,7 @@ class AnggotaController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'role' => 'required|in:Muslimat,Fatayat,GP Ansor,IPNU,IPPNU,PMII',
+            'role' => 'nullable|in:Muslimat,Fatayat,GP Ansor,IPNU,IPPNU,PMII',
             'wilayah' => 'nullable|string|max:255',
             'status' => 'required|in:Aktif,aktif,Nonaktif,nonaktif,Alumni,alumni,Pending,pending',
             'joined_at' => 'nullable|date',
@@ -78,8 +78,6 @@ class AnggotaController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
-            'role.required' => 'Role/Badan Otonom wajib dipilih.',
-            'role.in' => 'Pilihan role tidak valid.',
             'status.required' => 'Status keanggotaan wajib diisi.',
             'photo.image' => 'File harus berupa gambar.',
             'photo.mimes' => 'Format gambar harus berupa jpeg, png, atau jpg.',
@@ -98,6 +96,7 @@ class AnggotaController extends Controller
     public function edit($id): View
     {
         $anggota = Anggota::findOrFail($id);
+
         return view('admin.anggota.edit', compact('anggota'));
     }
 
@@ -107,7 +106,7 @@ class AnggotaController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'role' => 'required|in:Muslimat,Fatayat,GP Ansor,IPNU,IPPNU,PMII',
+            'role' => 'nullable|in:Muslimat,Fatayat,GP Ansor,IPNU,IPPNU,PMII',
             'wilayah' => 'nullable|string|max:255',
             'status' => 'required|in:Aktif,aktif,Nonaktif,nonaktif,Alumni,alumni,Pending,pending',
             'joined_at' => 'nullable|date',
@@ -115,8 +114,6 @@ class AnggotaController extends Controller
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
-            'role.required' => 'Role/Badan Otonom wajib dipilih.',
-            'role.in' => 'Pilihan role tidak valid.',
             'status.required' => 'Status keanggotaan wajib diisi.',
             'photo.image' => 'File harus berupa gambar.',
             'photo.max' => 'Ukuran gambar maksimal 2MB.',
@@ -132,6 +129,43 @@ class AnggotaController extends Controller
         $anggota->update($validated);
 
         return redirect()->route('admin.anggota.index')->with('success', 'Data anggota berhasil diperbarui.');
+    }
+
+    public function printCards(Request $request)
+    {
+        $query = Anggota::query();
+
+        if ($request->filled('id')) {
+            $query->where('id', $request->id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('role')) {
+            $query->where('position', $request->role);
+        }
+
+        $anggotas = $query->latest()->get();
+
+        return view('admin.anggota.print-cards', compact('anggotas'));
+    }
+
+    public function printMyCard(Request $request)
+    {
+        $user = $request->user();
+        $anggota = $user->getOrBuildProfilAnggota();
+        $anggotas = collect([$anggota]);
+
+        return view('admin.anggota.print-cards', compact('anggotas'));
+    }
+
+    public function verifyCard($id): View
+    {
+        $anggota = Anggota::findOrFail($id);
+
+        return view('anggota.verify', compact('anggota'));
     }
 
     public function destroy($id): RedirectResponse

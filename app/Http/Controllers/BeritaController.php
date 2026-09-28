@@ -17,6 +17,9 @@ class BeritaController extends Controller
         if ($request->filled('search')) {
             $query->where('title', 'like', "%{$request->search}%");
         }
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -34,6 +37,7 @@ class BeritaController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'category' => 'required|string|in:Kegiatan,Pengumuman,Organisasi,Sosial',
             'content' => 'required',
             'status' => 'required|in:published,draft',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -63,6 +67,7 @@ class BeritaController extends Controller
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'category' => 'required|string|in:Kegiatan,Pengumuman,Organisasi,Sosial',
             'content' => 'required',
             'status' => 'required|in:published,draft',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',

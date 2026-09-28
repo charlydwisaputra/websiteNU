@@ -38,18 +38,67 @@
                 @csrf
                 @method('PUT')
 
-                <!-- Kategori Organisasi -->
-                <div>
+                <!-- Kategori Organisasi (Custom Animated Dropdown) -->
+                <div x-data="{ 
+                    open: false, 
+                    selected: '{{ old('category', $galeri->category) }}',
+                    options: [
+                        { val: '', label: '-- Pilih Kategori --' },
+                        { val: 'Muslimat', label: 'Muslimat' },
+                        { val: 'Fatayat', label: 'Fatayat' },
+                        { val: 'GP Ansor', label: 'GP Ansor' },
+                        { val: 'IPNU', label: 'IPNU' },
+                        { val: 'IPPNU', label: 'IPPNU' },
+                        { val: 'PMII', label: 'PMII' }
+                    ],
+                    get currentLabel() {
+                        let opt = this.options.find(o => o.val === this.selected);
+                        return opt ? opt.label : '-- Pilih Kategori --';
+                    }
+                }" class="relative">
                     <label class="block text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Kategori Organisasi <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                    <select name="category" class="w-full px-4 py-3 bg-slate-50/60 border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-2 focus:ring-emerald-500/20 rounded-2xl text-sm font-bold text-slate-800 outline-none transition-all">
-                        <option value="">-- Pilih Kategori --</option>
-                        <option value="Muslimat" {{ old('category', $galeri->category) == 'Muslimat' ? 'selected' : '' }}>Muslimat</option>
-                        <option value="Fatayat" {{ old('category', $galeri->category) == 'Fatayat' ? 'selected' : '' }}>Fatayat</option>
-                        <option value="GP Ansor" {{ old('category', $galeri->category) == 'GP Ansor' ? 'selected' : '' }}>GP Ansor</option>
-                        <option value="IPNU" {{ old('category', $galeri->category) == 'IPNU' ? 'selected' : '' }}>IPNU</option>
-                        <option value="IPPNU" {{ old('category', $galeri->category) == 'IPPNU' ? 'selected' : '' }}>IPPNU</option>
-                        <option value="PMII" {{ old('category', $galeri->category) == 'PMII' ? 'selected' : '' }}>PMII</option>
-                    </select>
+                    <input type="hidden" name="category" :value="selected">
+
+                    <!-- Custom Trigger Button -->
+                    <button type="button" 
+                            @click="open = !open" 
+                            @click.outside="open = false"
+                            class="w-full px-4 py-3.5 bg-slate-50/70 hover:bg-white border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-4 focus:ring-emerald-500/10 rounded-2xl text-sm font-bold text-slate-800 flex items-center justify-between transition-all duration-200 shadow-xs active:scale-[0.99]">
+                        <span class="flex items-center gap-2.5 truncate" :class="selected ? 'text-slate-900' : 'text-slate-400 font-medium'">
+                            <span class="w-2 h-2 rounded-full" :class="selected ? 'bg-[#087A4B] shadow-xs' : 'bg-slate-300'"></span>
+                            <span x-text="currentLabel"></span>
+                        </span>
+                        <svg class="w-4 h-4 text-slate-400 transition-transform duration-300 shrink-0 ml-2" :class="open ? 'rotate-180 text-[#087A4B]' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Animated Dropdown Options Card -->
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                         class="absolute z-50 left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] p-1.5 space-y-1 overflow-hidden max-h-60 overflow-y-auto"
+                         x-cloak>
+                        <template x-for="opt in options" :key="opt.val">
+                            <div @click="selected = opt.val; open = false"
+                                 class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold cursor-pointer transition-all duration-150 flex items-center justify-between"
+                                 :class="selected === opt.val ? 'bg-emerald-50/80 text-[#087A4B]' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
+                                <span class="flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full" :class="selected === opt.val ? 'bg-[#087A4B]' : 'bg-transparent'"></span>
+                                    <span x-text="opt.label"></span>
+                                </span>
+                                <template x-if="selected === opt.val">
+                                    <svg class="w-4 h-4 text-[#087A4B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
                 </div>
 
                 <!-- Judul / Keterangan -->

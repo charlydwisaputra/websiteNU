@@ -2,10 +2,264 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   DESIGN SYSTEM — Theme Tokens (CSS Custom Properties)
+   Two themes: light + dark. All components consume these tokens.
+   ============================================================ */
+
+:root {
+    /* ── Page ── */
+    --color-page-bg: #F5F9F7;
+    --color-page-bg-alt: #F2F9F5;
+
+    /* ── Text ── */
+    --color-text-primary: #0F172A;
+    --color-text-secondary: #334155;
+    --color-text-muted: #64748B;
+    --color-text-inverted: #ffffff;
+
+    /* ── Accent ── */
+    --color-accent: #087A4B;
+    --color-accent-hover: #065C39;
+    --color-accent-light: rgba(8, 122, 75, 0.10);
+    --color-accent-glow: rgba(8, 122, 75, 0.08);
+
+    /* ── Surface (cards, panels) ── */
+    --color-surface: rgba(255, 255, 255, 0.85);
+    --color-surface-solid: #FFFFFF;
+    --color-surface-hover: #F8FBF9;
+    --color-surface-elevated: rgba(255, 255, 255, 0.88);
+
+    /* ── Glass ── */
+    --glass-bg: rgba(255, 255, 255, 0.45);
+    --glass-bg-strong: rgba(255, 255, 255, 0.55);
+    --glass-border: rgba(255, 255, 255, 0.72);
+    --glass-shadow: 0 12px 32px rgba(20, 70, 50, 0.07), 0 3px 10px rgba(20, 70, 50, 0.035), inset 0 1px 0 rgba(255, 255, 255, 0.85), inset 0 -1px 0 rgba(16, 120, 75, 0.05);
+    --glass-shadow-scrolled: 0 14px 36px rgba(20, 70, 50, 0.09), 0 4px 12px rgba(20, 70, 50, 0.045), inset 0 1px 0 rgba(255, 255, 255, 0.90), inset 0 -1px 0 rgba(16, 120, 75, 0.06);
+    --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.16) 40%, transparent 100%);
+
+    /* ── Border ── */
+    --color-border: rgba(16, 120, 75, 0.10);
+    --color-border-light: rgba(16, 120, 75, 0.08);
+    --color-border-subtle: rgba(255, 255, 255, 0.75);
+
+    /* ── Shadow ── */
+    --shadow-card: 0 12px 35px rgba(20, 60, 40, 0.05);
+    --shadow-card-hover: 0 16px 45px rgba(20, 60, 40, 0.08);
+    --shadow-button: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    /* ── Input ── */
+    --color-input-bg: rgba(255, 255, 255, 0.50);
+    --color-input-border: rgba(255, 255, 255, 0.80);
+    --color-input-focus-bg: #ffffff;
+
+    /* ── Nav dock ── */
+    --nav-dock-bg: rgba(255, 255, 255, 0.40);
+    --nav-dock-border: rgba(255, 255, 255, 0.60);
+    --nav-active-bg: rgba(255, 255, 255, 0.65);
+    --nav-active-shadow: 0 2px 8px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.80);
+
+    /* ── Footer ── */
+    --color-footer-bg: rgba(255, 255, 255, 0.70);
+    --color-footer-border: rgba(226, 232, 240, 0.70);
+
+    /* ── Mobile menu ── */
+    --mobile-menu-bg: rgba(255, 255, 255, 0.90);
+
+    /* ── Ambient glow (hero background decorations) ── */
+    --ambient-glow-opacity: 1;
+
+    /* ── Button dark/light fill ── */
+    --btn-dark-bg: #111827;
+    --btn-dark-text: #ffffff;
+
+    /* ── Admin ── */
+    --admin-body-bg: #FAFCFB;
+    --admin-glass-bg: rgba(255, 255, 255, 0.65);
+    --admin-glass-border: rgba(255, 255, 255, 0.50);
+    --admin-sidebar-active-bg: #ffffff;
+    --admin-sidebar-text: #94a3b8;
+    --admin-sidebar-text-hover: #334155;
+    --admin-topbar-bg: rgba(255, 255, 255, 0.65);
+
+    /* ── Transition ── */
+    --theme-transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease, box-shadow 300ms ease, fill 300ms ease, stroke 300ms ease;
+}
+
+/* ── DARK THEME ── */
+.dark {
+    color-scheme: dark;
+
+    --color-page-bg: #0F1211;
+    --color-page-bg-alt: #131715;
+
+    --color-text-primary: rgba(255, 255, 255, 0.92);
+    --color-text-secondary: rgba(255, 255, 255, 0.64);
+    --color-text-muted: rgba(255, 255, 255, 0.45);
+    --color-text-inverted: #0F1211;
+
+    --color-accent: #087A4B;
+    --color-accent-hover: #065C39;
+    --color-accent-light: rgba(8, 122, 75, 0.12);
+    --color-accent-glow: rgba(8, 122, 75, 0.04);
+
+    --color-surface: rgba(20, 24, 22, 0.65);
+    --color-surface-solid: rgba(255, 255, 255, 0.055);
+    --color-surface-hover: rgba(255, 255, 255, 0.075);
+    --color-surface-elevated: rgba(20, 24, 22, 0.75);
+
+    --glass-bg: rgba(18, 22, 20, 0.35);
+    --glass-bg-strong: rgba(18, 22, 20, 0.42);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-shadow: 0 10px 35px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    --glass-shadow-scrolled: 0 10px 35px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0.06) 35%, rgba(255, 255, 255, 0) 70%);
+
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-border-light: rgba(255, 255, 255, 0.05);
+    --color-border-subtle: rgba(255, 255, 255, 0.06);
+
+    --shadow-card: 0 15px 40px rgba(0, 0, 0, 0.18);
+    --shadow-card-hover: 0 20px 50px rgba(0, 0, 0, 0.25);
+    --shadow-button: 0 4px 12px rgba(0, 0, 0, 0.30);
+
+    --color-input-bg: rgba(0, 0, 0, 0.20);
+    --color-input-border: rgba(255, 255, 255, 0.12);
+    --color-input-focus-bg: rgba(0, 0, 0, 0.35);
+
+    --nav-dock-bg: rgba(255, 255, 255, 0.06);
+    --nav-dock-border: rgba(255, 255, 255, 0.08);
+    --nav-active-bg: rgba(255, 255, 255, 0.12);
+    --nav-active-shadow: 0 2px 8px rgba(0, 0, 0, 0.20);
+
+    --color-footer-bg: rgba(20, 20, 20, 0.60);
+    --color-footer-border: rgba(255, 255, 255, 0.08);
+
+    --mobile-menu-bg: rgba(18, 22, 20, 0.95);
+
+    --ambient-glow-opacity: 0.15;
+
+    --btn-dark-bg: rgba(255, 255, 255, 0.12);
+    --btn-dark-text: rgba(255, 255, 255, 0.92);
+
+    --admin-body-bg: #111111;
+    --admin-glass-bg: rgba(25, 25, 25, 0.65);
+    --admin-glass-border: rgba(255, 255, 255, 0.08);
+    --admin-sidebar-active-bg: rgba(255, 255, 255, 0.10);
+    --admin-sidebar-text: rgba(255, 255, 255, 0.45);
+    --admin-sidebar-text-hover: rgba(255, 255, 255, 0.85);
+    --admin-topbar-bg: rgba(25, 25, 25, 0.65);
+}
+
+/* ============================================================
+   BASE — Apply theme tokens globally
+   ============================================================ */
+
 html {
     scroll-behavior: smooth;
 }
 
+body {
+    background-color: var(--color-page-bg);
+    color: var(--color-text-primary);
+    transition: var(--theme-transition);
+}
+
+/* Light mode ambient halo behind navbar */
+html:not(.dark) body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 220px;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(
+        ellipse 60% 55% at 50% 0%,
+        rgba(16, 140, 90, 0.08) 0%,
+        rgba(16, 140, 90, 0.025) 45%,
+        transparent 75%
+    );
+    filter: blur(28px);
+}
+
+/* Dark mode ambient background glow */
+.dark body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+        radial-gradient(circle at 15% 10%, rgba(8, 122, 75, 0.05), transparent 60%),
+        radial-gradient(circle at 85% 85%, rgba(8, 122, 75, 0.03), transparent 65%),
+        radial-gradient(circle at 75% 35%, rgba(8, 122, 75, 0.04), transparent 55%);
+}
+
+/* ============================================================
+   FLOATING GLASS NAVBAR — iPhone/visionOS Glassmorphism
+   ============================================================ */
+.glass-navbar-container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    transition: var(--theme-transition);
+}
+
+/* Scrolled state */
+#glass-navbar.scrolled .glass-navbar-container {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(28px) saturate(170%);
+    -webkit-backdrop-filter: blur(28px) saturate(170%);
+    box-shadow: var(--glass-shadow-scrolled);
+}
+
+/* Dark mode specific backdrop filters and gloss effect */
+.dark .glass-navbar-container {
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+}
+
+.dark #glass-navbar.scrolled .glass-navbar-container {
+    backdrop-filter: blur(28px) saturate(170%);
+    -webkit-backdrop-filter: blur(28px) saturate(170%);
+}
+
+/* Glossy inner reflection */
+.glass-navbar-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 300ms ease;
+    opacity: 1; /* Default to visible in light mode */
+    background: var(--glass-highlight);
+}
+
+.dark .glass-navbar-container::before {
+    opacity: 1;
+}
+
+/* ============================================================
+   ADMIN GLASS PANEL
+   ============================================================ */
+.glass-panel {
+    background: var(--admin-glass-bg);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid var(--admin-glass-border);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02);
+    transition: var(--theme-transition);
+}
+
+/* ============================================================
+   MARQUEE — nama user di navbar admin
+   ============================================================ */
 @keyframes marquee {
     0% { transform: translateX(0%); }
     100% { transform: translateX(-50%); }
@@ -16,10 +270,14 @@ html {
     animation: marquee 4s linear infinite;
 }
 
+/* ============================================================
+   REVEAL — scroll entrance animation
+   ============================================================ */
 .reveal {
     opacity: 0;
     transform: translateY(40px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
 }
 
@@ -33,15 +291,419 @@ html {
 .delay-300 { transition-delay: 300ms; }
 .delay-400 { transition-delay: 400ms; }
 
-.scrollbar-none::-webkit-scrollbar {
-    display: none;
+/* ============================================================
+   SCROLLBAR HIDE
+   ============================================================ */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ============================================================
+   LIGHTBOX
+   ============================================================ */
+.lightbox-open { overflow: hidden; }
+
+/* ============================================================
+   MOBILE MENU ANIMATION
+   ============================================================ */
+#mobile-menu.menu-open {
+    display: block;
+    animation: menuSlideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.scrollbar-none {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+@keyframes menuSlideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.lightbox-open {
-    overflow: hidden;
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================================
+   MODERN FORM SELECT — Custom styled dropdown
+   ============================================================ */
+select.form-select-modern {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 18px;
+    padding-right: 44px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+select.form-select-modern:focus {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23087A4B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* ============================================================
+   FORM FIELD ANIMATIONS — Focus & hover micro-interactions
+   ============================================================ */
+.form-field {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-field:hover {
+    border-color: rgba(8, 122, 75, 0.3);
+    box-shadow: 0 0 0 3px rgba(8, 122, 75, 0.05);
+}
+
+.form-field:focus {
+    border-color: #087A4B;
+    box-shadow: 0 0 0 4px rgba(8, 122, 75, 0.1);
+    background-color: var(--color-input-focus-bg);
+    transform: scale(1.005);
+}
+
+/* ============================================================
+   ADMIN FORM LABELS — Subtle entrance
+   ============================================================ */
+.form-label {
+    transition: color 0.2s ease;
+}
+
+.form-label:hover {
+    color: #087A4B;
+}
+
+/* ============================================================
+   THEME TOGGLE — Premium capsule button
+   ============================================================ */
+.theme-toggle-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 300ms ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    outline: none;
+    color: var(--color-text-secondary);
+}
+
+.theme-toggle-btn:hover {
+    background: var(--color-surface-hover);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+    transform: scale(1.05);
+}
+
+.theme-toggle-btn .icon-sun,
+.theme-toggle-btn .icon-moon {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    transition: opacity 300ms ease, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.theme-toggle-btn .icon-sun {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.theme-toggle-btn .icon-moon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+}
+
+.dark .theme-toggle-btn .icon-sun {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.5);
+}
+
+.dark .theme-toggle-btn .icon-moon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+/* ============================================================
+   THEME-AWARE OVERRIDES — Semantic class mappings
+   These ensure existing Tailwind utility classes adapt to theme
+   without touching any blade templates.
+   ============================================================ */
+
+/* Light mode overrides for flat gray backgrounds */
+html:not(.dark) .bg-gray-50,
+html:not(.dark) .bg-slate-50,
+html:not(.dark) .bg-gray-100 {
+    background-color: var(--color-surface-hover) !important;
+}
+
+html:not(.dark) .bg-white\/60,
+html:not(.dark) .bg-white\/70,
+html:not(.dark) .bg-white\/75,
+html:not(.dark) .bg-white\/80,
+html:not(.dark) .bg-white\/85,
+html:not(.dark) .bg-white\/90 {
+    background-color: var(--color-surface) !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    border: 1px solid var(--color-border-subtle) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+/* Gray utility fallbacks to secondary surface */
+.dark .bg-gray-50,
+.dark .bg-slate-50,
+.dark .bg-gray-100,
+.dark .bg-slate-100 {
+    background-color: var(--color-surface-hover) !important;
+    backdrop-filter: blur(18px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(140%) !important;
+    border: 1px solid var(--color-border-subtle) !important;
+}
+
+/* Page backgrounds */
+.dark .bg-\[\#FAFCFB\],
+.dark .bg-\[\#F8FAF9\] {
+    background-color: var(--color-page-bg) !important;
+}
+
+/* Surface / card backgrounds */
+.dark .bg-white\/60,
+.dark .bg-white\/70,
+.dark .bg-white\/75,
+.dark .bg-white\/80,
+.dark .bg-white\/85,
+.dark .bg-white\/90 {
+    background-color: var(--color-surface) !important;
+    backdrop-filter: blur(18px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(140%) !important;
+    border-color: var(--color-border) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+.dark .bg-white {
+    background-color: var(--color-surface-solid) !important;
+    backdrop-filter: blur(18px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(140%) !important;
+    border-color: var(--color-border) !important;
+    box-shadow: var(--shadow-card) !important;
+}
+
+/* Text colors */
+.dark .text-gray-900,
+.dark .text-slate-900,
+.dark .text-\[\#1c242c\] {
+    color: var(--color-text-primary) !important;
+}
+
+.dark .text-gray-800,
+.dark .text-slate-800 {
+    color: var(--color-text-primary) !important;
+}
+
+.dark .text-gray-700,
+.dark .text-slate-700 {
+    color: var(--color-text-secondary) !important;
+}
+
+.dark .text-gray-600,
+.dark .text-slate-600 {
+    color: var(--color-text-secondary) !important;
+}
+
+.dark .text-gray-500,
+.dark .text-slate-500 {
+    color: var(--color-text-muted) !important;
+}
+
+.dark .text-gray-400,
+.dark .text-slate-400 {
+    color: var(--color-text-muted) !important;
+}
+
+/* Border colors */
+.dark .border-white\/60,
+.dark .border-white\/80,
+.dark .border-gray-200\/50,
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-slate-200\/70,
+.dark .border-slate-200,
+.dark .border-slate-100,
+.dark .border-slate-200\/50 {
+    border-color: var(--color-border) !important;
+}
+
+/* Shadow overrides */
+.dark .shadow-\[0_8px_30px_rgba\(0\,0\,0\,0\.03\)\],
+.dark .shadow-\[0_8px_30px_rgba\(0\,0\,0\,0\.04\)\] {
+    box-shadow: var(--shadow-card) !important;
+}
+
+/* Ambient glow opacity in dark */
+.dark .from-emerald-500\/20,
+.dark .from-emerald-500\/10,
+.dark .from-emerald-100\/40,
+.dark .from-emerald-100\/50,
+.dark .bg-emerald-400\/10,
+.dark .bg-emerald-500\/5,
+.dark .bg-emerald-100\/40 {
+    opacity: var(--ambient-glow-opacity);
+}
+
+/* Nav dock */
+.dark .bg-gray-500\/5 {
+    background-color: var(--nav-dock-bg) !important;
+}
+
+.dark .border-gray-400\/10 {
+    border-color: var(--nav-dock-border) !important;
+}
+
+/* Active nav link override */
+.dark .active-nav-link,
+.dark .nav-link-item.active-nav-link {
+    background-color: var(--nav-active-bg) !important;
+    box-shadow: var(--nav-active-shadow) !important;
+    color: var(--color-text-primary) !important;
+}
+
+/* Nav text */
+.dark .nav-link-item {
+    color: var(--color-text-muted);
+}
+
+.dark .nav-link-item:hover {
+    color: var(--color-text-primary) !important;
+    background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Hover bg overrides */
+.dark .hover\:bg-black\/5:hover {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark .hover\:bg-gray-50:hover,
+.dark .hover\:bg-gray-200:hover,
+.dark .hover\:bg-slate-50:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* BG gray-100 (user icon, etc.) handled above */
+
+/* Footer */
+.dark footer,
+.dark .bg-white\/70 {
+    background-color: var(--color-footer-bg) !important;
+}
+
+.dark footer .border-t {
+    border-color: var(--color-footer-border) !important;
+}
+
+/* Mobile menu */
+.dark #mobile-menu {
+    background-color: var(--mobile-menu-bg) !important;
+    border-color: var(--color-border) !important;
+}
+
+/* Buttons with bg-gray-900 */
+.dark .bg-gray-900 {
+    background-color: var(--btn-dark-bg) !important;
+    color: var(--btn-dark-text) !important;
+}
+
+/* Selection in dark */
+.dark ::selection {
+    background-color: rgba(16, 185, 129, 0.35);
+    color: #ffffff;
+}
+
+/* Admin body */
+.dark .admin-layout-body {
+    background-color: var(--admin-body-bg) !important;
+}
+
+/* Admin sidebar mobile */
+.dark .bg-white\/90 {
+    background-color: var(--mobile-menu-bg) !important;
+}
+
+/* Admin rail */
+.dark .rail-item {
+    color: var(--admin-sidebar-text);
+}
+
+.dark .rail-item:hover {
+    color: var(--admin-sidebar-text-hover) !important;
+    background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Admin active rail */
+.dark .rail-item.bg-white {
+    background-color: var(--admin-sidebar-active-bg) !important;
+}
+
+/* Admin active mobile sidebar links */
+.dark .bg-emerald-50 {
+    background-color: rgba(16, 185, 129, 0.12) !important;
+}
+
+/* Input fields in dark */
+.dark input,
+.dark textarea,
+.dark select {
+    background-color: var(--color-input-bg);
+    border-color: var(--color-input-border);
+    color: var(--color-text-primary);
+    backdrop-filter: blur(12px);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+    background-color: var(--color-input-focus-bg);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: var(--color-text-muted);
+}
+
+/* Dropdown menus */
+.dark #user-dropdown-menu {
+    background-color: var(--color-surface-solid) !important;
+    border-color: var(--color-border) !important;
+}
+
+/* Red button (logout) stays red in dark */
+.dark .text-red-400 { color: #f87171 !important; }
+.dark .hover\:bg-red-50:hover { background-color: rgba(248, 113, 113, 0.10) !important; }
+.dark .bg-red-50 { background-color: rgba(248, 113, 113, 0.10) !important; }
+
+/* Admin overlay in dark */
+.dark .bg-slate-900\/40 {
+    background-color: rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Global smooth transition on theme change */
+*, *::before, *::after {
+    transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
+}
+
+/* Exclude layout-affecting properties from global transition */
+.reveal, .reveal * {
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 300ms ease, color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
 }

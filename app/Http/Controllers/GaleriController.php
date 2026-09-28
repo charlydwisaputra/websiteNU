@@ -21,9 +21,19 @@ class GaleriController extends Controller
     }
 
     // Admin: Tampilkan Semua Galeri
-    public function index()
+    public function index(Request $request)
     {
-        $galeris = Galeri::latest()->get();
+        $query = Galeri::query();
+
+        if ($request->filled('search')) {
+            $query->where('title', 'like', "%{$request->search}%");
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        $galeris = $query->latest()->paginate(12)->withQueryString();
         return view('admin.galeri.index', compact('galeris'));
     }
 
