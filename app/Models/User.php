@@ -50,7 +50,7 @@ class User extends Authenticatable
             // Jika user adalah admin dan profilnya belum diset role-nya atau statusnya masih pending, auto-aktifkan
             if ($this->isAdmin() && (empty($this->profilAnggota->role) || $this->profilAnggota->status === 'Pending')) {
                 $this->profilAnggota->role = 'Administrator';
-                $this->profilAnggota->wilayah = $this->profilAnggota->wilayah ?: 'Pusat Cikembulan';
+                $this->profilAnggota->wilayah = $this->profilAnggota->wilayah ?: 'Pusat Kalisari';
                 $this->profilAnggota->status = 'Aktif';
                 $this->profilAnggota->save();
             }
@@ -62,7 +62,7 @@ class User extends Authenticatable
             'user_id' => $this->id,
             'name' => $this->name,
             'role' => $this->isAdmin() ? 'Administrator' : null,
-            'wilayah' => $this->isAdmin() ? 'Pusat Cikembulan' : null,
+            'wilayah' => $this->isAdmin() ? 'Pusat Kalisari' : null,
             'status' => $this->isAdmin() ? 'Aktif' : 'Pending',
             'joined_at' => $this->created_at ?? now(),
             'is_public' => true,

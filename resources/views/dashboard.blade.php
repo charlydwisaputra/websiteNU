@@ -34,7 +34,7 @@
             Dashboard
         </h1>
         <p class="text-sm mt-1 max-w-md leading-relaxed" style="color:var(--text-muted)">
-            Kelola ekosistem digital NU Cikembulan dari satu tempat.
+            Kelola ekosistem digital NU Kalisari dari satu tempat.
         </p>
     </div>
 
@@ -192,7 +192,7 @@
             <div class="flex-1">
                 <h3 class="font-semibold text-base mb-1" style="color:var(--text-primary)">Kartu Anggota Digital</h3>
                 <p class="text-sm leading-relaxed mb-4 max-w-sm" style="color:var(--text-secondary)">
-                    Tunjukkan atau pindai kode QR ini untuk verifikasi keanggotaan di kegiatan resmi NU Cikembulan.
+                    Tunjukkan atau pindai kode QR ini untuk verifikasi keanggotaan di kegiatan resmi NU Kalisari.
                 </p>
                 <a href="{{ route('anggota.print-my-card') }}"
                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all border"

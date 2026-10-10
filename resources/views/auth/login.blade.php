@@ -9,7 +9,7 @@
             Akses Administrator
         </span>
         <h2 class="font-serif text-2xl font-bold tracking-tight" style="color:var(--text-primary)">Masuk Admin</h2>
-        <p class="text-sm mt-1" style="color:var(--text-muted)">Portal tata kelola NU Cikembulan Digital</p>
+        <p class="text-sm mt-1" style="color:var(--text-muted)">Portal tata kelola NU Kalisari Digital</p>
     </div>
 
     <x-auth-session-status class="mb-4" :status="session('status')" />

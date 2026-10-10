@@ -11,7 +11,7 @@
                 Modul Publikasi
             </span>
             <h1 class="font-serif text-2xl md:text-3xl font-bold tracking-tight" style="color:var(--text-primary)">Data Berita</h1>
-            <p class="text-sm mt-1" style="color:var(--text-muted)">Kelola artikel, informasi, dan publikasi website NU Cikembulan.</p>
+            <p class="text-sm mt-1" style="color:var(--text-muted)">Kelola artikel, informasi, dan publikasi website NU Kalisari.</p>
         </div>
         <a href="{{ route('admin.berita.create') }}"
            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"

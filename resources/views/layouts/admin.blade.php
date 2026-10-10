@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Workspace — NU Cikembulan</title>
+    <title>Workspace — NU Kalisari</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -115,7 +115,7 @@
                class="relative flex-1 flex flex-col max-w-[280px] w-full px-5 py-8 shadow-2xl"
                style="background:var(--bg-surface);border-right:1px solid var(--border-light)">
             <div class="flex items-center justify-between mb-8">
-                <span class="font-serif font-bold text-lg" style="color:var(--text-primary)">NU Cikembulan</span>
+                <span class="font-serif font-bold text-lg" style="color:var(--text-primary)">NU Kalisari</span>
                 <button @click="mobileMenuOpen=false"
                         class="p-2 rounded-full transition-all" style="color:var(--text-muted)"
                         onmouseover="this.style.background='var(--bg-surface-elevated)'"
@@ -185,7 +185,7 @@
                 </button>
                 <div>
                     <p class="font-serif font-bold text-base leading-none" style="color:var(--text-primary)">Workspace</p>
-                    <p class="text-[10px] font-semibold uppercase tracking-widest mt-0.5" style="color:var(--text-muted)">NU Cikembulan Digital</p>
+                    <p class="text-[10px] font-semibold uppercase tracking-widest mt-0.5" style="color:var(--text-muted)">NU Kalisari Digital</p>
                 </div>
             </div>
 

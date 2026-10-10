@@ -1,30 +1,30 @@
+
 @php
     $isHome   = request()->routeIs('home');
-    $homeUrl  = route('home');
 
     $links = [
         [
-            'href'    => $isHome ? '#hero-section' : $homeUrl,
+            'href'    => route('home'),
             'label'   => 'Beranda',
-            'active'  => false,
-            'section' => $isHome ? 'hero-section' : null,
-        ],
-        [
-            'href'    => $isHome ? '#ekosistem' : $homeUrl . '#ekosistem',
-            'label'   => 'Organisasi',
-            'active'  => false,
-            'section' => $isHome ? 'ekosistem' : null,
-        ],
-        [
-            'href'    => route('anggota'),
-            'label'   => 'Anggota',
-            'active'  => request()->routeIs('anggota'),
+            'active'  => request()->routeIs('home'),
             'section' => null,
         ],
         [
-            'href'    => route('galeri'),
-            'label'   => 'Dokumentasi',
-            'active'  => request()->routeIs('galeri'),
+            'href'    => route('tentang'),
+            'label'   => 'Tentang',
+            'active'  => request()->routeIs('tentang'),
+            'section' => null,
+        ],
+        [
+            'href'    => route('ekosistem'),
+            'label'   => 'Ekosistem',
+            'active'  => request()->routeIs('ekosistem'),
+            'section' => null,
+        ],
+        [
+            'href'    => route('kegiatan'),
+            'label'   => 'Kegiatan',
+            'active'  => request()->routeIs('kegiatan'),
             'section' => null,
         ],
         [
@@ -33,44 +33,75 @@
             'active'  => request()->routeIs('berita*'),
             'section' => null,
         ],
+        [
+            'href'    => route('galeri'),
+            'label'   => 'Dokumentasi',
+            'active'  => request()->routeIs('galeri'),
+            'section' => null,
+        ],
     ];
 @endphp
 
+
 <style>
-    /* Premium OS-like Floating Glass Navbar */
+    /* Premium Fluid Glass Navbar (React Bits Inspired) */
     .glass-navbar-container {
-        /* Light Mode: More transparent for a glossy feel */
-        background: rgba(255, 255, 255, 0.4);
-        backdrop-filter: blur(16px) saturate(180%);
-        -webkit-backdrop-filter: blur(16px) saturate(180%);
-        border: 1px solid rgba(255, 255, 255, 0.6);
+        position: relative;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(24px) saturate(200%);
+        -webkit-backdrop-filter: blur(24px) saturate(200%);
         box-shadow: 
-            0 4px 24px -4px rgba(0, 0, 0, 0.05),
-            inset 0 1px 0 rgba(255, 255, 255, 0.5);
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            0 10px 40px -10px rgba(0, 0, 0, 0.1),
+            inset 0 1px 2px rgba(255, 255, 255, 0.9),
+            inset 0 -1px 2px rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
-    .dark .glass-navbar-container {
-        /* Dark Mode: Deep Black Iris with higher transparency */
-        background: rgba(8, 8, 19, 0.35);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 
-            0 8px 32px -4px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    /* Chromatic aberration & specular edge mimic */
+    .glass-navbar-container::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: 9999px;
+        background: linear-gradient(135deg, rgba(0, 255, 200, 0.2) 0%, rgba(255, 255, 255, 0) 40%, rgba(0, 143, 90, 0.2) 100%);
+        z-index: -1;
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        padding: 1px;
+        pointer-events: none;
+        opacity: 0.6;
     }
 
-    /* Scrolled state: slightly more opaque for readability but still very glossy */
-    header.is-scrolled .glass-navbar-container {
-        background: rgba(255, 255, 255, 0.65);
+    .dark .glass-navbar-container {
+        background: rgba(7, 19, 15, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: 
-            0 12px 40px -8px rgba(0, 0, 0, 0.08),
-            inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            0 16px 48px -12px rgba(0, 0, 0, 0.5),
+            inset 0 1px 1px rgba(255, 255, 255, 0.15),
+            inset 0 -1px 2px rgba(0, 0, 0, 0.6);
+    }
+    
+    .dark .glass-navbar-container::before {
+        background: linear-gradient(135deg, rgba(232, 255, 245, 0.15) 0%, rgba(255, 255, 255, 0) 40%, rgba(0, 168, 107, 0.25) 100%);
+        opacity: 0.8;
+    }
+
+    /* Scrolled state */
+    header.is-scrolled .glass-navbar-container {
+        background: rgba(255, 255, 255, 0.5);
+        box-shadow: 
+            0 8px 32px -8px rgba(0, 0, 0, 0.08),
+            inset 0 1px 2px rgba(255, 255, 255, 0.9);
     }
     .dark header.is-scrolled .glass-navbar-container {
-        background: rgba(8, 8, 19, 0.6);
+        background: rgba(5, 7, 6, 0.55);
         box-shadow: 
-            0 12px 40px -8px rgba(0, 0, 0, 0.6),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            0 8px 32px -8px rgba(0, 0, 0, 0.5),
+            inset 0 1px 1px rgba(255, 255, 255, 0.15);
     }
 
     /* Navigation Links */
@@ -87,6 +118,7 @@
         align-items: center;
         justify-content: center;
         transform: scale(1);
+        z-index: 1;
     }
     .dark .nav-link {
         color: var(--text-secondary);
@@ -94,31 +126,32 @@
     
     .nav-link:hover {
         color: var(--text-primary);
-        background: rgba(0, 0, 0, 0.04);
+        background: rgba(255, 255, 255, 0.4);
         transform: scale(1.02);
     }
     .dark .nav-link:hover {
         color: var(--text-primary);
-        background: rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.08);
     }
 
-    /* Active Navigation: Selected Pill Feel */
+    /* Active Navigation: Floating frosted pill */
     .nav-link.is-active, 
     .nav-link[data-active="true"] {
-        color: var(--accent) !important;
-        background: var(--bg-surface) !important;
+        color: var(--text-primary) !important;
+        background: rgba(255, 255, 255, 0.6) !important;
         font-weight: 600 !important;
         box-shadow: 
-            0 2px 10px -2px var(--accent-subtle),
-            inset 0 0 0 1px rgba(0, 140, 90, 0.1);
+            0 4px 12px -4px rgba(0, 143, 90, 0.2),
+            inset 0 1px 1px rgba(255, 255, 255, 0.8);
         transform: scale(1.02);
     }
-    .dark .nav-link.is-active, 
+    .dark .nav-link.is-active,
     .dark .nav-link[data-active="true"] {
-        background: rgba(255, 255, 255, 0.08) !important;
+        color: var(--text-primary) !important;
+        background: rgba(255, 255, 255, 0.12) !important;
         box-shadow: 
-            0 2px 12px -2px rgba(0, 179, 115, 0.2),
-            inset 0 0 0 1px rgba(0, 179, 115, 0.15);
+            0 4px 12px -4px rgba(0, 168, 107, 0.3),
+            inset 0 1px 1px rgba(255, 255, 255, 0.1);
     }
 
     /* Dashboard Button */
@@ -231,13 +264,13 @@
                 flex items-center justify-between px-4 sm:px-6">
 
         {{-- LEFT: Logo --}}
-        <a href="{{ $homeUrl }}" class="flex items-center gap-3 shrink-0 logo-container" aria-label="Beranda NU Cikembulan">
+        <a href="{{ route('home') }}" class="flex items-center gap-3 shrink-0 logo-container" aria-label="Beranda NU Kalisari">
             <div class="logo-icon-wrap w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-sm"
                  style="background:var(--accent)">
                 NU
             </div>
             <div class="hidden sm:flex flex-col leading-none">
-                <span class="font-serif font-bold text-[15px]" style="color:var(--text-primary)">NU Cikembulan</span>
+                <span class="font-serif font-bold text-[15px]" style="color:var(--text-primary)">NU Kalisari</span>
                 <span class="text-[10px] font-medium uppercase tracking-widest" style="color:var(--text-muted)">Ranting</span>
             </div>
         </a>
@@ -317,7 +350,7 @@
             </button>
 
             <button id="mobile-menu-btn" type="button" aria-label="Buka menu" aria-expanded="false"
-                    class="w-9 h-9 rounded-full flex items-center justify-center transition-all"
+                    class="w-9 h-9 rounded-full flex lg:hidden items-center justify-center transition-all"
                     style="color:var(--text-primary)"
                     onmouseover="this.style.background='var(--bg-surface-elevated)'"
                     onmouseout="this.style.background=''">
@@ -333,7 +366,7 @@
 
     {{-- MOBILE DRAWER --}}
     <div id="mobile-menu"
-         class="mobile-sheet hidden absolute top-[76px] left-4 right-4 rounded-2xl p-2 shadow-lg"
+         class="mobile-sheet hidden lg:hidden absolute top-[76px] left-4 right-4 rounded-2xl p-2 shadow-lg"
          style="background:var(--bg-surface);border:1px solid var(--border-light)">
         <ul class="flex flex-col gap-0.5">
             @foreach ($links as $link)
@@ -389,65 +422,5 @@
     });
 </script>
 
-{{-- ── SCROLL-SPY: only on home page ── --}}
-@if($isHome)
-<script>
-(function () {
-    var sectionIds = ['hero-section', 'ekosistem'];
-    var visible    = {};
 
-    function setActive(id) {
-        document.querySelectorAll('.nav-link[data-section]').forEach(function (el) {
-            var match = el.dataset.section === id;
-            if (match) {
-                el.dataset.active = 'true';
-            } else {
-                el.dataset.active = 'false';
-            }
-        });
-        document.querySelectorAll('.mobile-nav-link[data-section]').forEach(function (el) {
-            var match = el.dataset.section === id;
-            if (match) {
-                el.style.color      = 'var(--accent)';
-                el.style.background = 'var(--accent-subtle)';
-                el.style.fontWeight = '600';
-            } else {
-                el.style.color      = 'var(--text-secondary)';
-                el.style.background = '';
-                el.style.fontWeight = '500';
-            }
-        });
-    }
-
-    sectionIds.forEach(function (id) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        new IntersectionObserver(function (entries) {
-            entries.forEach(function (e) { visible[id] = e.isIntersecting; });
-            
-            // Find which one is visible (using strict center-screen margin)
-            var active = sectionIds.find(function (s) { return visible[s]; });
-            
-            // Force hero-section if at the very top of page
-            if (window.scrollY < 100) active = 'hero-section';
-            
-            if (active) setActive(active);
-        }, { rootMargin: '-40% 0px -40% 0px', threshold: 0 }).observe(el);
-    });
-
-    // Re-check on scroll just in case we hit the absolute top
-    window.addEventListener('scroll', function() {
-        if (window.scrollY < 100) setActive('hero-section');
-    });
-
-    // Check hash on load
-    if (window.location.hash) {
-        var hashId = window.location.hash.substring(1);
-        if (sectionIds.includes(hashId)) setActive(hashId);
-    } else {
-        setActive('hero-section');
-    }
-})();
-</script>
-@endif
 

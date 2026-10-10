@@ -167,7 +167,7 @@
                             </svg>
                         </div>
                         <input type="text" name="wilayah" id="wilayah" value="{{ old('wilayah') }}"
-                               placeholder="Cth: Cikembulan, Bandung Barat"
+                               placeholder="Cth: Kalisari, Bandung Barat"
                                class="w-full pl-10 pr-4 py-3.5 bg-slate-50/60 border @error('wilayah') border-red-400 @else border-slate-200/80 @enderror focus:bg-white focus:border-[#087A4B] focus:ring-2 focus:ring-emerald-500/20 rounded-2xl text-sm font-bold text-slate-800 placeholder:text-slate-400 placeholder:font-normal outline-none transition-all">
                     </div>
                     @error('wilayah') <p class="text-xs text-red-500 font-semibold">{{ $message }}</p> @enderror

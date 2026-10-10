@@ -170,7 +170,7 @@
                 <div class="space-y-1.5">
                     <label for="wilayah" class="text-xs font-black text-slate-700 uppercase tracking-wider block">Wilayah / Cabang</label>
                     <input type="text" name="wilayah" id="wilayah" value="{{ old('wilayah', $anggota->wilayah) }}"
-                           placeholder="Cth: Cikembulan, Bandung Barat"
+                           placeholder="Cth: Kalisari, Bandung Barat"
                            class="w-full px-4 py-3.5 bg-slate-50/60 border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-2 focus:ring-emerald-500/20 rounded-2xl text-sm font-bold text-slate-800 outline-none transition-all">
                     @error('wilayah') <p class="text-xs text-red-500 font-semibold">{{ $message }}</p> @enderror
                 </div>

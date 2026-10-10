@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi Keanggotaan — NU Cikembulan</title>
+    <title>Verifikasi Keanggotaan — NU Kalisari</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,7 +24,7 @@
             <a href="{{ route('home') }}" class="inline-flex flex-col items-center gap-2">
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold"
                      style="background:var(--accent)">NU</div>
-                <span class="font-serif font-bold text-sm" style="color:var(--text-primary)">NU Cikembulan</span>
+                <span class="font-serif font-bold text-sm" style="color:var(--text-primary)">NU Kalisari</span>
             </a>
         </div>
 
@@ -74,7 +74,7 @@
             <dl class="px-6 py-5 space-y-0 divide-y" style="--tw-divide-opacity:1">
                 @foreach([
                     ['key' => 'ID Keanggotaan',  'val' => 'ID-'.str_pad($anggota->id, 5, '0', STR_PAD_LEFT)],
-                    ['key' => 'Wilayah',         'val' => $anggota->wilayah ?: 'Pusat — Cikembulan'],
+                    ['key' => 'Wilayah',         'val' => $anggota->wilayah ?: 'Pusat — Kalisari'],
                     ['key' => 'Status',          'val' => ucfirst($anggota->status ?? 'Pending'), 'accent' => $isAktif],
                     ['key' => 'Terdaftar',       'val' => $anggota->joined_at ? \Carbon\Carbon::parse($anggota->joined_at)->format('d M Y') : '—'],
                 ] as $row)
@@ -95,7 +95,7 @@
                    style="background:var(--accent)"
                    onmouseover="this.style.background='var(--accent-hover)'"
                    onmouseout="this.style.background='var(--accent)'">
-                    Kunjungi Website NU Cikembulan
+                    Kunjungi Website NU Kalisari
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                     </svg>
@@ -104,7 +104,7 @@
         </div>
 
         <p class="text-center text-[10px] mt-5" style="color:var(--text-muted)">
-            Nahdlatul Ulama Cikembulan · Sistem Verifikasi Digital
+            Nahdlatul Ulama Kalisari · Sistem Verifikasi Digital
         </p>
     </div>
 

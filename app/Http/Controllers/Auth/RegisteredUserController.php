@@ -63,7 +63,7 @@ class RegisteredUserController extends Controller
             'user_id' => $user->id,
             'name' => $user->name,
             'role' => $isAdmin ? 'Administrator' : null,
-            'wilayah' => $isAdmin ? 'Pusat Cikembulan' : null,
+            'wilayah' => $isAdmin ? 'Pusat Kalisari' : null,
             'status' => $isAdmin ? 'Aktif' : 'Pending',
             'joined_at' => now(),
             'is_public' => true,

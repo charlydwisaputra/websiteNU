@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetak Kartu Anggota - NU Cikembulan</title>
+    <title>Cetak Kartu Anggota - NU Kalisari</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -452,7 +452,7 @@
                     'nama'   => $anggota->name,
                     'banom'  => $anggota->role,
                     'status' => $anggota->status,
-                    'org'    => 'NU Cikembulan',
+                    'org'    => 'NU Kalisari',
                 ]);
             @endphp
 
@@ -464,14 +464,14 @@
                 <div class="card-body">
                     {{-- Left column: logo + QR --}}
                     <div class="card-left">
-                        <div class="card-org-logo">NU<br>CIKEMBULAN</div>
+                        <div class="card-org-logo">NU<br>KALISARI</div>
                         <div class="card-qr-wrapper" id="qr-{{ $anggota->id }}"></div>
                     </div>
 
                     {{-- Right column: member info --}}
                     <div class="card-right">
                         <div>
-                            <div class="card-org-name">Nahdlatul Ulama Â· Cikembulan</div>
+                            <div class="card-org-name">Nahdlatul Ulama Â· Kalisari</div>
                             <div class="card-member-name" title="{{ $anggota->name }}">{{ $anggota->name }}</div>
                             <div class="card-role-badge">{{ $anggota->role ?? '-' }}</div>
 
@@ -531,7 +531,7 @@
             'wilayah' => $a->wilayah,
             'status'  => $a->status,
             'joined'  => $a->joined_at,
-            'org'     => 'NU Cikembulan',
+            'org'     => 'NU Kalisari',
         ];
     })->values());
 @endphp
@@ -546,7 +546,7 @@
 
             // Unique QR data per member
             const qrText = [
-                'NU CIKEMBULAN',
+                'NU KALISARI',
                 'ID: ' + String(m.id).padStart(5, '0'),
                 'Nama: ' + m.nama,
                 'Banom: ' + (m.banom || '-'),

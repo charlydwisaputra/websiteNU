@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Warta — NU Cikembulan</title>
+    <title>Warta — NU Kalisari</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -60,10 +60,10 @@
         <header class="mb-12 pb-10" style="border-bottom:1px solid var(--border-light)">
             <p class="text-label mb-3" style="color:var(--accent)">WARTA</p>
             <h1 class="font-serif text-5xl md:text-7xl font-bold tracking-tight mb-4" style="color:var(--text-primary)">
-                Warta NU Cikembulan.
+                Warta NU Kalisari.
             </h1>
             <p class="text-lg md:text-xl leading-relaxed max-w-2xl" style="color:var(--text-secondary)">
-                Berita, kegiatan, pengumuman, dan informasi terbaru dari lingkungan NU Cikembulan.
+                Berita, kegiatan, pengumuman, dan informasi terbaru dari lingkungan NU Kalisari.
             </p>
         </header>
 

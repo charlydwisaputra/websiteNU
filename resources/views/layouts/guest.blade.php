@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'NU Cikembulan') }}</title>
+    <title>{{ config('app.name', 'NU Kalisari') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
                 <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold text-sm shadow-sm transition-transform group-hover:scale-105"
                      style="background:var(--accent)">NU</div>
                 <div>
-                    <p class="font-serif font-bold text-lg tracking-tight" style="color:var(--text-primary)">NU Cikembulan</p>
+                    <p class="font-serif font-bold text-lg tracking-tight" style="color:var(--text-primary)">NU Kalisari</p>
                     <p class="text-[10px] font-semibold uppercase tracking-widest" style="color:var(--text-muted)">Digital Portal</p>
                 </div>
             </a>
