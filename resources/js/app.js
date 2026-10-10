@@ -8,11 +8,14 @@ Alpine.start();
    ============================================================ */
 function initializePublicInteractions() {
 
+    /* ── 0. Theme toggle ── */
+    initThemeToggle();
+
     /* ── 1. Mobile hamburger menu ── */
     initMobileMenu();
 
     /* ── 1b. Navbar scroll state ── */
-    const navbar = document.getElementById('glass-navbar');
+    const navbar = document.getElementById('glass-navbar') || document.getElementById('premium-navbar');
     if (navbar) {
         const onScroll = () => {
             navbar.classList.toggle('scrolled', window.scrollY > 30);
@@ -38,15 +41,19 @@ function initializePublicInteractions() {
     });
 
     /* ── 3. Reveal on scroll ── */
-    const reveals = document.querySelectorAll('.reveal');
-    if (!('IntersectionObserver' in window)) {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-fade');
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
         reveals.forEach(el => el.classList.add('active'));
     } else {
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('active');
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
             });
-        }, { threshold: 0.05 });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
         reveals.forEach(el => observer.observe(el));
     }
 
@@ -117,4 +124,33 @@ function initMobileMenu() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', initializePublicInteractions);
+/* ============================================================
+   THEME TOGGLE — Dark/Light Mode
+   ============================================================ */
+function initThemeToggle() {
+    function doToggle() {
+        if (typeof window.toggleTheme === 'function') {
+            window.toggleTheme();
+        } else {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: isDark ? 'dark' : 'light' } }));
+        }
+    }
+
+    window.toggleTheme = window.toggleTheme || doToggle;
+
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('#theme-toggle, #theme-toggle-mobile, [data-theme-toggle], .theme-toggle-btn');
+        if (!btn) return;
+        if (btn.hasAttribute('onclick')) return;
+        e.preventDefault();
+        doToggle();
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializePublicInteractions);
+} else {
+    initializePublicInteractions();
+}

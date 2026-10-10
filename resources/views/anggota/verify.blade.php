@@ -3,96 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi Keanggotaan - NU Cikembulan</title>
+    <title>Verifikasi Keanggotaan — NU Cikembulan</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css'])
+    @include('components.theme-script')
 </head>
-<body class="bg-slate-50 font-sans antialiased text-slate-800 min-h-screen flex flex-col justify-center items-center p-4">
+<body class="font-sans antialiased min-h-screen flex flex-col justify-center items-center p-4"
+      style="background:var(--bg-base);color:var(--text-primary)">
 
-    <div class="max-w-md w-full bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden my-6">
-        
-        <!-- Header Banner -->
-        <div class="bg-gradient-to-r from-[#087A4B] to-emerald-600 p-6 text-white text-center relative">
-            <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md text-white font-black text-lg mb-2 shadow-sm border border-white/20">
-                NU
-            </div>
-            <h1 class="text-xs uppercase tracking-widest font-extrabold text-emerald-100">Nahdlatul Ulama Ã‚Â· Cikembulan</h1>
-            <h2 class="text-base font-black tracking-tight mt-0.5">Sistem Verifikasi Digital</h2>
+    @php
+        $isAktif = in_array(strtolower($anggota->status ?? ''), ['aktif', 'admin', 'administrator']);
+    @endphp
+
+    <div class="w-full max-w-sm my-8">
+
+        {{-- Logo --}}
+        <div class="text-center mb-6">
+            <a href="{{ route('home') }}" class="inline-flex flex-col items-center gap-2">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-xs font-bold"
+                     style="background:var(--accent)">NU</div>
+                <span class="font-serif font-bold text-sm" style="color:var(--text-primary)">NU Cikembulan</span>
+            </a>
         </div>
 
-        <!-- Verification Status Pill -->
-        <div class="p-6 md:p-8 text-center">
-            @php
-                $isAktif = in_array(strtolower($anggota->status ?? ''), ['aktif', 'admin', 'administrator']);
-            @endphp
+        {{-- Card --}}
+        <div class="surface-card rounded-2xl overflow-hidden">
 
-            @if($isAktif)
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 text-[#087A4B] border border-emerald-200 text-xs font-black shadow-sm mb-6">
-                    <svg class="w-4 h-4 text-[#087A4B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+            {{-- Status banner --}}
+            <div class="px-6 pt-6 pb-5 text-center" style="border-bottom:1px solid var(--border-light)">
+                @if($isAktif)
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold mb-4"
+                      style="background:var(--accent-subtle);color:var(--accent)">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                     </svg>
-                    KARTU TERVERIFIKASI RESMI
-                </div>
-            @else
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-black shadow-sm mb-6">
-                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                    </svg>
-                    STATUS: {{ strtoupper($anggota->status ?? 'PENDING') }}
-                </div>
-            @endif
-
-            <!-- Foto Anggota -->
-            <div class="w-24 h-24 mx-auto rounded-2xl bg-slate-100 border-4 border-white shadow-lg overflow-hidden flex items-center justify-center text-2xl font-black text-[#087A4B] mb-4">
-                @if($anggota->photo)
-                    <img src="{{ asset('storage/' . $anggota->photo) }}" alt="{{ $anggota->name }}" class="w-full h-full object-cover">
+                    Terverifikasi Resmi
+                </span>
                 @else
-                    {{ strtoupper(substr($anggota->name, 0, 2)) }}
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold mb-4"
+                      style="background:var(--status-warning-bg);color:var(--status-warning-fg)">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    Status: {{ ucfirst($anggota->status ?? 'Pending') }}
+                </span>
                 @endif
+
+                {{-- Avatar --}}
+                <div class="w-20 h-20 mx-auto rounded-2xl overflow-hidden flex items-center justify-center font-bold text-xl mb-4"
+                     style="background:var(--bg-surface-elevated);color:var(--accent);border:1px solid var(--border-light)">
+                    @if($anggota->photo)
+                        <img src="{{ asset('storage/'.$anggota->photo) }}" alt="{{ $anggota->name }}"
+                             class="w-full h-full object-cover">
+                    @else
+                        {{ strtoupper(substr($anggota->name, 0, 2)) }}
+                    @endif
+                </div>
+
+                <h2 class="font-serif text-xl font-bold tracking-tight" style="color:var(--text-primary)">
+                    {{ $anggota->name }}
+                </h2>
+                <p class="text-xs font-semibold mt-1" style="color:var(--accent)">
+                    {{ $anggota->role ?: ($anggota->user && $anggota->user->isAdmin() ? 'Administrator' : 'Anggota') }}
+                </p>
             </div>
 
-            <h3 class="text-xl font-black text-slate-900 tracking-tight">{{ $anggota->name }}</h3>
-            <div class="inline-block mt-1 px-3 py-1 bg-emerald-50 text-[#087A4B] border border-emerald-100 font-bold text-xs rounded-full">
-                {{ $anggota->role ?: ($anggota->user && $anggota->user->isAdmin() ? 'Administrator' : 'Anggota') }}
-            </div>
+            {{-- Detail rows --}}
+            <dl class="px-6 py-5 space-y-0 divide-y" style="--tw-divide-opacity:1">
+                @foreach([
+                    ['key' => 'ID Keanggotaan',  'val' => 'ID-'.str_pad($anggota->id, 5, '0', STR_PAD_LEFT)],
+                    ['key' => 'Wilayah',         'val' => $anggota->wilayah ?: 'Pusat — Cikembulan'],
+                    ['key' => 'Status',          'val' => ucfirst($anggota->status ?? 'Pending'), 'accent' => $isAktif],
+                    ['key' => 'Terdaftar',       'val' => $anggota->joined_at ? \Carbon\Carbon::parse($anggota->joined_at)->format('d M Y') : '—'],
+                ] as $row)
+                <div class="flex items-center justify-between py-3">
+                    <dt class="text-xs" style="color:var(--text-muted)">{{ $row['key'] }}</dt>
+                    <dd class="text-xs font-semibold"
+                        style="color:{{ ($row['accent'] ?? false) ? 'var(--accent)' : 'var(--text-primary)' }}">
+                        {{ $row['val'] }}
+                    </dd>
+                </div>
+                @endforeach
+            </dl>
 
-            <!-- Detail Box -->
-            <div class="mt-6 bg-slate-50/80 rounded-2xl p-4 text-left border border-slate-100 divide-y divide-slate-100 text-xs space-y-2.5">
-                <div class="flex justify-between items-center pt-2">
-                    <span class="text-slate-400 font-bold">ID Keanggotaan</span>
-                    <span class="font-mono font-black text-slate-700">ID-{{ str_pad($anggota->id, 5, '0', STR_PAD_LEFT) }}</span>
-                </div>
-                <div class="flex justify-between items-center pt-2">
-                    <span class="text-slate-400 font-bold">Wilayah / Ranting</span>
-                    <span class="font-bold text-slate-700">{{ $anggota->wilayah ?: 'Pusat / Cikembulan' }}</span>
-                </div>
-                <div class="flex justify-between items-center pt-2">
-                    <span class="text-slate-400 font-bold">Status Akun</span>
-                    <span class="font-black {{ $isAktif ? 'text-[#087A4B]' : 'text-amber-600' }}">{{ ucfirst($anggota->status ?: 'Pending') }}</span>
-                </div>
-                @if($anggota->joined_at)
-                    <div class="flex justify-between items-center pt-2">
-                        <span class="text-slate-400 font-bold">Terdaftar Sejak</span>
-                        <span class="font-bold text-slate-700">{{ \Carbon\Carbon::parse($anggota->joined_at)->format('d M Y') }}</span>
-                    </div>
-                @endif
-            </div>
-
-            <div class="mt-6 pt-6 border-t border-slate-100 flex flex-col gap-2">
-                <a href="{{ route('home') }}" class="w-full py-3 bg-[#087A4B] hover:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow-md shadow-emerald-500/20 transition flex items-center justify-center gap-2">
-                    Kunjungi Website Resmi NU Cikembulan
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            {{-- Footer --}}
+            <div class="px-6 pb-6">
+                <a href="{{ route('home') }}"
+                   class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+                   style="background:var(--accent)"
+                   onmouseover="this.style.background='var(--accent-hover)'"
+                   onmouseout="this.style.background='var(--accent)'">
+                    Kunjungi Website NU Cikembulan
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
                 </a>
             </div>
-
         </div>
 
-        <div class="bg-slate-50 py-3 text-center border-t border-slate-100 text-[10px] font-bold text-slate-400">
-            DIGDAYA Ã‚Â· Nahdlatul Ulama Cikembulan
-        </div>
-
+        <p class="text-center text-[10px] mt-5" style="color:var(--text-muted)">
+            Nahdlatul Ulama Cikembulan · Sistem Verifikasi Digital
+        </p>
     </div>
 
 </body>

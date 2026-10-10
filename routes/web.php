@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\Route;
 
 // 1. Halaman Utama / Landing Page
 Route::get('/', function () {
-    $beritas = class_exists(Berita::class) ? Berita::latest()->take(3)->get() : collect();
+    $beritas = class_exists(Berita::class) ? Berita::where('status', 'published')->latest()->take(5)->get() : collect();
+    $galeris = Galeri::latest()->take(6)->get();
     $stats = [
         ['value' => Anggota::where('is_public', true)->count(), 'label' => 'Anggota'],
         ['value' => 6, 'label' => 'Organisasi'],
@@ -26,7 +27,7 @@ Route::get('/', function () {
         ['value' => Galeri::count(), 'label' => 'Dokumentasi'],
     ];
 
-    return view('welcome', compact('beritas', 'stats'));
+    return view('welcome', compact('beritas', 'stats', 'galeris'));
 })->name('home');
 
 // 2. Halaman Galeri Publik
@@ -48,8 +49,8 @@ Route::get('/berita', function () {
 // Halaman Detail Berita
 Route::get('/berita/detail/{id}', function ($id) {
     $berita = class_exists(Berita::class) ? Berita::with('author')->findOrFail($id) : abort(404);
-    $terkait = class_exists(Berita::class) 
-        ? Berita::where('id', '!=', $id)->where('status', 'published')->latest()->take(4)->get() 
+    $terkait = class_exists(Berita::class)
+        ? Berita::where('id', '!=', $id)->where('status', 'published')->latest()->take(4)->get()
         : collect();
 
     return view('berita-detail', compact('berita', 'terkait'));

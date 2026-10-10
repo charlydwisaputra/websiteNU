@@ -1,180 +1,265 @@
 <!DOCTYPE html>
-<html lang="id">
-
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>DIGDAYA NU - Digitalisasi Data dan Layanan Nahdlatul Ulama</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
+    <title>Kalisari — Tumbuh Bersama. Bergerak Bersama.</title>
+    <meta name="description" content="Ruang digital untuk mengenal, terhubung, dan bergerak bersama masyarakat Kalisari.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @include('components.theme-script')
+    
+    <style>
+        :root {
+            --home-bg: #F5F8F6;
+            --home-surface: #FFFFFF;
+            --home-text: #10231B;
+            --home-text-muted: #4A6356;
+            --home-accent: #008F5A;
+            --home-glass-border: rgba(0, 0, 0, 0.05);
+        }
+        
+        html.dark {
+            --home-bg: #050706;
+            --home-surface: #07130F;
+            --home-text: #E8FFF5;
+            --home-text-muted: #8AA89A;
+            --home-accent: #00A86B;
+            --home-glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            background-color: var(--home-bg);
+            color: var(--home-text);
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .font-editorial { font-family: 'Cormorant Garamond', serif; }
+        
+        .hero-overlay {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+        }
+
+        .glass-panel {
+            background: var(--home-surface);
+            border: 1px solid var(--home-glass-border);
+            border-radius: 16px;
+        }
+
+        /* Fallback for broken images */
+        img.fallback-ready { position: relative; }
+        img.fallback-ready::after {
+            content: attr(alt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            inset: 0;
+            background: var(--home-bg);
+            color: var(--home-text-muted);
+            font-size: 0.875rem;
+            text-align: center;
+            border: 1px dashed var(--home-glass-border);
+            border-radius: inherit;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
+<body class="selection:bg-emerald-500/30 selection:text-emerald-900 dark:selection:text-emerald-100">
 
-<body class="font-sans antialiased text-gray-900 bg-slate-50 flex flex-col min-h-screen selection:bg-emerald-500 selection:text-white relative overflow-x-hidden">
+    @include("layouts.public-navigation")
 
-    <!-- Efek Hijau Samar -->
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-48 bg-gradient-to-b from-emerald-500/20 via-emerald-500/5 to-transparent blur-3xl pointer-events-none z-40"></div>
-
-    <!-- NAVBAR PILL (Diperlebar ke max-w-6xl) -->
-    @include('layouts.public-navigation')
-
-    <!-- HERO SECTION -->
-    <div id="hero-section" class="pt-20 sm:pt-32 px-4 sm:px-6 w-full mx-auto scroll-mt-24">
-        <div class="w-full max-w-[1200px] mx-auto relative overflow-visible">
+    <main>
+        <!-- 1. HERO SECTION -->
+        <section class="relative w-full min-h-[100dvh] flex items-center justify-center overflow-hidden bg-black">
+            <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover z-0" poster="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1920&auto=format&fit=crop">
+                <source src="{{ asset('videos/village_sample.mp4') }}" type="video/mp4">
+            </video>
             
-            <!-- Ambient Glow -->
-            <div class="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-emerald-100/40 to-transparent blur-3xl pointer-events-none rounded-full -z-10"></div>
+            <div class="absolute inset-0 z-[1] hero-overlay"></div>
 
-            <div class="grid grid-cols-2 gap-3.5 sm:gap-6 lg:gap-8 items-center pt-2 pb-12 sm:pt-4 sm:pb-16 lg:pt-16 lg:pb-32">
+            <div class="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-start pt-20 text-white">
+                <p class="tracking-[0.25em] text-xs uppercase font-semibold mb-4 opacity-90" style="color: var(--home-accent)">
+                    Ekosistem Digital
+                </p>
+                <h1 class="font-editorial text-[clamp(2.75rem,10vw,7rem)] font-bold leading-[1.1] mb-6 max-w-4xl">
+                    KALISARI
+                </h1>
+                <p class="text-[clamp(1rem,2.5vw,1.5rem)] font-light opacity-90 max-w-2xl leading-relaxed mb-10">
+                    Tumbuh Bersama. Bergerak Bersama. Ruang digital untuk mengenal dan terhubung dengan masyarakat Nahdlatul Ulama di desa Kalisari.
+                </p>
                 
-                <!-- Left Content (Teks) -->
-                <div class="relative z-10 lg:pr-8 flex flex-col items-start text-left">
-                    <span class="inline-block text-[9px] sm:text-[11px] md:text-[12px] font-bold text-gray-400 uppercase tracking-[0.15em] sm:tracking-[0.2em] mb-1.5 sm:mb-3 reveal delay-100">
-                        Transformasi Digital
-                    </span>
-                    <h1 class="text-[1.35rem] min-[400px]:text-[1.55rem] sm:text-4xl md:text-5xl lg:text-[4.5rem] font-black tracking-tight text-[#1c242c] mb-2 sm:mb-4 lg:mb-6 leading-[1.1] reveal delay-200">
-                        Ekosistem<br />
-                        Digital<br />
-                        <span class="text-[#087A4B]">Nahdlatul<br />Ulama.</span>
-                    </h1>
-                    <p class="text-[11px] min-[400px]:text-xs sm:text-[15px] lg:text-[17px] text-gray-500 font-medium leading-snug sm:leading-relaxed mb-3 sm:mb-6 lg:mb-10 max-w-md reveal delay-300">
-                        Mengintegrasikan tata kelola Jam'iyah dan layanan Jamaah mandiri.
-                    </p>
-                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 reveal delay-400 w-full sm:w-auto">
-                        <a href="#produk-section" class="text-center bg-[#087A4B] text-white font-bold px-3.5 py-2 sm:px-6 sm:py-3 rounded-full shadow-md shadow-emerald-500/20 hover:shadow-lg hover:shadow-emerald-500/30 transition-all text-[11px] sm:text-xs md:text-sm whitespace-nowrap">
-                            Jelajahi Produk
-                        </a>
-                        <a href="{{ route('berita.index') }}" class="text-center bg-white text-[#087A4B] font-bold px-3.5 py-2 sm:px-6 sm:py-3 rounded-full border border-gray-200 hover:bg-gray-50 transition-all text-[11px] sm:text-xs md:text-sm whitespace-nowrap dark:bg-white/5 dark:text-white dark:border-white/10 dark:hover:bg-white/10 dark:backdrop-blur-md dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
-                            Lihat Dampak
-                        </a>
+                <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                    <a href="#intro" class="w-full sm:w-auto px-8 py-4 rounded-full text-sm font-medium tracking-wide text-center transition-transform hover:-translate-y-1" style="background: var(--home-accent); color: #fff;">
+                        Jelajahi Kalisari
+                    </a>
+                    <a href="#activities" class="w-full sm:w-auto px-8 py-4 rounded-full text-sm font-medium tracking-wide text-center backdrop-blur-md border border-white/20 hover:bg-white/10 transition-colors">
+                        Lihat Kegiatan
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. INTRO SECTION -->
+        <section id="intro" class="py-16 md:py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+            <h2 class="font-editorial text-[clamp(2rem,6vw,4rem)] leading-tight mb-8">
+                Kalisari bukan hanya sebuah tempat. Ia adalah jalinan <span style="color: var(--home-accent)">tradisi</span>, agama, dan persaudaraan.
+            </h2>
+            <p class="text-base md:text-lg opacity-80 leading-relaxed mb-6 font-light">
+                Sebagai akar rumput Nahdlatul Ulama, kami membangun harmoni melalui pendekatan sosial, pendidikan, dan dakwah. Setiap warga mengambil peran dalam merawat nilai-nilai luhur yang telah diwariskan dari generasi ke generasi, sembari beradaptasi dengan kemajuan zaman.
+            </p>
+            <div class="flex flex-wrap gap-2 mb-10 text-xs uppercase tracking-widest font-semibold" style="color: var(--home-text-muted)">
+                <span class="px-3 py-1 rounded-full border" style="border-color: var(--home-glass-border)">Kalisari</span>
+                <span class="px-3 py-1 rounded-full border" style="border-color: var(--home-glass-border)">Cilongok</span>
+                <span class="px-3 py-1 rounded-full border" style="border-color: var(--home-glass-border)">Banyumas</span>
+                <span class="px-3 py-1 rounded-full border" style="border-color: var(--home-glass-border)">Jawa Tengah</span>
+            </div>
+            <div>
+                <a href="{{ Route::has('tentang') ? route('tentang') : '#' }}" class="text-sm font-medium border-b pb-1 transition-colors uppercase tracking-widest hover:opacity-80" style="color: var(--home-accent); border-color: var(--home-accent)">
+                    Baca Selengkapnya &rarr;
+                </a>
+            </div>
+        </section>
+
+        <!-- 3. EKOSISTEM SECTION -->
+        <section id="ekosistem" class="py-16 md:py-24 bg-black/5 dark:bg-white/5">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-12">
+                    <p class="tracking-[0.2em] text-xs uppercase font-semibold mb-2 opacity-70" style="color: var(--home-accent)">Organisasi</p>
+                    <h2 class="font-editorial text-[clamp(2.5rem,5vw,4rem)] leading-tight">Ekosistem</h2>
+                </div>
+
+                @php
+                    $orgs = [
+                        ['name' => 'Muslimat NU', 'desc' => 'Pergerakan perempuan Islam untuk kesejahteraan keluarga dan keumatan.', 'logo' => 'MuslimatNU.png'],
+                        ['name' => 'Fatayat NU', 'desc' => 'Wadah pemudi NU dalam pengembangan diri, agama, dan sosial budaya.', 'logo' => 'FATAYAT-NU.png'],
+                        ['name' => 'GP Ansor', 'desc' => 'Pemuda NU yang bergerak dalam sosial kemasyarakatan dan kepemudaan.', 'logo' => 'GP-Ansor.png'],
+                    ];
+                @endphp
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                    @foreach($orgs as $org)
+                    <div class="glass-panel p-6 flex flex-col items-start hover:-translate-y-1 transition-transform">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-6 bg-white shadow-sm overflow-hidden p-2">
+                            <img src="{{ asset('storage/logo organisasi/' . $org['logo']) }}" alt="{{ $org['name'] }}" class="w-full h-full object-contain fallback-ready" loading="lazy">
+                        </div>
+                        <h3 class="font-editorial text-2xl font-semibold mb-3">{{ $org['name'] }}</h3>
+                        <p class="text-sm opacity-70 font-light leading-relaxed">{{ $org['desc'] }}</p>
+                    </div>
+                    @endforeach
+                </div>
+                
+                <div class="text-left md:text-center">
+                    <a href="{{ Route::has('ekosistem') ? route('ekosistem') : '#' }}" class="inline-flex items-center justify-center px-8 py-3 rounded-full text-sm font-medium tracking-wide border transition-colors hover:bg-black/5 dark:hover:bg-white/10" style="border-color: var(--home-glass-border)">
+                        Lihat Ekosistem Selengkapnya
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. ACTIVITIES SECTION -->
+        <section id="activities" class="py-16 md:py-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+            <div class="mb-12">
+                <p class="tracking-[0.2em] text-xs uppercase font-semibold mb-2 opacity-70" style="color: var(--home-accent)">Warta & Gerak</p>
+                <h2 class="font-editorial text-[clamp(2.5rem,5vw,4rem)] leading-tight">Kegiatan Terbaru</h2>
+            </div>
+
+            <!-- Mobile: Stacked, Desktop: Bento Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Large Featured -->
+                <div class="lg:col-span-8 glass-panel overflow-hidden group hover:border-emerald-500/30 transition-colors flex flex-col">
+                    <div class="relative w-full aspect-[4/3] lg:aspect-[16/9] overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1511649475669-e288648b2339?q=80&w=1200&auto=format&fit=crop" alt="GP Ansor Kalisari" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 fallback-ready" loading="lazy">
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center gap-3 text-xs font-semibold uppercase tracking-widest mb-3 opacity-70">
+                            <span style="color: var(--home-accent)">GP Ansor</span>
+                            <span class="w-1 h-1 rounded-full bg-current"></span>
+                            <span>24 Okt 2026</span>
+                        </div>
+                        <h3 class="font-editorial text-2xl lg:text-3xl font-semibold mb-2 leading-tight">Pelatihan Kepemimpinan Dasar GP Ansor Kalisari</h3>
+                        <p class="text-sm font-light opacity-70 leading-relaxed">Membangun karakter dan kepemimpinan generasi muda dalam menghadapi tantangan zaman melalui nilai-nilai Ahlussunnah wal Jamaah.</p>
                     </div>
                 </div>
 
-                <!-- Right Content (Foto di Samping Teks pada HP) -->
-                <div class="relative z-10 reveal delay-300 w-full">
-                    <!-- Decorative shadow blob behind image -->
-                    <div class="absolute -inset-3 sm:-inset-6 bg-gradient-to-br from-[#087A4B]/25 via-emerald-400/15 to-transparent blur-xl sm:blur-3xl rounded-full pointer-events-none"></div>
-                    <div class="absolute -bottom-4 -right-4 sm:-bottom-8 sm:-right-8 w-3/4 h-3/4 bg-emerald-500/10 blur-xl sm:blur-[60px] rounded-full pointer-events-none"></div>
+                <!-- Right Column (Small Cards) -->
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    <div class="glass-panel overflow-hidden flex flex-row lg:flex-col group hover:border-emerald-500/30 transition-colors flex-1">
+                        <div class="relative w-1/3 lg:w-full aspect-square lg:aspect-video overflow-hidden shrink-0">
+                            <img src="https://images.unsplash.com/photo-1429982260586-77884824e4c2?q=80&w=600&auto=format&fit=crop" alt="Muslimat NU" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 fallback-ready" loading="lazy">
+                        </div>
+                        <div class="p-4 lg:p-5 flex flex-col justify-center">
+                            <div class="text-[10px] font-semibold uppercase tracking-widest mb-2 opacity-70">18 Okt 2026</div>
+                            <h3 class="font-editorial text-lg font-semibold leading-tight">Pengajian Rutin Selapanan Muslimat NU</h3>
+                        </div>
+                    </div>
                     
-                    <div class="relative rounded-[1.25rem] sm:rounded-[2rem] overflow-hidden shadow-[0_12px_36px_rgba(8,122,75,0.22),0_4px_16px_rgba(0,0,0,0.08)] aspect-[4/5] sm:aspect-[4/4] lg:aspect-[4.5/5] transform hover:-translate-y-1.5 transition-all duration-500 bg-gradient-to-tr from-[#087A4B] to-emerald-400">
-                        <img src="{{ asset('images/flag-nu.jpg') }}" alt="Bendera NU" class="absolute inset-0 w-full h-full object-cover">
-                        
-                        <!-- Base Overlay gradient tipis -->
-                        <div class="absolute inset-0 bg-gradient-to-tr from-black/15 to-transparent"></div>
-                        
-                        <!-- Dark Mode Blending Overlay (Very soft left-to-right/bottom-to-top transition) -->
-                        <div class="hidden dark:block absolute inset-0 bg-gradient-to-tr from-[#111111]/70 via-[#111111]/15 to-transparent pointer-events-none"></div>
+                    <div class="glass-panel overflow-hidden flex flex-row lg:flex-col group hover:border-emerald-500/30 transition-colors flex-1">
+                        <div class="relative w-1/3 lg:w-full aspect-square lg:aspect-video overflow-hidden shrink-0">
+                            <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=600&auto=format&fit=crop" alt="Fatayat NU" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 fallback-ready" loading="lazy">
+                        </div>
+                        <div class="p-4 lg:p-5 flex flex-col justify-center">
+                            <div class="text-[10px] font-semibold uppercase tracking-widest mb-2 opacity-70">12 Okt 2026</div>
+                            <h3 class="font-editorial text-lg font-semibold leading-tight">Pelatihan Ekonomi Kreatif Fatayat</h3>
+                        </div>
                     </div>
                 </div>
-
-
             </div>
-        </div>
-    </div>
 
-    <section class="mx-auto grid max-w-[1200px] grid-cols-2 gap-4 px-4 py-8 sm:px-6 md:grid-cols-4 relative z-10 -mt-12 sm:-mt-16">
-        @foreach ($stats as $stat)
-            <div class="reveal rounded-3xl border border-white/80 bg-white/70 backdrop-blur-xl p-6 text-center shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)]">
-                <strong class="block text-3xl font-black text-gray-900 tracking-tight">{{ number_format($stat['value'], 0, ',', '.') }}</strong>
-                <span class="mt-1.5 block text-[11px] font-semibold uppercase tracking-widest text-gray-400">{{ $stat['label'] }}</span>
+            <div class="mt-10">
+                <a href="{{ Route::has('berita.index') ? route('berita.index') : '#' }}" class="text-sm font-medium border-b pb-1 transition-colors uppercase tracking-widest hover:opacity-80" style="color: var(--home-accent); border-color: var(--home-accent)">
+                    Lihat Semua Kegiatan &rarr;
+                </a>
             </div>
-        @endforeach
-    </section>
+        </section>
 
-    <section class="mx-auto grid max-w-[1200px] gap-12 px-4 py-16 sm:px-6 md:grid-cols-2 md:items-center">
-        <div class="reveal">
-            <span class="text-[11px] font-bold uppercase tracking-widest text-[#087A4B]">Tentang NU Cikembulan</span>
-            <h2 class="mt-3 text-3xl sm:text-4xl font-black tracking-tight text-gray-900">Satu ruang untuk tumbuh bersama.</h2>
-            <p class="mt-5 max-w-xl text-[15px] leading-relaxed text-gray-500">Website ini menjadi pusat informasi dan digitalisasi data organisasi NU Cikembulan, membantu warga menemukan berita, dokumentasi, dan informasi anggota dengan lebih mudah.</p>
-            <a href="#produk-section" class="mt-8 inline-flex rounded-full bg-gray-900 px-6 py-3 text-[14px] font-medium text-white shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgba(0,0,0,0.15)]">Kenali Organisasi Kami</a>
-        </div>
-        <div class="reveal rounded-[2.5rem] bg-gray-900 p-10 text-white shadow-2xl relative overflow-hidden">
-            <div class="absolute -right-20 -top-20 w-64 h-64 bg-[#087A4B]/30 blur-3xl rounded-full"></div>
-            <p class="text-[15px] leading-relaxed text-gray-300 relative z-10 font-medium">â€œDigitalisasi bukan hanya tentang teknologi, tetapi tentang membuat pelayanan dan informasi lebih dekat dengan masyarakat.â€</p>
-            <div class="mt-10 h-1.5 rounded-full bg-white/10 relative z-10"><div class="h-1.5 w-3/4 rounded-full bg-[#087A4B]"></div></div>
-            <p class="mt-4 text-[11px] font-bold uppercase tracking-widest text-gray-400 relative z-10">Kolaborasi â€¢ Transparansi â€¢ Pelayanan</p>
-        </div>
-    </section>
+        <!-- 5. DOCUMENTATION SECTION -->
+        <section class="py-16 md:py-24 bg-black/5 dark:bg-white/5">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-12">
+                    <p class="tracking-[0.2em] text-xs uppercase font-semibold mb-2 opacity-70" style="color: var(--home-accent)">Arsip Visual</p>
+                    <h2 class="font-editorial text-[clamp(2.5rem,5vw,4rem)] leading-tight">Dokumentasi</h2>
+                </div>
 
-    <!-- Organisasi Section -->
-    <div id="produk-section" class="max-w-[1200px] mx-auto px-4 sm:px-6 pt-16 pb-24 scroll-mt-28 flex-grow">
-        <div class="text-center mb-16 reveal">
-            <span class="text-gray-500 font-semibold text-[11px] uppercase tracking-widest block mb-3">Ekosistem Digital</span>
-            <h2 class="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">ORGANISASI NU</h2>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Card 1 -->
-            <div class="reveal delay-100 bg-white/60 backdrop-blur-xl p-8 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-white/80 transition duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex flex-col h-full group">
-                <div>
-                    <div class="w-14 h-14 shrink-0 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-gray-100 overflow-hidden">
-                        <img src="{{ asset('storage/logo%20organisasi/MuslimatNU.png') }}" alt="Logo Muslimat NU" class="w-9 h-9 object-contain transition-transform duration-300 group-hover:scale-110">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                    <div class="col-span-2 row-span-2 aspect-square lg:aspect-auto overflow-hidden rounded-2xl">
+                        <img src="https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?q=80&w=800&auto=format&fit=crop" alt="Dokumentasi 1" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 fallback-ready" loading="lazy">
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Muslimat NU</h3>
-                    <p class="text-gray-500 text-[14px] leading-relaxed">Badan otonom khusus perempuan di bawah naungan organisasi kemasyarakatan Islam terbesar di Indonesia, Nahdlatul Ulama (NU).</p>
+                    <div class="col-span-1 aspect-square overflow-hidden rounded-2xl">
+                        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=800&auto=format&fit=crop" alt="Dokumentasi 2" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 fallback-ready" loading="lazy">
+                    </div>
+                    <div class="col-span-1 aspect-square overflow-hidden rounded-2xl">
+                        <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?q=80&w=800&auto=format&fit=crop" alt="Dokumentasi 3" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 fallback-ready" loading="lazy">
+                    </div>
+                    <div class="col-span-2 lg:col-span-2 aspect-video overflow-hidden rounded-2xl">
+                        <img src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=800&auto=format&fit=crop" alt="Dokumentasi 4" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700 fallback-ready" loading="lazy">
+                    </div>
+                </div>
+                
+                <div class="mt-10">
+                    <a href="{{ Route::has('galeri') ? route('galeri') : '#' }}" class="text-sm font-medium border-b pb-1 transition-colors uppercase tracking-widest hover:opacity-80" style="color: var(--home-accent); border-color: var(--home-accent)">
+                        Buka Galeri Penuh &rarr;
+                    </a>
                 </div>
             </div>
+        </section>
 
-            <!-- Card 2 -->
-            <div class="reveal delay-200 bg-white/60 backdrop-blur-xl p-8 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-white/80 transition duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex flex-col h-full group">
-                <div>
-                    <div class="h-14 shrink-0 w-max px-3 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-gray-100 overflow-hidden">
-                        <img src="{{ asset('storage/logo%20organisasi/FATAYAT-NU.png') }}" alt="Logo Fatayat NU" class="h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Fatayat NU</h3>
-                    <p class="text-gray-500 text-[14px] leading-relaxed">Badan otonom Nahdlatul Ulama untuk perempuan muda usia 20 hingga 40 tahun, bergerak di bidang keagamaan, sosial, dan pemberdayaan.</p>
-                </div>
-            </div>
+        <!-- 6. CTA SECTION -->
+        <section class="py-20 md:py-32 px-4 sm:px-6 lg:px-8 text-center max-w-4xl mx-auto">
+            <h2 class="font-editorial text-[clamp(2.5rem,6vw,5rem)] mb-6 leading-tight">Ruang untuk bergerak bersama.</h2>
+            <p class="text-base md:text-lg opacity-70 mb-10 max-w-xl mx-auto font-light leading-relaxed">
+                Mari berkontribusi dan menjadi bagian dari pergerakan Nahdlatul Ulama di desa Kalisari.
+            </p>
+            <a href="{{ Route::has('login') ? route('login') : '#' }}" class="inline-flex items-center justify-center px-8 py-4 rounded-full text-sm font-medium tracking-wide transition-transform hover:-translate-y-1" style="background: var(--home-accent); color: #fff;">
+                Masuk Dashboard
+            </a>
+        </section>
+    </main>
 
-            <!-- Card 3 -->
-            <div class="reveal delay-300 bg-white/60 backdrop-blur-xl p-8 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-white/80 transition duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex flex-col h-full group">
-                <div>
-                    <div class="w-14 h-14 shrink-0 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-gray-100 overflow-hidden">
-                        <img src="{{ asset('storage/logo%20organisasi/GP-Ansor.png') }}" alt="Logo GP Ansor" class="w-9 h-9 object-contain transition-transform duration-300 group-hover:scale-110">
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">GP Ansor</h3>
-                    <p class="text-gray-500 text-[14px] leading-relaxed">Organisasi kepemudaan Islam di Indonesia yang berafiliasi dengan Nahdlatul Ulama (NU).</p>
-                </div>
-            </div>
-
-            <!-- Card 4 -->
-            <div class="reveal delay-100 bg-white/60 backdrop-blur-xl p-8 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-white/80 transition duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex flex-col h-full group">
-                <div>
-                    <div class="w-14 h-14 shrink-0 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-gray-100 overflow-hidden">
-                        <img src="{{ asset('storage/logo%20organisasi/IPNU.png') }}" alt="Logo IPNU" class="w-9 h-9 object-contain transition-transform duration-300 group-hover:scale-110">
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">IPNU</h3>
-                    <p class="text-gray-500 text-[14px] leading-relaxed">Ikatan Pelajar Nahdlatul Ulama, yaitu wadah berhimpun, komunikasi, dan kaderisasi bagi pelajar serta santri putra.</p>
-                </div>
-            </div>
-
-            <!-- Card 5 -->
-            <div class="reveal delay-200 bg-white/60 backdrop-blur-xl p-8 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-white/80 transition duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex flex-col h-full group">
-                <div>
-                    <div class="w-14 h-14 shrink-0 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-gray-100 overflow-hidden">
-                        <img src="{{ asset('storage/logo%20organisasi/IPPNU.png') }}" alt="Logo IPPNU" class="w-9 h-9 object-contain transition-transform duration-300 group-hover:scale-110">
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">IPPNU</h3>
-                    <p class="text-gray-500 text-[14px] leading-relaxed">Ikatan Pelajar Putri Nahdlatul Ulama, yaitu badan otonom yang mewadahi pelajar dan santri putri.</p>
-                </div>
-            </div>
-
-            <!-- Card 6 -->
-            <div class="reveal delay-300 bg-white/60 backdrop-blur-xl p-8 rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.03)] border border-white/80 transition duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] flex flex-col h-full group">
-                <div>
-                    <div class="w-14 h-14 shrink-0 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-gray-100 overflow-hidden">
-                        <img src="{{ asset('storage/logo%20organisasi/PMII.png') }}" alt="Logo PMII" class="w-9 h-9 object-contain transition-transform duration-300 group-hover:scale-110">
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">PMII</h3>
-                    <p class="text-gray-500 text-[14px] leading-relaxed">Pergerakan Mahasiswa Islam Indonesia, yaitu organisasi kemahasiswaan ekstrakampus yang berlandaskan Islam Ahlussunnah wal Jama'ah.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    @include('layouts.public-footer')
-
+    @include("layouts.public-footer")
 </body>
 </html>

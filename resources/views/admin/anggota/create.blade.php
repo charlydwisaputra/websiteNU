@@ -111,12 +111,12 @@
                 <input type="hidden" name="role" id="role-input" value="{{ old('role') }}" required>
                 @php
                     $banoms = [
-                        ['value' => 'Muslimat',  'emoji' => 'ðŸŒ¸', 'desc' => 'Organisasi perempuan dewasa'],
-                        ['value' => 'Fatayat',   'emoji' => 'ðŸŒº', 'desc' => 'Organisasi perempuan muda'],
-                        ['value' => 'GP Ansor',  'emoji' => 'âš¡', 'desc' => 'Gerakan Pemuda Ansor'],
-                        ['value' => 'IPNU',      'emoji' => 'ðŸ“š', 'desc' => 'Ikatan Pelajar NU Putra'],
-                        ['value' => 'IPPNU',     'emoji' => 'ðŸŽ“', 'desc' => 'Ikatan Pelajar NU Putri'],
-                        ['value' => 'PMII',      'emoji' => 'ðŸ›ï¸', 'desc' => 'Pergerakan Mahasiswa Islam'],
+                        ['value' => 'Muslimat',  'logo' => 'MuslimatNU.png', 'desc' => 'Organisasi perempuan dewasa'],
+                        ['value' => 'Fatayat',   'logo' => 'FATAYAT-NU.png', 'desc' => 'Organisasi perempuan muda'],
+                        ['value' => 'GP Ansor',  'logo' => 'GP-Ansor.png', 'desc' => 'Gerakan Pemuda Ansor'],
+                        ['value' => 'IPNU',      'logo' => 'IPNU.png', 'desc' => 'Ikatan Pelajar NU Putra'],
+                        ['value' => 'IPPNU',     'logo' => 'IPPNU.png', 'desc' => 'Ikatan Pelajar NU Putri'],
+                        ['value' => 'PMII',      'logo' => 'PMII.png', 'desc' => 'Pergerakan Mahasiswa Islam'],
                     ];
                 @endphp
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="banom-grid">
@@ -125,7 +125,7 @@
                                 onclick="selectBanom('{{ $b['value'] }}')"
                                 data-banom="{{ $b['value'] }}"
                                 class="banom-pill relative flex flex-col items-start gap-1 p-4 rounded-2xl border-2 border-slate-100 bg-slate-50/50 hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left group {{ old('role') == $b['value'] ? 'border-[#087A4B] bg-emerald-50 selected' : '' }}">
-                            <span class="text-2xl leading-none">{{ $b['emoji'] }}</span>
+                            <img src="{{ asset('storage/logo organisasi/' . $b['logo']) }}" alt="{{ $b['value'] }}" class="w-8 h-8 object-contain mb-1">
                             <span class="text-sm font-bold text-slate-800 group-[.selected]:text-[#087A4B]">{{ $b['value'] }}</span>
                             <span class="text-[10px] text-slate-400 leading-tight font-medium">{{ $b['desc'] }}</span>
                             <div class="absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-slate-200 flex items-center justify-center banom-check {{ old('role') == $b['value'] ? 'border-[#087A4B] bg-[#087A4B]' : '' }}">

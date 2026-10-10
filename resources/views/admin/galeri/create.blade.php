@@ -160,13 +160,13 @@
         function previewImage(event) {
             const file = event.target.files[0];
             if (file) {
-                const reader = new Bum.FileReader();
+            const reader = new FileReader();
                 reader.onload = function(e) {
                     document.getElementById('image-preview').src = e.target.result;
                     document.getElementById('file-name').textContent = file.name;
                     document.getElementById('preview-container').classList.remove('hidden');
                     document.getElementById('upload-placeholder').classList.add('hidden');
-                }
+                };
                 reader.readAsDataURL(file);
             }
         }
