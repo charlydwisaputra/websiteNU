@@ -4,6 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Anggota — NU Kalisari</title>
+    <x-seo-meta
+        :title="'Anggota — NU Kalisari'"
+        :description="'Direktori anggota Nahdlatul Ulama Ranting Kalisari.'"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,12 +24,24 @@
         {{-- Header --}}
         <div class="text-center max-w-2xl mx-auto mb-14 reveal">
             <p class="text-label mb-3" style="color:var(--accent)">DIREKTORI ANGGOTA</p>
-            <h1 class="font-serif text-5xl md:text-6xl font-bold tracking-tight mb-4" style="color:var(--text-primary)">
-                Orang-Orang di Balik<br><span style="color:var(--accent)">Gerakan</span>
-            </h1>
-            <p class="text-lg leading-relaxed" style="color:var(--text-secondary)">
-                Kenali anggota yang menjadi bagian dari perjalanan dan gerakan NU Kalisari.
-            </p>
+            @if(isset($banom) && $banom)
+                <h1 class="font-serif text-5xl md:text-6xl font-bold tracking-tight mb-4" style="color:var(--text-primary)">
+                    Anggota <span style="color:var(--accent)">{{ $banom }}</span>
+                </h1>
+                <p class="text-lg leading-relaxed mb-4" style="color:var(--text-secondary)">
+                    Menampilkan anggota dari {{ $banom }} NU Kalisari.
+                </p>
+            @else
+                <h1 class="font-serif text-5xl md:text-6xl font-bold tracking-tight mb-4" style="color:var(--text-primary)">
+                    Orang-Orang di Balik<br><span style="color:var(--accent)">Gerakan</span>
+                </h1>
+                <p class="text-lg leading-relaxed mb-4" style="color:var(--text-secondary)">
+                    Kenali anggota yang menjadi bagian dari perjalanan dan gerakan NU Kalisari.
+                </p>
+            @endif
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold" style="background:var(--accent-subtle);color:var(--accent)">
+                {{ $anggotas->total() }} anggota
+            </div>
         </div>
 
         {{-- Search + Filter --}}
@@ -47,17 +63,17 @@
                        style="background:var(--bg-surface);border:1px solid var(--border-medium);color:var(--text-primary)"
                        onfocus="this.style.borderColor='var(--accent)';this.style.boxShadow='0 0 0 3px var(--accent-subtle)'"
                        onblur="this.style.borderColor='var(--border-medium)';this.style.boxShadow=''">
-                <input type="hidden" name="category" value="{{ request('category') }}">
+                <input type="hidden" name="banom" value="{{ request('banom') }}">
             </form>
 
             {{-- Filter pills --}}
             @php
                 $filters = ['Semua' => null, 'Muslimat' => 'Muslimat', 'Fatayat' => 'Fatayat', 'GP Ansor' => 'GP Ansor', 'IPNU' => 'IPNU', 'IPPNU' => 'IPPNU', 'PMII' => 'PMII'];
-                $active  = request('category');
+                $active  = request('banom');
             @endphp
             <div class="flex gap-2 overflow-x-auto scrollbar-none pb-1 justify-start md:justify-center">
                 @foreach($filters as $label => $value)
-                <a href="{{ route('anggota', ['category' => $value, 'search' => request('search')]) }}"
+                <a href="{{ route('anggota', ['banom' => $value, 'search' => request('search')]) }}"
                    class="shrink-0 px-5 py-2 rounded-full text-sm font-semibold transition-all border"
                    style="{{ ($active == $value)
                        ? 'background:var(--accent);color:#fff;border-color:var(--accent)'
@@ -131,10 +147,13 @@
                               d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
                 </div>
-                <h3 class="font-serif text-xl font-bold mb-2" style="color:var(--text-primary)">Belum ada anggota</h3>
-                <p class="text-sm text-center max-w-sm" style="color:var(--text-secondary)">
-                    Data anggota pada kategori ini belum tersedia.
+                <h3 class="font-serif text-xl font-bold mb-2" style="color:var(--text-primary)">Belum ada anggota{{ isset($banom) && $banom ? ' ' . $banom : '' }}</h3>
+                <p class="text-sm text-center max-w-sm mb-4" style="color:var(--text-secondary)">
+                    Belum ada anggota{{ isset($banom) && $banom ? ' ' . $banom : '' }} yang terdaftar.
                 </p>
+                <a href="{{ route('anggota') }}" class="text-sm font-semibold transition-colors hover:underline" style="color:var(--accent)">
+                    Lihat semua anggota &rarr;
+                </a>
             </div>
             @endforelse
         </div>

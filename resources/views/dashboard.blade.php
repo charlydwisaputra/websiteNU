@@ -93,7 +93,7 @@
                 @foreach([
                     ['key' => 'Status',           'val' => ucfirst($anggota->status ?? 'Aktif')],
                     ['key' => 'Email',             'val' => $user->email],
-                    ['key' => 'Bergabung',         'val' => $user->created_at->format('d M Y')],
+                    ['key' => 'Bergabung',         'val' => \Carbon\Carbon::parse($user->created_at)->isoFormat('D MMM Y')],
                 ] as $row)
                 <div>
                     <dt class="text-[10px] font-semibold uppercase tracking-widest mb-0.5"
@@ -155,7 +155,7 @@
                             <p class="text-xs font-semibold leading-snug line-clamp-1"
                                style="color:var(--text-primary)">{{ $b->title }}</p>
                             <p class="text-[10px] mt-0.5" style="color:var(--text-muted)">
-                                {{ $b->created_at->diffForHumans() }}
+                                @tanggal($b->created_at)
                             </p>
                         </div>
                     </div>
@@ -176,7 +176,7 @@
                             <p class="text-xs font-semibold leading-snug line-clamp-1"
                                style="color:var(--text-primary)">{{ $ag->name }}</p>
                             <p class="text-[10px] mt-0.5" style="color:var(--text-muted)">
-                                Anggota baru · {{ $ag->created_at->diffForHumans() }}
+                                Anggota baru · @tanggal($ag->created_at)
                             </p>
                         </div>
                     </div>

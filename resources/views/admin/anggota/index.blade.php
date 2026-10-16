@@ -111,7 +111,7 @@
                                     <p class="text-sm font-semibold leading-snug" style="color:var(--text-primary)">{{ $anggota->name }}</p>
                                     @if($anggota->joined_at)
                                     <p class="text-xs mt-0.5" style="color:var(--text-muted)">
-                                        Bergabung {{ \Carbon\Carbon::parse($anggota->joined_at)->format('d M Y') }}
+                                        Bergabung @tanggal($anggota->joined_at)
                                     </p>
                                     @endif
                                 </div>

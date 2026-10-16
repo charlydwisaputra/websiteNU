@@ -14,14 +14,102 @@ function initializePublicInteractions() {
     /* ── 1. Mobile hamburger menu ── */
     initMobileMenu();
 
-    /* ── 1b. Navbar scroll state ── */
-    const navbar = document.getElementById('glass-navbar') || document.getElementById('premium-navbar');
+    /* ── 1b. Navbar scroll state (Headroom behavior) ── */
+    const navbar = document.getElementById('glass-navbar');
+    const heroSection = document.getElementById('hero-section');
+    
     if (navbar) {
-        const onScroll = () => {
-            navbar.classList.toggle('scrolled', window.scrollY > 30);
+        // 1. Theme-independent state for hero using IntersectionObserver
+        navbar.setAttribute('data-nav-state', 'scrolled');
+        
+        if (heroSection && 'IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navbar.setAttribute('data-nav-state', 'over-hero');
+                    } else {
+                        navbar.setAttribute('data-nav-state', 'scrolled');
+                    }
+                });
+            }, { 
+                rootMargin: "-60px 0px 0px 0px", 
+                threshold: 0 
+            });
+            
+            observer.observe(heroSection);
+            
+            if (window.scrollY > (heroSection.offsetHeight - 60)) {
+                navbar.setAttribute('data-nav-state', 'scrolled');
+            } else {
+                navbar.setAttribute('data-nav-state', 'over-hero');
+            }
+        }
+
+        // 2. Headroom mobile behavior
+        let lastScrollY = window.scrollY;
+        let isScrolling = false;
+
+        const updateNavbar = () => {
+            isScrolling = false;
+            const currentScrollY = window.scrollY;
+
+            // Desktop: always visible
+            if (window.innerWidth >= 1024) {
+                navbar.classList.remove('navbar--hidden');
+                lastScrollY = currentScrollY;
+                return;
+            }
+
+            // Don't hide when mobile menu is open
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const isMenuOpen = (mobileMenu && !mobileMenu.classList.contains('hidden')) ||
+                               (mobileBtn && mobileBtn.getAttribute('aria-expanded') === 'true');
+
+            if (isMenuOpen) {
+                navbar.classList.remove('navbar--hidden');
+                lastScrollY = currentScrollY;
+                return;
+            }
+
+            // Don't hide when near the top of the page
+            if (currentScrollY <= 80) {
+                navbar.classList.remove('navbar--hidden');
+                lastScrollY = currentScrollY;
+                return;
+            }
+
+            // Threshold check (~8px) to avoid flickering on minor scroll jitter
+            const diff = currentScrollY - lastScrollY;
+            if (Math.abs(diff) < 8) {
+                return;
+            }
+
+            if (diff > 0) {
+                // Scrolling down -> hide navbar
+                navbar.classList.add('navbar--hidden');
+            } else {
+                // Scrolling up -> show navbar
+                navbar.classList.remove('navbar--hidden');
+            }
+
+            lastScrollY = currentScrollY;
         };
+
+        const onScroll = () => {
+            if (!isScrolling) {
+                window.requestAnimationFrame(updateNavbar);
+                isScrolling = true;
+            }
+        };
+
         window.addEventListener('scroll', onScroll, { passive: true });
-        onScroll(); // set initial state
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                navbar.classList.remove('navbar--hidden');
+            }
+        }, { passive: true });
+        updateNavbar();
     }
 
     /* ── 2. Smooth scroll for anchor links ── */
@@ -42,19 +130,61 @@ function initializePublicInteractions() {
 
     /* ── 3. Reveal on scroll ── */
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-fade');
+    const revealSelector = '.reveal, .reveal-up, .reveal-left, .reveal-fade';
+
     if (prefersReducedMotion || !('IntersectionObserver' in window)) {
-        reveals.forEach(el => el.classList.add('active'));
+        document.querySelectorAll(revealSelector).forEach(el => el.classList.add('active'));
     } else {
-        const observer = new IntersectionObserver(entries => {
+        const revealObserver = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
-                    observer.unobserve(entry.target);
+                    revealObserver.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-        reveals.forEach(el => observer.observe(el));
+        }, { threshold: 0.02, rootMargin: '0px 0px 50px 0px' });
+
+        const observeElement = (el) => {
+            if (el.classList.contains('active')) return;
+            const rect = el.getBoundingClientRect();
+            if (rect.top <= (window.innerHeight || document.documentElement.clientHeight)) {
+                el.classList.add('active');
+            } else {
+                revealObserver.observe(el);
+            }
+        };
+
+        document.querySelectorAll(revealSelector).forEach(observeElement);
+
+        // Re-observe dynamic content (e.g. Alpine search/filter re-renders)
+        const mutationObserver = new MutationObserver(mutations => {
+            for (const mutation of mutations) {
+                for (const node of mutation.addedNodes) {
+                    if (node.nodeType === 1) {
+                        if (node.matches && node.matches(revealSelector)) {
+                            observeElement(node);
+                        }
+                        if (node.querySelectorAll) {
+                            node.querySelectorAll(revealSelector).forEach(observeElement);
+                        }
+                    }
+                }
+            }
+        });
+        mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+        // Safeguard on scroll
+        window.addEventListener('scroll', () => {
+            document.querySelectorAll(revealSelector).forEach(el => {
+                if (!el.classList.contains('active')) {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top <= (window.innerHeight || document.documentElement.clientHeight)) {
+                        el.classList.add('active');
+                        revealObserver.unobserve(el);
+                    }
+                }
+            });
+        }, { passive: true });
     }
 
     /* ── 4. Lightbox ── */
@@ -108,10 +238,28 @@ function initMobileMenu() {
         iconOpen.classList.toggle('hidden', isOpen);
         iconClose.classList.toggle('hidden', !isOpen);
     }
+        if (isOpen) {
+            const firstLink = menu.querySelector('a');
+            if (firstLink) setTimeout(() => firstLink.focus(), 50);
+        } else {
+            if (document.activeElement && menu.contains(document.activeElement)) {
+                btn.focus();
+            }
+        }
+
 
     btn.addEventListener('click', () => toggleMenu());
 
     // Close menu when a link inside is clicked
+    // Close on Escape key
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && isOpen) {
+            toggleMenu(false);
+            btn.focus();
+        }
+    });
+
+
     menu.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => toggleMenu(false));
     });
@@ -129,6 +277,9 @@ function initMobileMenu() {
    ============================================================ */
 function initThemeToggle() {
     function doToggle() {
+        // Add a smooth transition class to body when toggling theme
+        document.body.style.transition = 'background-color 0.2s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s ease';
+        
         if (typeof window.toggleTheme === 'function') {
             window.toggleTheme();
         } else {
@@ -136,6 +287,11 @@ function initThemeToggle() {
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: isDark ? 'dark' : 'light' } }));
         }
+        
+        // Remove the inline transition after it's done so it doesn't affect other changes
+        setTimeout(() => {
+            document.body.style.transition = '';
+        }, 300);
     }
 
     window.toggleTheme = window.toggleTheme || doToggle;

@@ -3,10 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Warta — NU Kalisari</title>
+    <title>Warta — {{ config('organisasi.nama') }}</title>
+    <x-seo-meta
+        :title="'Warta — ' . config('organisasi.nama')"
+        :description="'Warta, kegiatan, dan informasi terbaru dari lingkungan NU Kalisari.'"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>[x-cloak]{display:none!important}</style>
     @include('components.theme-script')
@@ -16,215 +20,169 @@
 
     @include('layouts.public-navigation')
 
-    <div class="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 flex-grow w-full"
-         x-data="{
-            search: '',
-            category: 'Semua',
-            page: 1,
-            perPage: 9,
-            categories: ['Semua','Kegiatan','Pengumuman','Organisasi','Sosial'],
-            items: {{ \Illuminate\Support\Js::from($beritas->map(fn($b) => [
-                'id'       => $b->id,
-                'title'    => $b->title,
-                'excerpt'  => \Illuminate\Support\Str::limit(strip_tags($b->content), 120),
-                'full_ex'  => \Illuminate\Support\Str::limit(strip_tags($b->content), 220),
-                'image'    => $b->image ? asset('storage/'.$b->image) : null,
-                'date'     => $b->created_at->format('d M Y'),
-                'url'      => route('berita.show', $b->id),
-                'category' => $b->category ?: 'Kegiatan',
-            ])) }},
-            get filtered() {
-                let r = this.items;
-                if (this.category !== 'Semua') r = r.filter(i => i.category === this.category);
-                if (this.search.trim()) {
-                    const q = this.search.toLowerCase();
-                    r = r.filter(i => i.title.toLowerCase().includes(q) || i.excerpt.toLowerCase().includes(q));
-                }
-                return r;
-            },
-            get hero()  { return this.filtered[0] ?? null; },
-            get side()  { return this.filtered.slice(1,4); },
-            get rest()  {
-                const start = 4 + (this.page-1)*this.perPage;
-                return this.filtered.slice(start, start+this.perPage);
-            },
-            get totalPages() { return Math.max(1, Math.ceil(Math.max(0, this.filtered.length-4)/this.perPage)); },
-            goPage(p) {
-                if (p<1||p>this.totalPages) return;
-                this.page=p;
-                window.scrollTo({top:document.getElementById('more-section').offsetTop-120, behavior:'smooth'});
-            }
-         }">
-
-        {{-- PAGE HEADER --}}
-        <header class="mb-12 pb-10" style="border-bottom:1px solid var(--border-light)">
-            <p class="text-label mb-3" style="color:var(--accent)">WARTA</p>
-            <h1 class="font-serif text-5xl md:text-7xl font-bold tracking-tight mb-4" style="color:var(--text-primary)">
-                Warta NU Kalisari.
+    <div class="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 flex-grow w-full">
+        <!-- PAGE HEADER -->
+        <header class="mb-12 pb-10 border-b border-black/5 dark:border-white/5">
+            <h1 class="font-serif text-[clamp(2.5rem,6vw,5rem)] font-medium tracking-tight mb-4" style="color:var(--text-primary)">
+                Warta
             </h1>
-            <p class="text-lg md:text-xl leading-relaxed max-w-2xl" style="color:var(--text-secondary)">
-                Berita, kegiatan, pengumuman, dan informasi terbaru dari lingkungan NU Kalisari.
+            <p class="text-lg md:text-xl leading-relaxed max-w-2xl font-light" style="color:var(--text-secondary)">
+                Warta, kegiatan, dan informasi terbaru dari lingkungan NU Kalisari.
             </p>
         </header>
 
-        {{-- FILTERS --}}
-        <div class="mb-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            {{-- Category tabs --}}
-            <div class="flex overflow-x-auto scrollbar-none gap-0 pb-1" style="border-bottom:1px solid var(--border-light)">
-                <template x-for="cat in categories" :key="cat">
-                    <button @click="category=cat;page=1"
-                            :style="category===cat
-                                ? 'color:var(--text-primary);border-bottom:2px solid var(--text-primary);margin-bottom:-1px'
-                                : 'color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-1px'"
-                            class="px-3 py-2.5 text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all"
-                            x-text="cat">
-                    </button>
-                </template>
+        @if($beritas->isEmpty())
+            <div class="py-12 px-6 rounded-2xl bg-black/5 dark:bg-white/5 text-center border border-black/5 dark:border-white/5">
+                <p class="text-base" style="color:var(--text-secondary)">Belum ada warta yang dipublikasikan.</p>
+            </div>
+        @else
+        <div x-data="{
+                search: '',
+                category: 'Semua',
+                limit: 10,
+                categories: ['Semua','Kegiatan','Pengumuman','Organisasi','Sosial'],
+                items: {{ \Illuminate\Support\Js::from($beritas->map(fn($b) => [
+                    'id'       => $b->id,
+                    'title'    => $b->title,
+                    'excerpt'  => \Illuminate\Support\Str::limit(strip_tags($b->content), 120),
+                    'full_ex'  => \Illuminate\Support\Str::limit(strip_tags($b->content), 220),
+                    'image'    => $b->image ? asset('storage/'.$b->image) : null,
+                    'date'     => \Carbon\Carbon::parse($b->created_at)->isoFormat('D MMM Y'),
+                    'url'      => route('berita.show', $b->id),
+                    'category' => $b->category ?: 'Kegiatan',
+                ])) }},
+                get filtered() {
+                    let r = this.items;
+                    if (this.category !== 'Semua') r = r.filter(i => i.category === this.category);
+                    if (this.search.trim()) {
+                        const q = this.search.toLowerCase();
+                        r = r.filter(i => i.title.toLowerCase().includes(q) || i.excerpt.toLowerCase().includes(q));
+                    }
+                    return r;
+                },
+                get hero()  { return this.filtered.length > 0 ? this.filtered[0] : null; },
+                get side()  { return this.filtered.slice(1, 4); },
+                get rest()  { return this.filtered.slice(4, this.limit); },
+                get hasMore() { return this.limit < this.filtered.length; },
+                loadMore() { this.limit += 10; }
+             }">
+
+            <!-- FILTERS -->
+            <div class="mb-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <!-- Category chips -->
+                <div class="flex gap-2 overflow-x-auto scrollbar-none whitespace-nowrap flex-nowrap w-full md:w-auto pb-1">
+                    <template x-for="c in categories" :key="c">
+                        <button @click="category = c; limit = 10"
+                                class="px-4 py-2 min-h-[44px] rounded-full text-sm font-medium transition-colors border shrink-0"
+                                :class="category === c ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-transparent border-black/10 dark:border-white/10 hover:border-emerald-500/30'"
+                                :style="category !== c ? 'color:var(--text-secondary)' : ''"
+                                x-text="c"></button>
+                    </template>
+                </div>
+                <!-- Search -->
+                <div class="relative w-full md:w-64 shrink-0">
+                    <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style="color:var(--text-muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <input type="text" x-model="search" @input="limit = 10" placeholder="Cari warta..."
+                           class="w-full pl-9 pr-4 py-2 text-sm bg-black/5 dark:bg-white/5 border border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
+                           style="color:var(--text-primary)">
+                </div>
             </div>
 
-            {{-- Search --}}
-            <div class="relative w-full md:w-72 shrink-0 group">
-                <input type="text" x-model="search" @input="page=1" placeholder="Cari warta..."
-                       class="w-full bg-transparent py-2 pr-4 text-sm font-medium transition-all outline-none"
-                       style="border-bottom:1px solid var(--border-medium);color:var(--text-primary)"
-                       onfocus="this.style.borderBottomColor='var(--accent)'"
-                       onblur="this.style.borderBottomColor='var(--border-medium)'"
-                       ::placeholder-style="'color:var(--text-muted)'">
-                <svg class="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors"
-                     :style="search ? 'color:var(--accent)' : 'color:var(--text-muted)'"
-                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
+            <!-- RESULT COUNT -->
+            <div class="mb-8" x-show="search || category !== 'Semua'" x-cloak>
+                <p class="text-sm" style="color:var(--text-muted)">
+                    Menampilkan <span x-text="filtered.length" class="font-medium" style="color:var(--text-primary)"></span> hasil.
+                </p>
             </div>
-        </div>
 
-        {{-- HERO + SIDEBAR --}}
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20" x-show="hero" x-cloak>
+            <div x-show="filtered.length > 0">
+                <!-- TOP GRID (1 HERO + 3 SIDE) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-16">
+                    <!-- HERO -->
+                    <div class="lg:col-span-8 flex flex-col group" x-show="hero">
+                        <a :href="hero?.url" class="block w-full aspect-video rounded-2xl overflow-hidden mb-5 bg-emerald-50 dark:bg-emerald-900/10 border border-black/5 dark:border-white/5">
+                            <template x-if="hero?.image">
+                                <img :src="hero.image" :alt="hero.title" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                            </template>
+                            <template x-if="!hero?.image">
+                                <div class="w-full h-full flex items-center justify-center text-emerald-600/30 font-serif text-4xl font-medium" x-text="hero?.title.substring(0,2)"></div>
+                            </template>
+                        </a>
+                        <div class="flex items-center gap-2 mb-3 text-[10px] font-medium uppercase tracking-widest" style="color:var(--text-muted)">
+                            <span x-text="hero?.category"></span>
+                            <span>·</span>
+                            <span x-text="hero?.date"></span>
+                        </div>
+                        <h2 class="font-serif text-3xl md:text-4xl font-medium leading-tight mb-3 group-hover:text-emerald-600 transition-colors" style="color:var(--text-primary)">
+                            <a :href="hero?.url" x-text="hero?.title"></a>
+                        </h2>
+                        <p class="text-base font-normal leading-relaxed line-clamp-3" style="color:var(--text-secondary)" x-text="hero?.full_ex"></p>
+                    </div>
+                    
+                    <!-- SIDE -->
+                    <div class="lg:col-span-4 flex flex-col gap-4" x-show="side.length > 0">
+                        <template x-for="item in side" :key="item.id">
+                            <a :href="item.url" class="flex flex-row lg:flex-col gap-4 lg:gap-3 group flex-1 min-h-0">
+                                <div class="w-1/3 lg:w-full aspect-[4/3] lg:aspect-[16/9] shrink-0 rounded-xl overflow-hidden bg-emerald-50 dark:bg-emerald-900/10 border border-black/5 dark:border-white/5 relative">
+                                    <template x-if="item.image">
+                                        <img :src="item.image" :alt="item.title" class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105" loading="lazy">
+                                    </template>
+                                    <template x-if="!item.image">
+                                        <div class="w-full h-full flex items-center justify-center text-emerald-600/30 font-serif text-xl font-medium" x-text="item.title.substring(0,2)"></div>
+                                    </template>
+                                    <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wide bg-black/60 text-white backdrop-blur-sm lg:hidden" x-text="item.category"></span>
+                                </div>
+                                <div class="flex flex-col justify-center py-1">
+                                    <span class="text-[10px] font-medium uppercase tracking-widest mb-1" style="color:var(--text-muted)" x-text="item.date"></span>
+                                    <h3 class="font-serif text-xl font-semibold leading-tight group-hover:text-emerald-600 transition-colors line-clamp-2" style="color:var(--text-primary)" x-text="item.title"></h3>
+                                </div>
+                            </a>
+                        </template>
+                    </div>
+                </div>
 
-            {{-- Featured hero --}}
-            <a :href="hero?.url" class="lg:col-span-8 group flex flex-col">
-                <div class="w-full aspect-[16/10] rounded-2xl overflow-hidden mb-6 img-zoom-wrap"
-                     style="background:var(--bg-surface-elevated);border:1px solid var(--border-light)">
-                    <template x-if="hero?.image">
-                        <img :src="hero.image" class="w-full h-full object-cover" alt="">
-                    </template>
-                    <template x-if="!hero?.image">
-                        <div class="w-full h-full flex items-center justify-center font-serif text-2xl font-bold opacity-30"
-                             style="color:var(--text-muted)">WARTA NU</div>
-                    </template>
-                </div>
-                <div class="flex items-center gap-3 mb-3 text-xs font-bold uppercase tracking-widest">
-                    <span x-text="hero?.category" style="color:var(--accent)"></span>
-                    <span style="color:var(--border-medium)">|</span>
-                    <span x-text="hero?.date" style="color:var(--text-muted)"></span>
-                </div>
-                <h2 class="font-serif text-4xl md:text-5xl font-bold leading-tight mb-4 transition-colors"
-                    :style="'color:var(--text-primary)'"
-                    x-text="hero?.title"
-                    @mouseover="$el.style.color='var(--accent)'"
-                    @mouseout="$el.style.color='var(--text-primary)'"></h2>
-                <p class="text-base leading-relaxed line-clamp-3" style="color:var(--text-secondary)" x-text="hero?.full_ex"></p>
-            </a>
-
-            {{-- Side highlights --}}
-            <div class="lg:col-span-4 flex flex-col">
-                <div class="mb-5 pb-2" style="border-bottom:2px solid var(--text-primary)">
-                    <h3 class="text-xs font-bold uppercase tracking-widest" style="color:var(--text-primary)">Sorotan</h3>
-                </div>
-                <div class="flex flex-col gap-6">
-                    <template x-for="item in side" :key="item.id">
-                        <a :href="item.url" class="group grid grid-cols-3 gap-4 items-start">
-                            <div class="col-span-1 aspect-square rounded-xl overflow-hidden img-zoom-wrap"
-                                 style="background:var(--bg-surface-elevated)">
+                <!-- MORE LIST -->
+                <div id="more-section" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" x-show="rest.length > 0">
+                    <template x-for="item in rest" :key="item.id">
+                        <a :href="item.url" class="group block p-4 rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/5 hover:border-emerald-500/30 transition-colors card-hover">
+                            <div class="w-full aspect-video rounded-xl overflow-hidden mb-4 bg-emerald-50 dark:bg-emerald-900/10">
                                 <template x-if="item.image">
-                                    <img :src="item.image" class="w-full h-full object-cover" alt="">
+                                    <img :src="item.image" :alt="item.title" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                                </template>
+                                <template x-if="!item.image">
+                                    <div class="w-full h-full flex items-center justify-center text-emerald-600/30 font-serif text-2xl font-medium" x-text="item.title.substring(0,2)"></div>
                                 </template>
                             </div>
-                            <div class="col-span-2 flex flex-col">
-                                <span class="text-[10px] font-bold uppercase tracking-widest mb-1"
-                                      style="color:var(--accent)" x-text="item.category"></span>
-                                <h4 class="font-serif text-base font-bold leading-snug line-clamp-2 mb-1.5 transition-colors"
-                                    style="color:var(--text-primary)"
-                                    x-text="item.title"
-                                    @mouseover="$el.style.color='var(--accent)'"
-                                    @mouseout="$el.style.color='var(--text-primary)'"></h4>
-                                <span class="text-xs font-medium" style="color:var(--text-muted)" x-text="item.date"></span>
+                            <div class="flex items-center gap-2 mb-2 text-[10px] font-medium uppercase tracking-widest" style="color:var(--text-muted)">
+                                <span x-text="item.category"></span>
+                                <span>·</span>
+                                <span x-text="item.date"></span>
                             </div>
+                            <h3 class="font-serif text-xl font-semibold leading-snug line-clamp-2 mb-2 group-hover:text-emerald-600 transition-colors" style="color:var(--text-primary)" x-text="item.title"></h3>
+                            <p class="text-sm font-normal leading-relaxed line-clamp-2" style="color:var(--text-secondary)" x-text="item.excerpt"></p>
                         </a>
                     </template>
                 </div>
-            </div>
-        </div>
 
-        {{-- MORE ARTICLES --}}
-        <div id="more-section" class="scroll-mt-32 pt-12" style="border-top:1px solid var(--border-light)"
-             x-show="rest.length > 0" x-cloak>
-            <div class="mb-8 pb-2 inline-block" style="border-bottom:2px solid var(--text-primary)">
-                <h2 class="text-xs font-bold uppercase tracking-widest" style="color:var(--text-primary)">Berita Lainnya</h2>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
-                <template x-for="item in rest" :key="item.id">
-                    <a :href="item.url" class="group flex flex-col">
-                        <div class="aspect-[4/3] rounded-xl overflow-hidden mb-4 img-zoom-wrap"
-                             style="background:var(--bg-surface-elevated);border:1px solid var(--border-light)">
-                            <template x-if="item.image">
-                                <img :src="item.image" class="w-full h-full object-cover" alt="">
-                            </template>
-                        </div>
-                        <div class="flex items-center gap-2 mb-2 text-[10px] font-bold uppercase tracking-widest">
-                            <span x-text="item.category" style="color:var(--accent)"></span>
-                            <span style="color:var(--border-medium)">·</span>
-                            <span x-text="item.date" style="color:var(--text-muted)"></span>
-                        </div>
-                        <h3 class="font-serif text-xl font-bold leading-snug line-clamp-2 mb-2 transition-colors"
-                            style="color:var(--text-primary)"
-                            x-text="item.title"
-                            @mouseover="$el.style.color='var(--accent)'"
-                            @mouseout="$el.style.color='var(--text-primary)'"></h3>
-                        <p class="text-sm leading-relaxed line-clamp-2" style="color:var(--text-secondary)" x-text="item.excerpt"></p>
-                    </a>
-                </template>
-            </div>
-
-            {{-- Pagination --}}
-            <div class="mt-16 flex justify-center pt-10" style="border-top:1px solid var(--border-light)"
-                 x-show="totalPages > 1">
-                <div class="flex items-center gap-2">
-                    <button @click="goPage(page-1)" :disabled="page===1"
-                            class="w-10 h-10 flex items-center justify-center rounded-full border transition-all disabled:opacity-40"
-                            style="border-color:var(--border-medium);color:var(--text-primary)"
-                            onmouseover="this.style.background='var(--bg-surface)'"
-                            onmouseout="this.style.background=''">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                    </button>
-                    <template x-for="p in Array.from({length:totalPages},(_,i)=>i+1)" :key="p">
-                        <button @click="goPage(p)"
-                                :style="page===p
-                                    ? 'background:var(--text-primary);color:var(--bg-base);border-color:var(--text-primary);font-weight:700'
-                                    : 'border-color:transparent;color:var(--text-secondary)'"
-                                class="w-10 h-10 flex items-center justify-center rounded-full border text-sm transition-all"
-                                x-text="p"></button>
-                    </template>
-                    <button @click="goPage(page+1)" :disabled="page===totalPages"
-                            class="w-10 h-10 flex items-center justify-center rounded-full border transition-all disabled:opacity-40"
-                            style="border-color:var(--border-medium);color:var(--text-primary)"
-                            onmouseover="this.style.background='var(--bg-surface)'"
-                            onmouseout="this.style.background=''">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <!-- LOAD MORE -->
+                <div class="text-center pt-8" x-show="hasMore">
+                    <button @click="loadMore" class="px-6 py-2.5 btn-active-scale rounded-xl text-sm font-medium transition-colors bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10" style="color:var(--text-primary)">
+                        Muat lebih banyak
                     </button>
                 </div>
             </div>
-        </div>
 
-        {{-- EMPTY --}}
-        <div class="mt-20 text-center py-24" style="border-top:1px solid var(--border-light)"
-             x-show="filtered.length===0" x-cloak>
-            <h3 class="font-serif text-3xl font-bold mb-3" style="color:var(--text-primary)">Warta tidak ditemukan</h3>
-            <p class="text-base max-w-md mx-auto" style="color:var(--text-secondary)">
-                Tidak ada berita yang cocok dengan filter yang dipilih.
-            </p>
+            <!-- EMPTY SEARCH -->
+            <div class="py-16 text-center" x-show="filtered.length === 0" x-cloak>
+                <h3 class="font-serif text-2xl font-medium mb-3" style="color:var(--text-primary)">Tidak ada hasil</h3>
+                <p class="text-base text-center mb-6" style="color:var(--text-secondary)">Tidak ada warta yang cocok dengan pencarian atau filter.</p>
+                <button @click="search = ''; category = 'Semua'" class="px-6 py-2 btn-active-scale rounded-xl text-sm font-medium transition-colors bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10" style="color:var(--text-primary)">
+                    Reset Filter
+                </button>
+            </div>
+            
         </div>
-
+        @endif
     </div>
 
     @include('layouts.public-footer')

@@ -3,8 +3,8 @@
         /* ─────────────────────────────────────────
            CORE PALETTE
         ───────────────────────────────────────── */
-        --black-iris:       #080813;
-        --frozen:           #A0BDDB;
+        --black-iris:       #050A07;
+        --frozen:           #A8B8B0;
         --nu-green:         #008C5A;
         --deep-green:       #005A3C;
         --light-background: #F4F7F6;
@@ -14,13 +14,14 @@
            LIGHT MODE
         ───────────────────────────────────────── */
         --bg-base:             var(--light-background);
+        --bg-base-transparent: rgba(244, 247, 246, 0);
         --bg-surface:          var(--white);
         --bg-surface-elevated: #EBEFEF;
         --bg-overlay:          rgba(244, 247, 246, 0.85);
 
         --text-primary:        var(--black-iris);
         --text-secondary:      #4A5568;
-        --text-muted:          #718096;
+        --text-muted:          #5A6577;
         --text-inverted:       var(--white);
 
         --border-light:        rgba(8, 8, 19, 0.08);
@@ -53,13 +54,14 @@
     ───────────────────────────────────────── */
     .dark {
         --bg-base:             var(--black-iris);
-        --bg-surface:          #11111E; /* slightly lighter than black iris */
-        --bg-surface-elevated: #1B1B29;
+        --bg-base-transparent: rgba(5, 10, 7, 0);
+        --bg-surface:          #070D09; /* slightly lighter than black iris */
+        --bg-surface-elevated: #0C140E;
         --bg-overlay:          rgba(8, 8, 19, 0.9);
 
         --text-primary:        var(--light-background);
         --text-secondary:      var(--frozen);
-        --text-muted:          #59647C;
+        --text-muted:          #7A8599;
         --text-inverted:       var(--black-iris);
 
         --border-light:        rgba(160, 189, 219, 0.12);
@@ -120,15 +122,15 @@
 ───────────────────────────────────────── */
 @layer components {
     .text-display {
-        @apply font-serif text-5xl md:text-7xl font-bold tracking-tight leading-none;
+        @apply font-serif text-5xl md:text-7xl font-medium tracking-tight leading-none;
         color: var(--text-primary);
     }
     .text-h1 {
-        @apply font-serif text-4xl md:text-5xl font-bold tracking-tight leading-tight;
+        @apply font-serif text-4xl md:text-5xl font-medium tracking-tight leading-tight;
         color: var(--text-primary);
     }
     .text-h2 {
-        @apply font-serif text-3xl md:text-4xl font-bold tracking-tight leading-snug;
+        @apply font-serif text-3xl md:text-4xl font-medium tracking-tight leading-snug;
         color: var(--text-primary);
     }
     .text-h3 {
@@ -224,5 +226,101 @@
         background: var(--bg-surface-elevated);
         color: var(--text-muted);
         border: 1px solid var(--border-light);
+    }
+}
+
+/* ─────────────────────────────────────────
+   ANIMATIONS & INTERACTIONS (PHASE C)
+───────────────────────────────────────── */
+@layer utilities {
+    /* 1. View Transitions */
+    @view-transition {
+        navigation: auto;
+    }
+    
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation-duration: 400ms;
+        animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    
+    ::view-transition-old(root) {
+        animation-name: fade-out;
+    }
+    ::view-transition-new(root) {
+        animation-name: fade-in;
+    }
+    
+    @keyframes fade-out {
+        to { opacity: 0; }
+    }
+    @keyframes fade-in {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* 2. Removed Hero Zoom for performance */
+    
+    @media (prefers-reduced-motion: reduce) {
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation: none;
+        }
+    }
+
+    /* 3. Reveal Animations */
+    html.js .reveal-up {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 800ms cubic-bezier(0.22, 1, 0.36, 1), transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: opacity, transform;
+    }
+    html.js .reveal-up.active,
+    .reveal-up.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .delay-100 { transition-delay: 100ms; }
+    .delay-200 { transition-delay: 200ms; }
+    .delay-300 { transition-delay: 300ms; }
+    .delay-400 { transition-delay: 400ms; }
+
+    /* 4. Moving Underline for Links */
+    .link-underline {
+        position: relative;
+        text-decoration: none;
+    }
+    .link-underline::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        transform: scaleX(0);
+        height: 1px;
+        bottom: 0;
+        left: 0;
+        background-color: currentColor;
+        transform-origin: bottom right;
+        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .link-underline:hover::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+    }
+
+    /* 5. Active state for buttons & cards (touch & mouse) */
+    .btn-active-scale:active, .card-hover:active {
+        transform: scale(0.98);
+        transition: transform 100ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    
+    /* Hover state for cards (not touch) */
+    @media (hover: hover) and (pointer: fine) {
+        .card-hover {
+            transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1), border-color 400ms ease, box-shadow 400ms ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+        }
     }
 }

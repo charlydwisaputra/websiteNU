@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Anggota;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -14,13 +15,20 @@ class AnggotaController extends Controller
     {
         $query = Anggota::query()
             ->where('is_public', true)
-            ->whereIn('status', ['Aktif', 'aktif']);
+            ->whereIn('status', ['Aktif', 'aktif'])
+            ->whereDoesntHave('user', function ($q) {
+                $q->where('role', 'admin');
+            });
 
-        $category = $request->query('category');
-        $categories = ['Muslimat', 'Fatayat', 'GP Ansor', 'IPNU', 'IPPNU', 'PMII'];
-        $query->when($category && in_array($category, $categories, true), function ($query) use ($category) {
-            $query->where('position', $category);
-        });
+        $banom = $request->query('banom');
+        $validBanoms = ['Muslimat', 'Fatayat', 'GP Ansor', 'IPNU', 'IPPNU', 'PMII'];
+
+        if ($banom && in_array($banom, $validBanoms, true)) {
+            $column = Schema::hasColumn('anggota', 'banom') ? 'banom' : 'position';
+            $query->where($column, $banom);
+        } else {
+            $banom = null; // invalid banom ignored
+        }
 
         if ($request->filled('search')) {
             $search = $request->string('search')->toString();
@@ -33,7 +41,7 @@ class AnggotaController extends Controller
 
         $anggotas = $query->latest()->paginate(12)->withQueryString();
 
-        return view('anggota.index', compact('anggotas', 'categories'));
+        return view('anggota.index', compact('anggotas', 'banom'));
     }
 
     public function index(Request $request): View
@@ -42,7 +50,7 @@ class AnggotaController extends Controller
 
         // Fitur Pencarian (nama, role/position, atau wilayah/region)
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = str_replace(['%', '_'], ['\\%', '\\_'], $request->string('search')->toString());
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('position', 'like', "%{$search}%")

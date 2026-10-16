@@ -43,12 +43,9 @@
                     selected: '{{ old('category') }}',
                     options: [
                         { val: '', label: '-- Pilih Kategori --' },
-                        { val: 'Muslimat', label: 'Muslimat' },
-                        { val: 'Fatayat', label: 'Fatayat' },
-                        { val: 'GP Ansor', label: 'GP Ansor' },
-                        { val: 'IPNU', label: 'IPNU' },
-                        { val: 'IPPNU', label: 'IPPNU' },
-                        { val: 'PMII', label: 'PMII' }
+                        @foreach(config('organisasi.banom') as $b)
+                        { val: '{{ $b['singkatan'] }}', label: '{{ $b['nama'] }}' },
+                        @endforeach
                     ],
                     get currentLabel() {
                         let opt = this.options.find(o => o.val === this.selected);

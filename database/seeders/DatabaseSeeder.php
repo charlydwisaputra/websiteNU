@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         // Memanggil seeder khusus Admin dan mematikan factory default bawaan Laravel
         $this->call([
             AdminSeeder::class,
+            DemoContentSeeder::class,
         ]);
     }
 }

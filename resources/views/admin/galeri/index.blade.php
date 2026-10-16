@@ -100,7 +100,7 @@
                         {{ $galeri->title ?: 'Tanpa Keterangan' }}
                     </p>
                     @if($galeri->created_at)
-                    <p class="text-xs mt-1" style="color:var(--text-muted)">{{ $galeri->created_at->format('d M Y') }}</p>
+                    <p class="text-xs mt-1" style="color:var(--text-muted)">@tanggal($galeri->created_at)</p>
                     @endif
                 </div>
                 <div class="flex items-center justify-end gap-2 pt-3" style="border-top:1px solid var(--border-light)">

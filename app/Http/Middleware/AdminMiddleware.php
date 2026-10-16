@@ -11,7 +11,7 @@ class AdminMiddleware
     public function handle(Request $request, Closure $next)
     {
         // Menggunakan Auth facade agar editor mengenali metode check() dan user()
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
+        if (! Auth::check() || Auth::user()->role !== 'admin') {
             abort(403, 'Anda tidak memiliki akses ke panel admin.');
         }
 

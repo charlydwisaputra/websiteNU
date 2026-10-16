@@ -17,10 +17,10 @@ return new class extends Migration
             $table->text('content');
             $table->enum('status', ['published', 'draft'])->default('published');
             $table->string('image')->nullable();
-            
+
             // Relasi ke tabel users (untuk author_id)
             $table->foreignId('author_id')->constrained('users')->cascadeOnDelete();
-            
+
             $table->timestamps();
         });
     }

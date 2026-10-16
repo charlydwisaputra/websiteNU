@@ -110,24 +110,17 @@
             <div class="p-6 md:p-8">
                 <input type="hidden" name="role" id="role-input" value="{{ old('role') }}" required>
                 @php
-                    $banoms = [
-                        ['value' => 'Muslimat',  'logo' => 'MuslimatNU.png', 'desc' => 'Organisasi perempuan dewasa'],
-                        ['value' => 'Fatayat',   'logo' => 'FATAYAT-NU.png', 'desc' => 'Organisasi perempuan muda'],
-                        ['value' => 'GP Ansor',  'logo' => 'GP-Ansor.png', 'desc' => 'Gerakan Pemuda Ansor'],
-                        ['value' => 'IPNU',      'logo' => 'IPNU.png', 'desc' => 'Ikatan Pelajar NU Putra'],
-                        ['value' => 'IPPNU',     'logo' => 'IPPNU.png', 'desc' => 'Ikatan Pelajar NU Putri'],
-                        ['value' => 'PMII',      'logo' => 'PMII.png', 'desc' => 'Pergerakan Mahasiswa Islam'],
-                    ];
+                    $banoms = config('organisasi.banom');
                 @endphp
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="banom-grid">
                     @foreach($banoms as $b)
                         <button type="button"
-                                onclick="selectBanom('{{ $b['value'] }}')"
-                                data-banom="{{ $b['value'] }}"
-                                class="banom-pill relative flex flex-col items-start gap-1 p-4 rounded-2xl border-2 border-slate-100 bg-slate-50/50 hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left group {{ old('role') == $b['value'] ? 'border-[#087A4B] bg-emerald-50 selected' : '' }}">
-                            <img src="{{ asset('storage/logo organisasi/' . $b['logo']) }}" alt="{{ $b['value'] }}" class="w-8 h-8 object-contain mb-1">
-                            <span class="text-sm font-bold text-slate-800 group-[.selected]:text-[#087A4B]">{{ $b['value'] }}</span>
-                            <span class="text-[10px] text-slate-400 leading-tight font-medium">{{ $b['desc'] }}</span>
+                                onclick="selectBanom('{{ $b['singkatan'] }}')"
+                                data-banom="{{ $b['singkatan'] }}"
+                                class="banom-pill relative flex flex-col items-start gap-1 p-4 rounded-2xl border-2 border-slate-100 bg-slate-50/50 hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left group {{ old('role') == $b['singkatan'] ? 'border-[#087A4B] bg-emerald-50 selected' : '' }}">
+                            <img src="{{ asset('storage/logo-organisasi/' . $b['logo']) }}" alt="{{ $b['singkatan'] }}" class="w-8 h-8 object-contain mb-1">
+                            <span class="text-sm font-bold text-slate-800 group-[.selected]:text-[#087A4B]">{{ $b['nama'] }}</span>
+                            <span class="text-[10px] text-slate-400 leading-tight font-medium">{{ Str::limit($b['deskripsi'], 40) }}</span>
                             <div class="absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-slate-200 flex items-center justify-center banom-check {{ old('role') == $b['value'] ? 'border-[#087A4B] bg-[#087A4B]' : '' }}">
                                 <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>

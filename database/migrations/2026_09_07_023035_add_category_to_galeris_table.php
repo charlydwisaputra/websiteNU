@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::table('galeris', function (Blueprint $table) {
             // Menambahkan kolom kategori baru
-            if (!Schema::hasColumn('galeris', 'category')) {
+            if (! Schema::hasColumn('galeris', 'category')) {
                 $table->string('category')->nullable()->after('title');
             }
-            
+
             // Menyesuaikan nama kolom foto dari 'image' menjadi 'photo' jika belum ada
-            if (Schema::hasColumn('galeris', 'image') && !Schema::hasColumn('galeris', 'photo')) {
+            if (Schema::hasColumn('galeris', 'image') && ! Schema::hasColumn('galeris', 'photo')) {
                 $table->renameColumn('image', 'photo');
             }
         });
@@ -31,7 +31,7 @@ return new class extends Migration
     {
         Schema::table('galeris', function (Blueprint $table) {
             $table->dropColumn('category');
-            if (Schema::hasColumn('galeris', 'photo') && !Schema::hasColumn('galeris', 'image')) {
+            if (Schema::hasColumn('galeris', 'photo') && ! Schema::hasColumn('galeris', 'image')) {
                 $table->renameColumn('photo', 'image');
             }
         });

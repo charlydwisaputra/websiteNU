@@ -128,7 +128,7 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 text-xs font-medium whitespace-nowrap" style="color:var(--text-muted)">
-                            {{ $berita->created_at->format('d M Y') }}
+                            @tanggal($berita->created_at)
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right">
                             <div class="flex items-center justify-end gap-2">

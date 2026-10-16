@@ -76,7 +76,7 @@
                     ['key' => 'ID Keanggotaan',  'val' => 'ID-'.str_pad($anggota->id, 5, '0', STR_PAD_LEFT)],
                     ['key' => 'Wilayah',         'val' => $anggota->wilayah ?: 'Pusat — Kalisari'],
                     ['key' => 'Status',          'val' => ucfirst($anggota->status ?? 'Pending'), 'accent' => $isAktif],
-                    ['key' => 'Terdaftar',       'val' => $anggota->joined_at ? \Carbon\Carbon::parse($anggota->joined_at)->format('d M Y') : '—'],
+                    ['key' => 'Terdaftar',       'val' => $anggota->joined_at ? \Carbon\Carbon::parse($anggota->joined_at)->isoFormat('D MMM Y') : '—'],
                 ] as $row)
                 <div class="flex items-center justify-between py-3">
                     <dt class="text-xs" style="color:var(--text-muted)">{{ $row['key'] }}</dt>

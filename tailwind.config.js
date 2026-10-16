@@ -14,7 +14,7 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Inter', ...defaultTheme.fontFamily.sans],
-                serif: ['"DM Serif Display"', ...defaultTheme.fontFamily.serif],
+                serif: ['"Cormorant Garamond"', ...defaultTheme.fontFamily.serif],
             },
         },
     },

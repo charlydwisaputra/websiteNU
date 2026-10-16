@@ -1,4 +1,3 @@
-
 @php
     $isHome   = request()->routeIs('home');
 
@@ -7,401 +6,279 @@
             'href'    => route('home'),
             'label'   => 'Beranda',
             'active'  => request()->routeIs('home'),
-            'section' => null,
         ],
         [
             'href'    => route('tentang'),
             'label'   => 'Tentang',
             'active'  => request()->routeIs('tentang'),
-            'section' => null,
         ],
         [
             'href'    => route('ekosistem'),
             'label'   => 'Ekosistem',
             'active'  => request()->routeIs('ekosistem'),
-            'section' => null,
-        ],
-        [
-            'href'    => route('kegiatan'),
-            'label'   => 'Kegiatan',
-            'active'  => request()->routeIs('kegiatan'),
-            'section' => null,
         ],
         [
             'href'    => route('berita.index'),
-            'label'   => 'Berita',
+            'label'   => 'Warta',
             'active'  => request()->routeIs('berita*'),
-            'section' => null,
         ],
         [
             'href'    => route('galeri'),
             'label'   => 'Dokumentasi',
             'active'  => request()->routeIs('galeri'),
-            'section' => null,
         ],
     ];
 @endphp
 
-
 <style>
-    /* Premium Fluid Glass Navbar (React Bits Inspired) */
-    .glass-navbar-container {
-        position: relative;
-        border-radius: 9999px;
-        background: rgba(255, 255, 255, 0.25);
-        backdrop-filter: blur(24px) saturate(200%);
-        -webkit-backdrop-filter: blur(24px) saturate(200%);
-        box-shadow: 
-            0 10px 40px -10px rgba(0, 0, 0, 0.1),
-            inset 0 1px 2px rgba(255, 255, 255, 0.9),
-            inset 0 -1px 2px rgba(255, 255, 255, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    /* CSS Variables based on state */
+    #glass-navbar {
+        /* Default: Scrolled State (Light Mode) */
+        --nav-bg: rgba(255, 255, 255, 0.75);
+        --nav-border: rgba(0, 0, 0, 0.08);
+        --nav-text: #1f2937;
+        --nav-text-hover: #111827;
+        --nav-active-bg: #d1fae5;
+        --nav-active-text: #065f46;
+        --nav-btn-bg: rgba(0, 0, 0, 0.05);
+        --nav-btn-text: #1f2937;
+        --nav-mobile-bg: rgba(255, 255, 255, 0.95);
+        --nav-mobile-border: rgba(0, 0, 0, 0.1);
+        --nav-blur: 16px;
+        --nav-saturate: 1.4;
+        --nav-highlight: inset 0 1px 0 rgba(255,255,255,0.1);
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
     }
     
-    /* Chromatic aberration & specular edge mimic */
-    .glass-navbar-container::before {
-        content: '';
-        position: absolute;
-        inset: -1px;
-        border-radius: 9999px;
-        background: linear-gradient(135deg, rgba(0, 255, 200, 0.2) 0%, rgba(255, 255, 255, 0) 40%, rgba(0, 143, 90, 0.2) 100%);
-        z-index: -1;
-        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        padding: 1px;
-        pointer-events: none;
-        opacity: 0.6;
+    .dark #glass-navbar {
+        /* Default: Scrolled State (Dark Mode) */
+        --nav-bg: rgba(7, 19, 15, 0.65);
+        --nav-border: rgba(255, 255, 255, 0.1);
+        --nav-text: #e5e7eb;
+        --nav-text-hover: #ffffff;
+        --nav-active-bg: rgba(16, 185, 129, 0.2);
+        --nav-active-text: #34d399;
+        --nav-btn-bg: rgba(255, 255, 255, 0.1);
+        --nav-btn-text: #ffffff;
+        --nav-mobile-bg: rgba(5, 10, 7, 0.95);
+        --nav-mobile-border: rgba(255, 255, 255, 0.1);
+        --nav-highlight: inset 0 1px 0 rgba(255,255,255,0.05);
     }
 
-    .dark .glass-navbar-container {
-        background: rgba(7, 19, 15, 0.45);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 
-            0 16px 48px -12px rgba(0, 0, 0, 0.5),
-            inset 0 1px 1px rgba(255, 255, 255, 0.15),
-            inset 0 -1px 2px rgba(0, 0, 0, 0.6);
+    #glass-navbar[data-nav-state="over-hero"] {
+        /* Over-Hero State */
+        --nav-bg: rgba(30, 40, 35, 0.5); /* Slightly brighter tint */
+        --nav-border: rgba(255, 255, 255, 0.18);
+        --nav-text: rgba(255, 255, 255, 0.85);
+        --nav-text-hover: #ffffff;
+        --nav-active-bg: rgba(255, 255, 255, 0.2);
+        --nav-active-text: #ffffff;
+        --nav-btn-bg: rgba(255, 255, 255, 0.15);
+        --nav-btn-text: #ffffff;
+        --nav-blur: 10px; /* Toggle to 0px if jitter occurs */
+        --nav-saturate: 1.2;
+        --nav-highlight: inset 0 1px 0 rgba(255,255,255,0.12);
+    }
+
+    .navbar--hidden,
+    #glass-navbar.navbar--hidden {
+        transform: translateY(calc(-100% - 2rem));
+    }
+
+    @media (min-width: 1024px) {
+        #glass-navbar.navbar--hidden {
+            transform: translateY(0);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #glass-navbar {
+            transition: none !important;
+        }
+    }
+
+    /* Core Styles */
+    .nav-container {
+        background-color: var(--nav-bg);
+        border: 1px solid var(--nav-border);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), var(--nav-highlight);
+        transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, backdrop-filter 0.25s ease;
     }
     
-    .dark .glass-navbar-container::before {
-        background: linear-gradient(135deg, rgba(232, 255, 245, 0.15) 0%, rgba(255, 255, 255, 0) 40%, rgba(0, 168, 107, 0.25) 100%);
-        opacity: 0.8;
+    @supports (backdrop-filter: blur(16px)) {
+        .nav-container {
+            backdrop-filter: blur(var(--nav-blur)) saturate(var(--nav-saturate));
+            -webkit-backdrop-filter: blur(var(--nav-blur)) saturate(var(--nav-saturate));
+        }
+    }
+    @supports not (backdrop-filter: blur(16px)) {
+        #glass-navbar { --nav-bg: #ffffff; }
+        .dark #glass-navbar { --nav-bg: #050a07; }
+        #glass-navbar[data-nav-state="over-hero"] { --nav-bg: #1e2823; }
     }
 
-    /* Scrolled state */
-    header.is-scrolled .glass-navbar-container {
-        background: rgba(255, 255, 255, 0.5);
-        box-shadow: 
-            0 8px 32px -8px rgba(0, 0, 0, 0.08),
-            inset 0 1px 2px rgba(255, 255, 255, 0.9);
-    }
-    .dark header.is-scrolled .glass-navbar-container {
-        background: rgba(5, 7, 6, 0.55);
-        box-shadow: 
-            0 8px 32px -8px rgba(0, 0, 0, 0.5),
-            inset 0 1px 1px rgba(255, 255, 255, 0.15);
-    }
-
-    /* Navigation Links */
+    /* Nav Links */
     .nav-link {
-        position: relative;
-        font-size: 0.875rem;
+        color: var(--nav-text);
+        transition: color 0.25s ease, background-color 0.25s ease;
+    }
+    .nav-link:hover, .nav-link:focus-visible {
+        color: var(--nav-text-hover);
+        outline: none;
+    }
+    .nav-link:focus-visible {
+        box-shadow: 0 0 0 2px var(--nav-active-bg);
+    }
+    .nav-link.active {
+        background-color: var(--nav-active-bg);
+        color: var(--nav-active-text);
         font-weight: 500;
-        color: var(--text-secondary);
-        padding: 0.45rem 1.1rem;
-        border-radius: 9999px;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transform: scale(1);
-        z-index: 1;
-    }
-    .dark .nav-link {
-        color: var(--text-secondary);
-    }
-    
-    .nav-link:hover {
-        color: var(--text-primary);
-        background: rgba(255, 255, 255, 0.4);
-        transform: scale(1.02);
-    }
-    .dark .nav-link:hover {
-        color: var(--text-primary);
-        background: rgba(255, 255, 255, 0.08);
     }
 
-    /* Active Navigation: Floating frosted pill */
-    .nav-link.is-active, 
-    .nav-link[data-active="true"] {
-        color: var(--text-primary) !important;
-        background: rgba(255, 255, 255, 0.6) !important;
-        font-weight: 600 !important;
-        box-shadow: 
-            0 4px 12px -4px rgba(0, 143, 90, 0.2),
-            inset 0 1px 1px rgba(255, 255, 255, 0.8);
-        transform: scale(1.02);
+    /* Buttons */
+    .nav-icon-btn {
+        color: var(--nav-text);
+        background-color: transparent;
+        border: 1px solid var(--nav-border);
+        transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
     }
-    .dark .nav-link.is-active,
-    .dark .nav-link[data-active="true"] {
-        color: var(--text-primary) !important;
-        background: rgba(255, 255, 255, 0.12) !important;
-        box-shadow: 
-            0 4px 12px -4px rgba(0, 168, 107, 0.3),
-            inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    .nav-icon-btn:hover, .nav-icon-btn:focus-visible {
+        background-color: var(--nav-btn-bg);
+        color: var(--nav-text-hover);
+        outline: none;
+    }
+    .nav-icon-btn:focus-visible {
+        box-shadow: 0 0 0 2px var(--nav-active-bg);
+    }
+    
+    .nav-primary-btn {
+        background-color: var(--nav-btn-bg);
+        color: var(--nav-btn-text);
+        transition: transform 0.1s ease, background-color 0.25s ease;
+    }
+    .nav-primary-btn:hover {
+        opacity: 0.9;
+    }
+    .nav-primary-btn:active {
+        transform: scale(0.96);
     }
 
-    /* Dashboard Button */
-    .btn-dashboard {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.35rem 1rem 0.35rem 0.35rem;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        background: var(--bg-surface);
-        border: 1px solid var(--border-medium);
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        text-decoration: none;
-    }
-    .btn-dashboard:hover {
-        border-color: var(--accent);
-        box-shadow: 0 4px 12px -2px var(--accent-subtle);
-        transform: scale(1.02);
-    }
-    .dark .btn-dashboard {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.1);
-    }
-    .dark .btn-dashboard:hover {
-        border-color: var(--accent);
-        background: rgba(255, 255, 255, 0.08);
-        box-shadow: 0 4px 12px -2px rgba(0, 179, 115, 0.2);
-    }
-    .btn-dashboard-icon {
-        width: 1.75rem;
-        height: 1.75rem;
-        border-radius: 9999px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.65rem;
-        color: white;
-        background: var(--accent);
-        transition: transform 0.3s ease;
-    }
-    .btn-dashboard:hover .btn-dashboard-icon {
-        transform: scale(1.1);
-    }
+    /* Mobile Menu */
     
-    /* OS-like Theme Toggle */
-    .theme-toggle-btn {
-        width: 2.25rem;
-        height: 2.25rem;
-        border-radius: 9999px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-muted);
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
+    .nav-mobile-panel {
+        background-color: var(--nav-mobile-bg);
+        border: 1px solid var(--nav-mobile-border);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        /* display: none handled by .hidden */
     }
-    .theme-toggle-btn::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 9999px;
-        background: var(--text-primary);
-        opacity: 0;
-        transition: opacity 0.3s ease;
+    .nav-mobile-panel.menu-open {
+        animation: fade-in-up 0.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
-    .theme-toggle-btn:hover::before {
-        opacity: 0.06;
+    @keyframes fade-in-up {
+        from { opacity: 0; transform: translateY(-8px); }
+        to { opacity: 1; transform: translateY(0); }
     }
-    .dark .theme-toggle-btn:hover::before {
-        opacity: 0.1;
+    @supports (backdrop-filter: blur(16px)) {
+        .nav-mobile-panel {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(24px) saturate(1.5);
+        }
+        .dark .nav-mobile-panel {
+            background-color: rgba(5, 10, 7, 0.85);
+        }
     }
-    .theme-toggle-btn svg {
-        position: relative;
-        z-index: 1;
-        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .theme-toggle-btn:hover svg {
-        transform: rotate(15deg) scale(1.1);
-        color: var(--text-primary);
-    }
-    
-    /* Logo Interaction */
-    .logo-container {
-        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .logo-container:hover {
-        transform: scale(1.03);
-    }
-    .logo-icon-wrap {
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        box-shadow: 0 2px 8px -2px var(--accent-subtle);
-    }
-    .logo-container:hover .logo-icon-wrap {
-        transform: rotate(-5deg) scale(1.05);
-        box-shadow: 0 4px 12px -2px rgba(0, 140, 90, 0.3);
-    }
-    .dark .logo-container:hover .logo-icon-wrap {
-        box-shadow: 0 4px 12px -2px rgba(0, 179, 115, 0.4);
-    }
+
 </style>
 
-<header id="glass-navbar" class="fixed left-0 right-0 z-50 top-4 px-4 transition-all duration-300 ease-out">
-
-    <div class="glass-navbar-container relative mx-auto w-full max-w-[1100px] h-16 rounded-full
-                flex items-center justify-between px-4 sm:px-6">
-
-        {{-- LEFT: Logo --}}
-        <a href="{{ route('home') }}" class="flex items-center gap-3 shrink-0 logo-container" aria-label="Beranda NU Kalisari">
-            <div class="logo-icon-wrap w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-sm"
-                 style="background:var(--accent)">
-                NU
+<header id="glass-navbar" data-nav-state="scrolled" class="fixed top-5 inset-x-0 z-50 px-4 md:px-6 w-full max-w-7xl mx-auto flex justify-center">
+    
+    <nav aria-label="Utama" class="nav-container w-full rounded-full flex items-center justify-between px-4 py-2 min-h-[56px] lg:px-6">
+        
+        <!-- LOGO -->
+        <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-lg p-1 group" aria-label="Beranda">
+            <div class="relative w-9 h-9 flex items-center justify-center">
+                <img src="{{ asset('images/logonu.png') }}" alt="" class="w-9 h-9 object-contain relative z-10" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                <div class="absolute inset-0 bg-emerald-700 text-white rounded-full items-center justify-center text-[10px] font-bold font-serif shadow-inner hidden" style="display:none;">NU</div>
             </div>
-            <div class="hidden sm:flex flex-col leading-none">
-                <span class="font-serif font-bold text-[15px]" style="color:var(--text-primary)">NU Kalisari</span>
-                <span class="text-[10px] font-medium uppercase tracking-widest" style="color:var(--text-muted)">Ranting</span>
+            <div class="flex flex-col justify-center">
+                <span class="font-serif text-[1.1rem] font-bold tracking-wide leading-none nav-link !bg-transparent !p-0 group-hover:text-emerald-500 transition-colors">NU Kalisari</span>
+                <span class="hidden sm:block text-[0.6rem] uppercase tracking-[0.15em] opacity-80 leading-none mt-1 nav-link !bg-transparent !p-0">Ranting</span>
             </div>
         </a>
 
-        {{-- CENTER: Nav --}}
-        <nav class="hidden lg:flex items-center gap-1">
-            @foreach ($links as $link)
-                <a href="{{ $link['href'] }}"
-                   class="nav-link{{ $link['active'] ? ' is-active' : '' }}"
-                   @if($link['section']) data-section="{{ $link['section'] }}" data-active="false" @endif>
-                    {{ $link['label'] }}
-                </a>
-            @endforeach
-        </nav>
-
-        {{-- RIGHT: Controls --}}
-        <div class="hidden lg:flex items-center gap-2">
-
-            {{-- Theme toggle --}}
-            <button type="button" onclick="toggleTheme()" aria-label="Ganti tema" class="theme-toggle-btn">
-                <svg class="icon-sun w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-                </svg>
-                <svg class="icon-moon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                </svg>
-            </button>
-
-            @if(Route::has('login'))
-                @auth
-                    <a href="{{ url('/dashboard') }}" class="btn-dashboard">
-                        <span class="btn-dashboard-icon">
-                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                        </span>
-                        Dashboard
-                    </a>
-                @else
-                    <div class="relative group">
-                        <button class="w-9 h-9 rounded-full flex items-center justify-center transition-all"
-                                style="color:var(--text-muted)"
-                                onmouseover="this.style.background='rgba(0,0,0,0.05)'"
-                                onmouseout="this.style.background=''">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
-                        </button>
-                        <div class="absolute right-0 mt-2 w-44 rounded-2xl py-2 opacity-0 invisible
-                                    group-hover:opacity-100 group-hover:visible transition-all"
-                             style="background:var(--bg-surface);border:1px solid var(--border-light);box-shadow:var(--shadow-md)">
-                            <a href="{{ route('login') }}"
-                               class="block px-4 py-2.5 text-sm font-medium transition-colors"
-                               style="color:var(--text-secondary)"
-                               onmouseover="this.style.background='var(--bg-surface-elevated)';this.style.color='var(--text-primary)'"
-                               onmouseout="this.style.background='';this.style.color='var(--text-secondary)'">
-                                Masuk Admin
-                            </a>
-                        </div>
-                    </div>
-                @endauth
-            @endif
-        </div>
-
-        {{-- MOBILE: Controls --}}
-        <div class="lg:hidden flex items-center gap-2">
-            <button type="button" onclick="toggleTheme()" aria-label="Ganti tema" class="theme-toggle-btn">
-                <svg class="icon-sun w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-                </svg>
-                <svg class="icon-moon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                </svg>
-            </button>
-
-            <button id="mobile-menu-btn" type="button" aria-label="Buka menu" aria-expanded="false"
-                    class="w-9 h-9 rounded-full flex lg:hidden items-center justify-center transition-all"
-                    style="color:var(--text-primary)"
-                    onmouseover="this.style.background='var(--bg-surface-elevated)'"
-                    onmouseout="this.style.background=''">
-                <svg id="icon-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-                <svg id="icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-    </div>
-
-    {{-- MOBILE DRAWER --}}
-    <div id="mobile-menu"
-         class="mobile-sheet hidden lg:hidden absolute top-[76px] left-4 right-4 rounded-2xl p-2 shadow-lg"
-         style="background:var(--bg-surface);border:1px solid var(--border-light)">
-        <ul class="flex flex-col gap-0.5">
+        <!-- DESKTOP LINKS -->
+        <ul class="hidden lg:flex items-center gap-1 mx-auto">
             @foreach ($links as $link)
                 <li>
-                    <a href="{{ $link['href'] }}"
-                       class="mobile-nav-link block px-4 py-3 rounded-xl text-sm font-medium transition-all
-                              {{ $link['active'] ? 'is-active' : '' }}"
-                       @if($link['section']) data-section="{{ $link['section'] }}" data-active="false" @endif
-                       style="{{ $link['active'] ? 'color:var(--accent);background:var(--accent-subtle);font-weight:600' : 'color:var(--text-secondary)' }}"
-                       onmouseover="{{ $link['active'] ? '' : "this.style.background='var(--bg-surface-elevated)';this.style.color='var(--text-primary)'" }}"
-                       onmouseout="{{ $link['active'] ? '' : "this.style.background='';this.style.color='var(--text-secondary)'" }}">
+                    <a href="{{ $link['href'] }}" 
+                       class="nav-link px-4 py-2 rounded-full text-sm font-medium {{ $link['active'] ? 'active' : '' }}"
+                       @if($link['active']) aria-current="page" @endif>
                         {{ $link['label'] }}
                     </a>
                 </li>
             @endforeach
+        </ul>
 
-            <li><div class="h-px my-1" style="background:var(--border-light)"></div></li>
+        <!-- RIGHT SIDE: THEME & LOGIN/DASHBOARD & MOBILE TOGGLE -->
+        <div class="flex items-center gap-2 shrink-0">
+            <!-- Theme Toggle -->
+            <button id="theme-toggle" type="button" aria-label="Ganti Tema" class="nav-icon-btn w-11 h-11 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+
+            <!-- Dashboard/Login -->
+            @auth
+                <a href="{{ url('/dashboard') }}" class="nav-primary-btn hidden md:inline-flex px-4 py-2 rounded-full text-sm font-medium">
+                    Dashboard
+                </a>
+            @else
+                <a href="{{ route('login') }}" class="nav-primary-btn hidden md:inline-flex px-4 py-2 rounded-full text-sm font-medium">
+                    Masuk
+                </a>
+            @endauth
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" type="button" aria-label="Buka menu" aria-expanded="false" class="nav-icon-btn w-11 h-11 rounded-full flex lg:hidden items-center justify-center">
+                <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+                <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MOBILE MENU PANEL -->
+    <div id="mobile-menu" class="nav-mobile-panel hidden absolute top-[calc(100%+8px)] left-4 right-4 rounded-2xl p-2 lg:hidden ">
+        <ul class="flex flex-col gap-1">
+            @foreach ($links as $link)
+                <li>
+                    <a href="{{ $link['href'] }}" 
+                       class="block px-4 py-3 min-h-[44px] rounded-xl text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors {{ $link['active'] ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : '' }}"
+                       @if($link['active']) aria-current="page" @endif>
+                        {{ $link['label'] }}
+                    </a>
+                </li>
+            @endforeach
+            
+            <li><div class="h-px my-2 bg-slate-200 dark:bg-slate-700/50"></div></li>
 
             @auth
                 <li>
-                    <a href="{{ url('/dashboard') }}"
-                       class="block px-4 py-3 rounded-xl text-sm font-medium transition-all"
-                       style="color:var(--text-secondary)"
-                       onmouseover="this.style.background='var(--bg-surface-elevated)';this.style.color='var(--text-primary)'"
-                       onmouseout="this.style.background='';this.style.color='var(--text-secondary)'">
+                    <a href="{{ url('/dashboard') }}" class="block px-4 py-3 min-h-[44px] rounded-xl text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         Dashboard — {{ Auth::user()->name }}
                     </a>
                 </li>
             @else
                 <li>
-                    <a href="{{ route('login') }}"
-                       class="block px-4 py-3 rounded-xl text-sm font-medium transition-all"
-                       style="color:var(--text-secondary)"
-                       onmouseover="this.style.background='var(--bg-surface-elevated)';this.style.color='var(--text-primary)'"
-                       onmouseout="this.style.background='';this.style.color='var(--text-secondary)'">
+                    <a href="{{ route('login') }}" class="block px-4 py-3 min-h-[44px] rounded-xl text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         Masuk Admin
                     </a>
                 </li>
@@ -409,18 +286,5 @@
         </ul>
     </div>
 </header>
-
-<script>
-    // Scroll behavior for glass navbar
-    window.addEventListener('scroll', function() {
-        const header = document.getElementById('glass-navbar');
-        if (window.scrollY > 20) {
-            header.classList.add('is-scrolled');
-        } else {
-            header.classList.remove('is-scrolled');
-        }
-    });
-</script>
-
 
 

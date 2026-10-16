@@ -5,6 +5,15 @@
 @tailwind utilities;
 
 /* ─────────────────────────────────────────────────────────────
+   ACCESSIBILITY
+───────────────────────────────────────────────────────────── */
+/* Focus-visible ring for keyboard navigation */
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────
    BASE
 ───────────────────────────────────────────────────────────── */
 html { scroll-behavior: smooth; }
@@ -25,10 +34,10 @@ body {
     pointer-events: none;
     z-index: 0;
     background:
-        radial-gradient(ellipse 70% 40% at 50% 0%,
-            rgba(0, 184, 114, 0.035) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 50% at 90% 100%,
-            rgba(160, 189, 219, 0.025) 0%, transparent 60%);
+        radial-gradient(ellipse 80% 50% at 50% 0%,
+            rgba(0, 184, 114, 0.035) 0%, transparent 80%),
+        radial-gradient(ellipse 60% 50% at 80% 100%,
+            rgba(160, 189, 219, 0.025) 0%, transparent 70%);
 }
 
 ::selection {
@@ -38,6 +47,15 @@ body {
 .dark ::selection {
     background-color: rgba(0, 184, 114, 0.22);
     color: #fff;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   DOKUMENTASI GRID — auto-fill on desktop
+───────────────────────────────────────────────────────────── */
+@media (min-width: 768px) {
+    .dok-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -106,7 +124,7 @@ body {
 /* ─────────────────────────────────────────────────────────────
    SCROLL REVEAL
 ───────────────────────────────────────────────────────────── */
-.reveal {
+html.js .reveal {
     opacity: 0;
     transform: translateY(20px);
     transition:
@@ -114,13 +132,25 @@ body {
         transform 0.55s var(--ease-out-micro);
     will-change: opacity, transform;
 }
+html.js .reveal.active,
 .reveal.active { opacity: 1; transform: translateY(0); }
 
-.reveal-fade {
+html.js .reveal-fade {
     opacity: 0;
     transition: opacity 0.5s ease;
 }
+html.js .reveal-fade.active,
 .reveal-fade.active { opacity: 1; }
+
+/* Fallback: if JS fails to add .active after 3s, show content anyway */
+@keyframes reveal-fallback {
+    to { opacity: 1; transform: translateY(0); }
+}
+html.js .reveal:not(.active),
+html.js .reveal-up:not(.active),
+html.js .reveal-fade:not(.active) {
+    animation: reveal-fallback 0s 3s forwards;
+}
 
 .delay-100 { transition-delay: 100ms; }
 .delay-200 { transition-delay: 200ms; }
