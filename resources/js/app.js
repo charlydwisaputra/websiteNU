@@ -1,5 +1,97 @@
 import Alpine from 'alpinejs';
 
+Alpine.data('mapEmbed', (config = {}) => ({
+    active: false,
+    map: null,
+    observer: null,
+    lat: config.lat ?? -7.4218,
+    lng: config.lng ?? 109.1608,
+    zoom: config.zoom ?? 14,
+    pinUrl: config.pinUrl ?? '/images/pin-hijau.svg',
+
+    init() {
+        this.loadLeaflet();
+        this.setupObserver();
+    },
+
+    loadLeaflet() {
+        if (typeof L === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+            script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+            script.crossOrigin = '';
+            script.onload = () => this.setupMap();
+            document.head.appendChild(script);
+        } else {
+            this.setupMap();
+        }
+    },
+
+    setupMap() {
+        if (this.map) return;
+        const container = this.$refs.mapContainer;
+        if (!container) return;
+
+        this.map = L.map(container, {
+            attributionControl: false,
+            zoomControl: true,
+            scrollWheelZoom: false,
+            dragging: false,
+            touchZoom: false,
+            doubleClickZoom: false,
+            boxZoom: false,
+        }).setView([this.lat, this.lng], this.zoom);
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(this.map);
+
+        const pinIcon = L.icon({
+            iconUrl: this.pinUrl,
+            iconSize: [32, 40],
+            iconAnchor: [16, 40],
+            popupAnchor: [0, -40],
+        });
+
+        L.marker([this.lat, this.lng], { icon: pinIcon }).addTo(this.map);
+    },
+
+    setupObserver() {
+        this.observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) {
+                    this.toggleActive(false);
+                }
+            });
+        }, { threshold: 0.1 });
+        this.observer.observe(this.$el);
+    },
+
+    toggleActive(state) {
+        this.active = state;
+        if (!this.map) return;
+        if (state) {
+            this.map.dragging.enable();
+            this.map.touchZoom.enable();
+            this.map.scrollWheelZoom.enable();
+        } else {
+            this.map.dragging.disable();
+            this.map.touchZoom.disable();
+            this.map.scrollWheelZoom.disable();
+        }
+    },
+
+    destroy() {
+        if (this.observer) {
+            this.observer.disconnect();
+        }
+        if (this.map) {
+            this.map.remove();
+            this.map = null;
+        }
+    },
+}));
+
 window.Alpine = Alpine;
 Alpine.start();
 
@@ -19,31 +111,36 @@ function initializePublicInteractions() {
     const heroSection = document.getElementById('hero-section');
     
     if (navbar) {
-        // 1. Theme-independent state for hero using IntersectionObserver
-        navbar.setAttribute('data-nav-state', 'scrolled');
-        
-        if (heroSection && 'IntersectionObserver' in window) {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        navbar.setAttribute('data-nav-state', 'over-hero');
-                    } else {
+        if (heroSection) {
+            const updateHeroState = () => {
+                const rect = heroSection.getBoundingClientRect();
+                // When hero bottom is at or above navbar height (~80px from top)
+                if (rect.bottom <= 80) {
+                    if (navbar.getAttribute('data-nav-state') !== 'scrolled') {
                         navbar.setAttribute('data-nav-state', 'scrolled');
                     }
-                });
-            }, { 
-                rootMargin: "-60px 0px 0px 0px", 
-                threshold: 0 
-            });
-            
-            observer.observe(heroSection);
-            
-            if (window.scrollY > (heroSection.offsetHeight - 60)) {
-                navbar.setAttribute('data-nav-state', 'scrolled');
-            } else {
-                navbar.setAttribute('data-nav-state', 'over-hero');
-            }
+                } else {
+                    if (navbar.getAttribute('data-nav-state') !== 'over-hero') {
+                        navbar.setAttribute('data-nav-state', 'over-hero');
+                    }
+                }
+            };
+
+            updateHeroState();
+            window.addEventListener('scroll', updateHeroState, { passive: true });
+        } else {
+            navbar.setAttribute('data-nav-state', 'scrolled');
         }
+
+        // 1c. Mobile navbar solid background threshold (> 24px)
+        const updateScrollPast = () => {
+            const isScrolledPast = window.scrollY > 24;
+            if (navbar.getAttribute('data-scrolled-past') !== (isScrolledPast ? 'true' : 'false')) {
+                navbar.setAttribute('data-scrolled-past', isScrolledPast ? 'true' : 'false');
+            }
+        };
+        updateScrollPast();
+        window.addEventListener('scroll', updateScrollPast, { passive: true });
 
         // 2. Headroom mobile behavior
         let lastScrollY = window.scrollY;
@@ -215,60 +312,94 @@ function initializePublicInteractions() {
    MOBILE MENU — hamburger toggle
    ============================================================ */
 function initMobileMenu() {
-    const btn       = document.getElementById('mobile-menu-btn');
-    const menu      = document.getElementById('mobile-menu');
-    const iconOpen  = document.getElementById('icon-open');
+    const btn      = document.getElementById('mobile-menu-btn');
+    const menu     = document.getElementById('mobile-menu');
+    const backdrop = document.getElementById('mobile-menu-backdrop');
+    const navbar   = document.getElementById('glass-navbar');
+    const iconOpen = document.getElementById('icon-open');
     const iconClose = document.getElementById('icon-close');
     if (!btn || !menu) return;
 
     let isOpen = false;
 
-    function toggleMenu(force) {
-        isOpen = typeof force === 'boolean' ? force : !isOpen;
-        btn.setAttribute('aria-expanded', isOpen);
-
-        if (isOpen) {
-            menu.classList.remove('hidden');
-            menu.classList.add('menu-open');
-        } else {
-            menu.classList.add('hidden');
-            menu.classList.remove('menu-open');
-        }
-
-        iconOpen.classList.toggle('hidden', isOpen);
-        iconClose.classList.toggle('hidden', !isOpen);
+    /** Single source of truth: class 'menu-open' on <html> only. */
+    function setScrollLock(lock) {
+        document.documentElement.classList.toggle('menu-open', lock);
     }
-        if (isOpen) {
-            const firstLink = menu.querySelector('a');
-            if (firstLink) setTimeout(() => firstLink.focus(), 50);
-        } else {
-            if (document.activeElement && menu.contains(document.activeElement)) {
-                btn.focus();
-            }
+
+    /** Position backdrop so it starts below the navbar, never dimming the header. */
+    function positionBackdrop() {
+        if (!backdrop || !navbar) return;
+        const navBottom = navbar.getBoundingClientRect().bottom;
+        backdrop.style.top = navBottom + 'px';
+    }
+
+    function openMenu() {
+        if (isOpen) return;
+        isOpen = true;
+        menu.classList.remove('hidden');
+        menu.classList.add('menu-open');
+        if (backdrop) {
+            positionBackdrop();
+            backdrop.classList.add('active');
         }
+        setScrollLock(true);
+        btn.setAttribute('aria-expanded', 'true');
+        btn.setAttribute('aria-label', 'Tutup menu');
+        if (iconOpen) iconOpen.classList.add('hidden');
+        if (iconClose) iconClose.classList.remove('hidden');
+        // Focus first link after animation settles
+        const firstLink = menu.querySelector('a');
+        if (firstLink) setTimeout(() => firstLink.focus(), 50);
+    }
 
+    function closeMenu(returnFocusToBtn = false) {
+        if (!isOpen) return;
+        isOpen = false;
+        menu.classList.add('hidden');
+        menu.classList.remove('menu-open');
+        if (backdrop) backdrop.classList.remove('active');
+        setScrollLock(false);
+        btn.setAttribute('aria-expanded', 'false');
+        btn.setAttribute('aria-label', 'Buka menu');
+        if (iconOpen) iconOpen.classList.remove('hidden');
+        if (iconClose) iconClose.classList.add('hidden');
+        if (returnFocusToBtn) btn.focus();
+    }
 
-    btn.addEventListener('click', () => toggleMenu());
+    // Guarantee clean state on first render
+    closeMenu();
 
-    // Close menu when a link inside is clicked
-    // Close on Escape key
+    // Hamburger / X button in navbar
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isOpen ? closeMenu(true) : openMenu();
+    });
+
+    // Backdrop tap closes menu
+    if (backdrop) {
+        backdrop.addEventListener('click', () => closeMenu(false));
+    }
+
+    // Escape key
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && isOpen) {
-            toggleMenu(false);
-            btn.focus();
-        }
+        if (e.key === 'Escape' && isOpen) closeMenu(true);
     });
 
-
+    // Close when any nav link or CTA inside panel is tapped
     menu.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => toggleMenu(false));
+        link.addEventListener('click', () => closeMenu(false));
     });
 
-    // Close on outside click
-    document.addEventListener('click', e => {
-        if (isOpen && !btn.contains(e.target) && !menu.contains(e.target)) {
-            toggleMenu(false);
-        }
+    // Close and release lock when resized to desktop (≥ 1024 px)
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 1024 && isOpen) closeMenu(false);
+        else if (isOpen) positionBackdrop(); // re-position if navbar height changes
+    }, { passive: true });
+
+    // Release lock on bfcache restore (browser back/forward)
+    window.addEventListener('pageshow', (e) => {
+        if (e.persisted) closeMenu(false);
     });
 }
 

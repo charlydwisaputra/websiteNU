@@ -9,6 +9,8 @@
 <meta name="description" content="{{ $description }}">
 <link rel="canonical" href="{{ $url }}">
 <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/brand/logo-nu-sm.png') }}">
+<link rel="apple-touch-icon" href="{{ asset('images/brand/logo-nu-sm.png') }}">
 
 {{-- Open Graph --}}
 <meta property="og:type" content="{{ $type }}">

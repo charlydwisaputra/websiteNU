@@ -23,6 +23,17 @@ class ProfileController extends Controller
     }
 
     /**
+     * Display the admin workspace profile management view.
+     */
+    public function adminEdit(Request $request): View
+    {
+        $user = $request->user();
+        $anggota = $user->getOrBuildProfilAnggota();
+
+        return view('admin.profil', compact('user', 'anggota'));
+    }
+
+    /**
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
@@ -49,8 +60,11 @@ class ProfileController extends Controller
 
         $anggota->save();
 
-        // Diubah agar kembali ke halaman sebelumnya (dashboard)
-        return Redirect::back()->with('status', 'profile-updated');
+        if ($request->routeIs('admin.*') || str_contains($request->header('referer', ''), '/admin/')) {
+            return Redirect::route('admin.profil')->with('success', 'Profil admin berhasil diperbarui.');
+        }
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**

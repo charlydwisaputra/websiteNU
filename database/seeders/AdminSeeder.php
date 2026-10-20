@@ -10,13 +10,13 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        // Menggunakan updateOrCreate untuk mencegah duplikasi jika seeder dijalankan ulang
-        User::updateOrCreate(
-            ['email' => 'admin@example.com'], // Gunakan email yang aman untuk env Anda
+        // Menggunakan firstOrCreate untuk mencegah duplikasi dan tidak menimpa data edit admin
+        User::firstOrCreate(
+            ['email' => 'admin@example.com'],
             [
                 'name' => 'Administrator',
-                'password' => Hash::make('password123'), // Ingat, jangan hardcode di production sesungguhnya
-                'role' => User::ROLE_ADMIN, // Mengambil konstan dari model User
+                'password' => Hash::make('password123'),
+                'role' => User::ROLE_ADMIN,
             ]
         );
     }

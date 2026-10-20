@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="50%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#022c22"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#064e3b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <rect width="800" height="500" fill="url(#glow)"/>
+  
+  <!-- Subtle geometric background pattern -->
+  <g stroke="rgba(255,255,255,0.06)" stroke-width="1.5" fill="none">
+    <circle cx="400" cy="250" r="160"/>
+    <circle cx="400" cy="250" r="220"/>
+    <polygon points="400,130 504,250 400,370 296,250"/>
+  </g>
+
+  <!-- Clean News / Document Icon without text -->
+  <g transform="translate(360, 210)" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="0" y="0" width="80" height="80" rx="16" fill="url(#cardGrad)" stroke="rgba(255,255,255,0.3)"/>
+    <path d="M22 28h36"/>
+    <path d="M22 40h36"/>
+    <path d="M22 52h24"/>
+  </g>
+</svg>

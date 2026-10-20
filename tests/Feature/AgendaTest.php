@@ -49,11 +49,8 @@ test('welcome page renders upcoming agendas up to 5 ordered by date ascending wi
     $response->assertDontSee('Agenda Hari Ke-6');
     $response->assertDontSee('Agenda Hari Ke-7');
 
-    // Assert layout classes
-    $response->assertSee('flex-[0_0_80%]', false);
-    $response->assertSee('snap-x');
-    $response->assertSee('snap-mandatory');
-    $response->assertSee('overscroll-x-contain');
-    $response->assertSee('scrollbar-none');
+    // Assert layout classes: vertical stack on mobile, 3-column grid on desktop
+    $response->assertSee('flex-col');
+    $response->assertSee('md:grid');
     $response->assertSee('md:grid-cols-3');
 });

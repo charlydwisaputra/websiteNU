@@ -45,7 +45,7 @@ test('welcome and ekosistem pages do not render placeholder coordinator', functi
     $ekosistemResponse->assertDontSee('[ISI: Waktu]');
 });
 
-test('welcome page renders dokumentasi horizontal snap gallery on mobile and grid on desktop', function () {
+test('welcome page renders dokumentasi grid on mobile and desktop', function () {
     $galeri = Galeri::create([
         'title' => 'Foto Dokumentasi Pengajian',
         'category' => 'Kegiatan',
@@ -55,10 +55,9 @@ test('welcome page renders dokumentasi horizontal snap gallery on mobile and gri
     $response = $this->get(route('home'));
     $response->assertStatus(200);
     $response->assertSee('Foto Dokumentasi Pengajian');
-    $response->assertSee('snap-x');
-    $response->assertSee('snap-mandatory');
-    $response->assertSee('overscroll-x-contain');
-    $response->assertSee('flex-[0_0_75%]', false);
+    $response->assertSee('grid-cols-2');
+    $response->assertSee('md:grid-cols-3');
+    $response->assertSee('aspect-[4/3]');
     $response->assertSee('loading="lazy"', false);
     $response->assertSee('Buka Galeri Penuh');
 

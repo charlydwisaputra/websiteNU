@@ -1,312 +1,481 @@
 @extends('layouts.admin')
 
-@section('content')
-<div class="max-w-4xl mx-auto space-y-6 pb-12">
+@section('hide_bottom_nav', true)
 
-    {{-- Header Banner --}}
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm">
-        <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-[#087A4B] text-xs font-bold mb-3 border border-emerald-100/60">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Edit Data Anggota
-            </div>
-            <h1 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Perbarui Data {{ $anggota->name }}</h1>
-            <p class="text-sm text-slate-500 mt-1">Ubah informasi organisasi, wilayah, status, dan foto anggota.</p>
-        </div>
+@section('content')
+@php
+    $sec1ErrorCount = ($errors->has('name') ? 1 : 0) + ($errors->has('photo') ? 1 : 0);
+    $sec2ErrorCount = 0;
+    foreach (['banom_id', 'position', 'role', 'status', 'urutan', 'is_pengurus'] as $f) {
+        if ($errors->has($f)) $sec2ErrorCount++;
+    }
+    $sec3ErrorCount = 0;
+    foreach (['wilayah', 'region', 'tampil_wilayah', 'phone', 'email', 'address', 'joined_at', 'is_public'] as $f) {
+        if ($errors->has($f)) $sec3ErrorCount++;
+    }
+@endphp
+
+<div class="max-w-3xl mx-auto space-y-6 pb-28 md:pb-12"
+     x-data="{
+         openSections: {
+             identitas: true,
+             organisasi: {{ $sec2ErrorCount > 0 ? 'true' : 'false' }},
+             wilayah: {{ $sec3ErrorCount > 0 ? 'true' : 'false' }}
+         },
+         previewUrl: '{{ $anggota->photo ? asset('storage/'.$anggota->photo) : '' }}',
+         submitting: false,
+         toggleSection(sec) {
+             this.openSections[sec] = !this.openSections[sec];
+         }
+     }">
+
+    {{-- Breadcrumb & Back --}}
+    <div class="flex items-center justify-between gap-2 flex-wrap">
         <a href="{{ route('admin.anggota.index') }}"
-           class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-2xl transition-all active:scale-95 shrink-0">
+           class="inline-flex items-center gap-2 text-xs font-semibold py-2 px-3 rounded-xl transition-all min-h-[44px] border"
+           style="background:var(--bg-surface);color:var(--text-secondary);border-color:var(--border-medium)"
+           onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'"
+           onmouseout="this.style.color='var(--text-secondary)';this.style.borderColor='var(--border-medium)'">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
             </svg>
-            Kembali
+            Kembali ke Daftar Anggota
         </a>
+
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.anggota.print-single', $anggota->id) }}"
+               class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all min-h-[44px]"
+               style="background:var(--bg-surface);color:var(--accent);border-color:var(--border-medium)"
+               title="Cetak Kartu {{ $anggota->name }}"
+               aria-label="Cetak kartu {{ $anggota->name }}">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
+                </svg>
+                <span>Cetak Kartu</span>
+            </a>
+            <span class="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1.5 rounded-xl border"
+                  style="background:var(--bg-surface-elevated);color:var(--text-muted);border-color:var(--border-light)">
+                ID #{{ str_pad($anggota->id, 5, '0', STR_PAD_LEFT) }}
+            </span>
+        </div>
     </div>
 
-    {{-- Validation Errors --}}
+    {{-- Page Header --}}
+    <div>
+        <h1 class="font-serif text-2xl md:text-3xl font-bold tracking-tight" style="color:var(--text-primary)">
+            Edit Data: {{ $anggota->name }}
+        </h1>
+        <p class="text-xs sm:text-sm mt-1 leading-relaxed" style="color:var(--text-muted)">
+            Perbarui data diri, penugasan banom, posisi pengurus, atau foto profil anggota.
+        </p>
+    </div>
+
+    {{-- Summary Errors Alert --}}
     @if($errors->any())
-        <div class="bg-red-50 border border-red-200/80 text-red-700 px-6 py-4 rounded-3xl shadow-sm flex items-start gap-3">
-            <div class="w-8 h-8 rounded-2xl bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
-                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </div>
-            <div>
-                <p class="font-bold text-sm mb-1">Ada kesalahan pada formulir:</p>
-                <ul class="text-xs space-y-0.5 list-disc list-inside text-red-600">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
+    <div class="p-4 rounded-xl flex items-start gap-3 text-sm font-medium"
+         style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.25)">
+        <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <div>
+            <p class="font-bold">Gagal menyimpan: terdapat {{ $errors->count() }} kolom yang perlu diperbaiki.</p>
+            <ul class="text-xs mt-1 space-y-0.5 list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
+    </div>
     @endif
 
-    <form action="{{ route('admin.anggota.update', $anggota->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.anggota.update', $anggota->id) }}" method="POST" enctype="multipart/form-data" id="anggota-form" class="space-y-5" @submit="submitting = true">
         @csrf
         @method('PUT')
 
-        {{-- Section 1: Identitas Anggota --}}
-        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-5">
-            <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                    <svg class="w-4 h-4 text-[#087A4B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-xs font-black text-slate-900 uppercase tracking-wider">Identitas Anggota</p>
-                    <p class="text-xs text-slate-400 font-medium">Nama dan foto profil</p>
-                </div>
-            </div>
-
-            <div class="p-6 md:p-8">
-                <div class="flex flex-col md:flex-row gap-8">
-                    {{-- Foto Profil --}}
-                    <div class="flex flex-col items-center gap-3 shrink-0">
-                        <div class="w-28 h-28 rounded-3xl bg-slate-50 border-2 border-slate-200 flex items-center justify-center overflow-hidden relative shadow-sm">
-                            @if($anggota->photo)
-                                <img src="{{ asset('storage/' . $anggota->photo) }}" alt="{{ $anggota->name }}" class="w-full h-full object-cover">
-                            @else
-                                <div class="text-[#087A4B] font-black text-xl">
-                                    {{ strtoupper(substr($anggota->name, 0, 2)) }}
-                                </div>
+        {{-- Seksi 1: Identitas & Foto Profil --}}
+        <div class="surface-card rounded-2xl overflow-hidden border" style="border-color:var(--border-light)">
+            <button type="button"
+                    @click="toggleSection('identitas')"
+                    class="w-full px-5 py-4 flex items-center justify-between text-left transition-colors min-h-[44px]"
+                    style="background:var(--bg-surface-elevated)">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                         style="background:var(--accent-subtle);color:var(--accent)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-sm font-bold" style="color:var(--text-primary)">1. Identitas & Foto Profil</h2>
+                            @if($sec1ErrorCount > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400 border border-red-200 dark:border-red-800">
+                                {{ $sec1ErrorCount }} kolom perlu diperbaiki
+                            </span>
                             @endif
                         </div>
-                        <input type="file" name="photo" id="photo" accept="image/jpeg,image/png,image/jpg" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-[#087A4B] hover:file:bg-emerald-100 cursor-pointer">
-                        @error('photo') <p class="text-xs text-red-500 font-semibold text-center">{{ $message }}</p> @enderror
+                        <p class="text-[11px]" style="color:var(--text-muted)">Nama lengkap dan foto kartu anggota</p>
+                    </div>
+                </div>
+                <svg class="w-4 h-4 transition-transform duration-200" :class="openSections.identitas ? 'rotate-180' : ''"
+                     style="color:var(--text-muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+
+            <div x-show="openSections.identitas" x-collapse class="p-5 sm:p-6 space-y-5">
+                {{-- Foto Profil dengan Pratinjau --}}
+                <div>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider mb-2" style="color:var(--text-muted)">
+                        Foto Profil (Kamera / Galeri HP)
+                    </label>
+                    <div class="flex flex-col sm:flex-row items-center gap-4">
+                        <div class="w-24 h-24 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center border font-bold text-lg"
+                             style="background:var(--bg-surface-elevated);border-color:var(--border-medium);color:var(--text-muted)">
+                            <template x-if="previewUrl">
+                                <img :src="previewUrl" class="w-full h-full object-cover" alt="Preview Foto">
+                            </template>
+                            <template x-if="!previewUrl">
+                                <span class="text-xs text-center px-2" style="color:var(--text-muted)">Belum ada foto</span>
+                            </template>
+                        </div>
+                        <div class="flex-1 w-full space-y-1.5">
+                            <input type="file" name="photo" id="photo"
+                                   accept="image/*"
+                                   @change="if ($event.target.files.length) { previewUrl = URL.createObjectURL($event.target.files[0]); }"
+                                   class="w-full text-xs cursor-pointer py-2 min-h-[44px]"
+                                   style="color:var(--text-secondary)">
+                            <p class="text-[11px]" style="color:var(--text-muted)">
+                                Biarkan kosong jika tidak ingin mengubah foto. Format: JPG, PNG, WEBP. Maks 2MB.
+                            </p>
+                            @error('photo')
+                            <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Nama Lengkap --}}
+                <div class="space-y-1.5">
+                    <label for="name" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Nama Lengkap <span style="color:#ef4444">*</span>
+                    </label>
+                    <input type="text" name="name" id="name" value="{{ old('name', $anggota->name) }}" required
+                           placeholder="Cth: Ahmad Fauzan Mustofa"
+                           class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px] @error('name') border-red-500 is-invalid @enderror"
+                           style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)"
+                           onfocus="this.style.borderColor='var(--accent)'"
+                           onblur="this.style.borderColor='var(--border-medium)'">
+                    @error('name')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+        </div>
+
+        {{-- Seksi 2: Organisasi & Penugasan --}}
+        <div class="surface-card rounded-2xl overflow-hidden border" style="border-color:var(--border-light)">
+            <button type="button"
+                    @click="toggleSection('organisasi')"
+                    class="w-full px-5 py-4 flex items-center justify-between text-left transition-colors min-h-[44px]"
+                    style="background:var(--bg-surface-elevated)">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                         style="background:var(--accent-subtle);color:var(--accent)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-sm font-bold" style="color:var(--text-primary)">2. Organisasi & Penugasan</h2>
+                            @if($sec2ErrorCount > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400 border border-red-200 dark:border-red-800">
+                                {{ $sec2ErrorCount }} kolom perlu diperbaiki
+                            </span>
+                            @endif
+                        </div>
+                        <p class="text-[11px]" style="color:var(--text-muted)">Badan otonom, jabatan, status, dan nomor urut</p>
+                    </div>
+                </div>
+                <svg class="w-4 h-4 transition-transform duration-200" :class="openSections.organisasi ? 'rotate-180' : ''"
+                     style="color:var(--text-muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+
+            <div x-show="openSections.organisasi" x-collapse class="p-5 sm:p-6 space-y-5">
+                {{-- Badan Otonom --}}
+                <div class="space-y-1.5">
+                    <label for="banom_id" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Pilihan Badan Otonom (Banom)
+                    </label>
+                    <select name="banom_id" id="banom_id"
+                            class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                            style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                        <option value="">-- Bukan Anggota Banom Khusus / Pengurus Ranting --</option>
+                        @foreach($banoms as $b)
+                        <option value="{{ $b->id }}" {{ old('banom_id', $anggota->banom_id) == $b->id ? 'selected' : '' }}>
+                            {{ $b->nama }} ({{ $b->singkatan }})
+                        </option>
+                        @endforeach
+                    </select>
+                    @error('banom_id')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Jabatan / Posisi --}}
+                <div class="space-y-1.5">
+                    <label for="position" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Jabatan / Posisi Organisasi
+                    </label>
+                    <input type="text" name="position" id="position" value="{{ old('position', old('role', $anggota->position ?: $anggota->role)) }}"
+                           placeholder="Cth: Ketua, Sekretaris, Anggota, Koordinator"
+                           class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                           style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                    @error('position')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Status Keanggotaan --}}
+                <div class="space-y-1.5">
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Status Keanggotaan <span style="color:#ef4444">*</span>
+                    </label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        @foreach(['Aktif', 'Pending', 'Alumni', 'Nonaktif'] as $st)
+                        <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition-all min-h-[44px]"
+                               style="background:var(--bg-surface-elevated);border-color:var(--border-medium)">
+                            <input type="radio" name="status" value="{{ $st }}"
+                                   {{ strcasecmp(old('status', $anggota->status), $st) === 0 ? 'checked' : '' }}
+                                   class="text-[var(--accent)] focus:ring-[var(--accent)]">
+                            <span class="text-xs font-semibold" style="color:var(--text-primary)">{{ $st }}</span>
+                        </label>
+                        @endforeach
+                    </div>
+                    @error('status')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {{-- Urutan Tampil --}}
+                    <div class="space-y-1.5">
+                        <label for="urutan" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                            Nomor Urut Tampil
+                        </label>
+                        <input type="number" name="urutan" id="urutan" value="{{ old('urutan', $anggota->urutan ?? 0) }}" min="0"
+                               class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                               style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                        <p class="text-[10px]" style="color:var(--text-muted)">Angka lebih kecil tampil lebih awal.</p>
+                        @error('urutan')
+                        <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    {{-- Nama Lengkap --}}
-                    <div class="flex-1 flex flex-col justify-center gap-1.5">
-                        <label for="name" class="text-xs font-black text-slate-700 uppercase tracking-wider">
-                            Nama Lengkap <span class="text-red-400">*</span>
+                    {{-- Flag Tampil di Pengurus Inti --}}
+                    <div class="space-y-1.5 flex flex-col justify-end">
+                        <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer min-h-[44px]"
+                               style="background:var(--bg-surface-elevated);border-color:var(--border-medium)">
+                            <input type="checkbox" name="is_pengurus" value="1"
+                                   {{ old('is_pengurus', $anggota->is_pengurus) ? 'checked' : '' }}
+                                   class="rounded text-[var(--accent)] focus:ring-[var(--accent)] w-4 h-4">
+                            <div>
+                                <span class="text-xs font-semibold block" style="color:var(--text-primary)">Pengurus Inti Ranting</span>
+                                <span class="text-[10px] block" style="color:var(--text-muted)">Tampilkan di bagan struktur pengurus utama</span>
+                            </div>
                         </label>
-                        <input type="text" name="name" id="name" value="{{ old('name', $anggota->name) }}" required
-                               class="w-full px-4 py-3.5 bg-slate-50/60 border @error('name') border-red-400 @else border-slate-200/80 @enderror focus:bg-white focus:border-[#087A4B] focus:ring-2 focus:ring-emerald-500/20 rounded-2xl text-sm font-bold text-slate-800 outline-none transition-all">
-                        @error('name') <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Section 2: Badan Otonom & Detail --}}
-        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-5">
-            <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                    <svg class="w-4 h-4 text-[#087A4B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-xs font-black text-slate-900 uppercase tracking-wider">Organisasi & Detail</p>
-                    <p class="text-xs text-slate-400 font-medium">Pilih Banom/Role, Wilayah, dan Status</p>
-                </div>
-            </div>
-
-            <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                {{-- Role / Banom (Animated Dropdown) --}}
-                <div x-data="{ 
-                    open: false, 
-                    selected: '{{ old('role', $anggota->role) }}',
-                    options: [
-                        { val: '', label: '-- Pilih Banom --' },
-                        @foreach(config('organisasi.banom') as $b)
-                        { val: '{{ $b['singkatan'] }}', label: '{{ $b['nama'] }}' },
-                        @endforeach
-                    ],
-                    get currentLabel() {
-                        let opt = this.options.find(o => o.val === this.selected);
-                        return opt ? opt.label : '-- Pilih Banom --';
-                    }
-                }" class="space-y-1.5 relative">
-                    <label class="text-xs font-black text-slate-700 uppercase tracking-wider block">Role / Banom</label>
-                    <input type="hidden" name="role" :value="selected">
-
-                    <button type="button" 
-                            @click="open = !open" 
-                            @click.outside="open = false"
-                            class="w-full px-4 py-3.5 bg-slate-50/70 hover:bg-white border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-4 focus:ring-emerald-500/10 rounded-2xl text-sm font-bold text-slate-800 flex items-center justify-between transition-all duration-200 shadow-xs active:scale-[0.99]">
-                        <span class="flex items-center gap-2.5 truncate" :class="selected ? 'text-slate-900' : 'text-slate-400 font-medium'">
-                            <span class="w-2 h-2 rounded-full" :class="selected ? 'bg-[#087A4B] shadow-xs' : 'bg-slate-300'"></span>
-                            <span x-text="currentLabel"></span>
-                        </span>
-                        <svg class="w-4 h-4 text-slate-400 transition-transform duration-300 shrink-0 ml-2" :class="open ? 'rotate-180 text-[#087A4B]' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+        {{-- Seksi 3: Wilayah & Kontak --}}
+        <div class="surface-card rounded-2xl overflow-hidden border" style="border-color:var(--border-light)">
+            <button type="button"
+                    @click="toggleSection('wilayah')"
+                    class="w-full px-5 py-4 flex items-center justify-between text-left transition-colors min-h-[44px]"
+                    style="background:var(--bg-surface-elevated)">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                         style="background:var(--accent-subtle);color:var(--accent)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/>
                         </svg>
-                    </button>
-
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 translate-y-2 scale-95"
-                         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                         x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                         x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-                         class="absolute z-50 left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] p-1.5 space-y-1 overflow-hidden max-h-60 overflow-y-auto"
-                         x-cloak>
-                        <template x-for="opt in options" :key="opt.val">
-                            <div @click="selected = opt.val; open = false"
-                                 class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold cursor-pointer transition-all duration-150 flex items-center justify-between"
-                                 :class="selected === opt.val ? 'bg-emerald-50/80 text-[#087A4B]' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
-                                <span class="flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full" :class="selected === opt.val ? 'bg-[#087A4B]' : 'bg-transparent'"></span>
-                                    <span x-text="opt.label"></span>
-                                </span>
-                                <template x-if="selected === opt.val">
-                                    <svg class="w-4 h-4 text-[#087A4B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </template>
-                            </div>
-                        </template>
                     </div>
-                    @error('role') <p class="text-xs text-red-500 font-semibold">{{ $message }}</p> @enderror
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-sm font-bold" style="color:var(--text-primary)">3. Wilayah & Kontak</h2>
+                            @if($sec3ErrorCount > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400 border border-red-200 dark:border-red-800">
+                                {{ $sec3ErrorCount }} kolom perlu diperbaiki
+                            </span>
+                            @endif
+                        </div>
+                        <p class="text-[11px]" style="color:var(--text-muted)">RT/RW, kontak, alamat, dan visibilitas direktori</p>
+                    </div>
+                </div>
+                <svg class="w-4 h-4 transition-transform duration-200" :class="openSections.wilayah ? 'rotate-180' : ''"
+                     style="color:var(--text-muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+
+            <div x-show="openSections.wilayah" x-collapse class="p-5 sm:p-6 space-y-5">
+                {{-- Wilayah RT/RW --}}
+                <div class="space-y-1.5">
+                    <label for="wilayah" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Wilayah Lingkungan / RT RW
+                    </label>
+                    <input type="text" name="wilayah" id="wilayah" value="{{ old('wilayah', old('region', $anggota->wilayah ?: $anggota->region)) }}"
+                           placeholder="Cth: RT 03 / RW 02 Kalisari"
+                           class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                           style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                    @error('wilayah')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                {{-- Wilayah --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {{-- No Telepon/WhatsApp --}}
+                    <div class="space-y-1.5">
+                        <label for="phone" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                            Nomor WhatsApp / HP
+                        </label>
+                        <input type="text" name="phone" id="phone" value="{{ old('phone', $anggota->phone) }}"
+                               placeholder="Cth: 081234567890"
+                               class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                               style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                        @error('phone')
+                        <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Email --}}
+                    <div class="space-y-1.5">
+                        <label for="email" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                            Email Anggota
+                        </label>
+                        <input type="email" name="email" id="email" value="{{ old('email', $anggota->email) }}"
+                               placeholder="Cth: fauzan@example.com"
+                               class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                               style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                        @error('email')
+                        <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                {{-- Alamat Lengkap --}}
                 <div class="space-y-1.5">
-                    <label for="wilayah" class="text-xs font-black text-slate-700 uppercase tracking-wider block">Wilayah / Cabang</label>
-                    <input type="text" name="wilayah" id="wilayah" value="{{ old('wilayah', $anggota->wilayah) }}"
-                           placeholder="Cth: Kalisari, Bandung Barat"
-                           class="w-full px-4 py-3.5 bg-slate-50/60 border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-2 focus:ring-emerald-500/20 rounded-2xl text-sm font-bold text-slate-800 outline-none transition-all">
-                    @error('wilayah') <p class="text-xs text-red-500 font-semibold">{{ $message }}</p> @enderror
+                    <label for="address" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Alamat Domisili Lengkap
+                    </label>
+                    <textarea name="address" id="address" rows="3"
+                              placeholder="Jl. Kalisari Raya No. ..., RT ..., RW ..."
+                              class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all resize-y"
+                              style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">{{ old('address', $anggota->address) }}</textarea>
+                    @error('address')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- Tanggal Bergabung --}}
                 <div class="space-y-1.5">
-                    <label for="joined_at" class="text-xs font-black text-slate-700 uppercase tracking-wider block">Tanggal Bergabung</label>
-                    <input type="date" name="joined_at" id="joined_at" value="{{ old('joined_at', $anggota->joined_at ? \Carbon\Carbon::parse($anggota->joined_at)->format('Y-m-d') : '') }}"
-                           class="w-full px-4 py-3.5 bg-slate-50/60 border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-2 focus:ring-emerald-500/20 rounded-2xl text-sm font-bold text-slate-800 outline-none transition-all">
-                    @error('joined_at') <p class="text-xs text-red-500 font-semibold">{{ $message }}</p> @enderror
+                    <label for="joined_at" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Tanggal Bergabung Organisasi
+                    </label>
+                    <input type="date" name="joined_at" id="joined_at"
+                           value="{{ old('joined_at', $anggota->joined_at ? $anggota->joined_at->format('Y-m-d') : '') }}"
+                           class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                           style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                    @error('joined_at')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                {{-- Status Keanggotaan (Animated Dropdown) --}}
-                <div x-data="{ 
-                    open: false, 
-                    selected: '{{ old('status', $anggota->status) }}',
-                    options: [
-                        { val: 'Aktif', label: 'Aktif', dot: 'bg-emerald-500' },
-                        { val: 'Pending', label: 'Pending', dot: 'bg-amber-500' },
-                        { val: 'Alumni', label: 'Alumni', dot: 'bg-blue-500' },
-                        { val: 'Nonaktif', label: 'Nonaktif', dot: 'bg-slate-400' }
-                    ],
-                    get currentOption() {
-                        return this.options.find(o => o.val === this.selected) || this.options[0];
-                    }
-                }" class="space-y-1.5 relative">
-                    <label class="text-xs font-black text-slate-700 uppercase tracking-wider block">Status Keanggotaan <span class="text-red-400">*</span></label>
-                    <input type="hidden" name="status" :value="selected">
-
-                    <button type="button" 
-                            @click="open = !open" 
-                            @click.outside="open = false"
-                            class="w-full px-4 py-3.5 bg-slate-50/70 hover:bg-white border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-4 focus:ring-emerald-500/10 rounded-2xl text-sm font-bold text-slate-800 flex items-center justify-between transition-all duration-200 shadow-xs active:scale-[0.99]">
-                        <span class="flex items-center gap-2.5 truncate">
-                            <span class="w-2 h-2 rounded-full" :class="currentOption.dot"></span>
-                            <span x-text="currentOption.label"></span>
-                        </span>
-                        <svg class="w-4 h-4 text-slate-400 transition-transform duration-300 shrink-0 ml-2" :class="open ? 'rotate-180 text-[#087A4B]' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 translate-y-2 scale-95"
-                         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                         x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                         x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-                         class="absolute z-50 left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] p-1.5 space-y-1 overflow-hidden"
-                         x-cloak>
-                        <template x-for="opt in options" :key="opt.val">
-                            <div @click="selected = opt.val; open = false"
-                                 class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold cursor-pointer transition-all duration-150 flex items-center justify-between"
-                                 :class="selected === opt.val ? 'bg-emerald-50/80 text-[#087A4B]' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
-                                <span class="flex items-center gap-2">
-                                    <span class="w-2 h-2 rounded-full" :class="opt.dot"></span>
-                                    <span x-text="opt.label"></span>
-                                </span>
-                                <template x-if="selected === opt.val">
-                                    <svg class="w-4 h-4 text-[#087A4B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </template>
-                            </div>
-                        </template>
+                {{-- Visibilitas Publik --}}
+                <div class="p-3.5 rounded-xl border flex items-center justify-between gap-4"
+                     style="background:var(--bg-surface-elevated);border-color:var(--border-medium)">
+                    <div>
+                        <p class="text-xs font-semibold" style="color:var(--text-primary)">Tampilkan di Direktori Publik</p>
+                        <p class="text-[11px]" style="color:var(--text-muted)">Jika dicentang, profil anggota dapat dilihat masyarakat umum.</p>
                     </div>
-                    @error('status') <p class="text-xs text-red-500 font-semibold">{{ $message }}</p> @enderror
+                    <input type="hidden" name="is_public" value="0">
+                    <input type="checkbox" name="is_public" value="1" id="is_public"
+                           {{ old('is_public', $anggota->is_public) ? 'checked' : '' }}
+                           class="rounded text-[var(--accent)] focus:ring-[var(--accent)] w-5 h-5">
                 </div>
 
-                {{-- Visibilitas Publik (Animated Dropdown) --}}
-                <div x-data="{ 
-                    open: false, 
-                    selected: '{{ old('is_public', $anggota->is_public) }}',
-                    options: [
-                        { val: '1', label: 'Ya, Tampilkan (Publik)', dot: 'bg-emerald-500' },
-                        { val: '0', label: 'Tidak, Sembunyikan (Privat)', dot: 'bg-slate-400' }
-                    ],
-                    get currentLabel() {
-                        return this.selected == '1' ? 'Ya, Tampilkan (Publik)' : 'Tidak, Sembunyikan (Privat)';
-                    }
-                }" class="space-y-1.5 col-span-1 md:col-span-2 relative">
-                    <label class="text-xs font-black text-slate-700 uppercase tracking-wider block">Tampil di Halaman Publik? <span class="text-red-400">*</span></label>
-                    <input type="hidden" name="is_public" :value="selected">
-
-                    <button type="button" 
-                            @click="open = !open" 
-                            @click.outside="open = false"
-                            class="w-full px-4 py-3.5 bg-slate-50/70 hover:bg-white border border-slate-200/80 focus:bg-white focus:border-[#087A4B] focus:ring-4 focus:ring-emerald-500/10 rounded-2xl text-sm font-bold text-slate-800 flex items-center justify-between transition-all duration-200 shadow-xs active:scale-[0.99]">
-                        <span class="flex items-center gap-2.5 truncate">
-                            <span class="w-2 h-2 rounded-full" :class="selected == '1' ? 'bg-emerald-500' : 'bg-slate-400'"></span>
-                            <span x-text="currentLabel"></span>
-                        </span>
-                        <svg class="w-4 h-4 text-slate-400 transition-transform duration-300 shrink-0 ml-2" :class="open ? 'rotate-180 text-[#087A4B]' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-
-                    <div x-show="open" 
-                         x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 translate-y-2 scale-95"
-                         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                         x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                         x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-                         class="absolute z-50 left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] p-1.5 space-y-1 overflow-hidden"
-                         x-cloak>
-                        <template x-for="opt in options" :key="opt.val">
-                            <div @click="selected = opt.val; open = false"
-                                 class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold cursor-pointer transition-all duration-150 flex items-center justify-between"
-                                 :class="selected == opt.val ? 'bg-emerald-50/80 text-[#087A4B]' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
-                                <span class="flex items-center gap-2">
-                                    <span class="w-2 h-2 rounded-full" :class="opt.dot"></span>
-                                    <span x-text="opt.label"></span>
-                                </span>
-                                <template x-if="selected == opt.val">
-                                    <svg class="w-4 h-4 text-[#087A4B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </template>
-                            </div>
-                        </template>
+                {{-- Privasi Wilayah di Publik --}}
+                <div class="p-3.5 rounded-xl border flex items-center justify-between gap-4"
+                     style="background:var(--bg-surface-elevated);border-color:var(--border-medium)">
+                    <div>
+                        <p class="text-xs font-semibold" style="color:var(--text-primary)">Tampilkan wilayah di publik</p>
+                        <p class="text-[11px]" style="color:var(--text-muted)">Jika dicentang, informasi wilayah/RT-RW akan ditampilkan pada direktori publik.</p>
                     </div>
-                    @error('is_public') <p class="text-xs text-red-500 font-semibold">{{ $message }}</p> @enderror
+                    <input type="hidden" name="tampil_wilayah" value="0">
+                    <input type="checkbox" name="tampil_wilayah" value="1" id="tampil_wilayah"
+                           {{ old('tampil_wilayah', $anggota->tampil_wilayah) ? 'checked' : '' }}
+                           class="rounded text-[var(--accent)] focus:ring-[var(--accent)] w-5 h-5">
                 </div>
-
             </div>
         </div>
 
-        {{-- Action Buttons --}}
-        <div class="flex items-center justify-end gap-4 bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-            <a href="{{ route('admin.anggota.index') }}" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-2xl transition-all">
+        {{-- Desktop Action Buttons (md+) --}}
+        <div class="hidden md:flex items-center justify-end gap-3 pt-4 border-t" style="border-color:var(--border-light)">
+            <a href="{{ route('admin.anggota.index') }}"
+               class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all min-h-[44px] inline-flex items-center border"
+               style="color:var(--text-secondary);border-color:var(--border-medium);background:var(--bg-surface)">
                 Batal
             </a>
-            <button type="submit" class="px-8 py-3 bg-[#087A4B] hover:bg-emerald-700 text-white font-bold text-sm rounded-2xl shadow-lg shadow-emerald-500/25 transition-all active:scale-95">
-                Simpan Perubahan
+            <button type="submit"
+                    :disabled="submitting"
+                    :class="submitting ? 'opacity-70 cursor-not-allowed' : ''"
+                    class="px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white transition-all min-h-[44px] inline-flex items-center gap-2 shadow-sm"
+                    style="background:var(--accent)">
+                <svg x-show="submitting" class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+                <span x-text="submitting ? 'Menyimpan...' : 'Simpan Perubahan'">Simpan Perubahan</span>
             </button>
         </div>
 
+        {{-- Mobile Sticky Action Bar (Hanya HP, md:hidden, Hormati Safe Area, Solid / Backdrop-blur) --}}
+        <div class="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t p-3 flex items-center gap-2.5 shadow-2xl"
+             style="background:var(--bg-overlay);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-color:var(--border-light);padding-bottom:max(0.75rem,env(safe-area-inset-bottom))">
+            <a href="{{ route('admin.anggota.index') }}"
+               class="py-3 px-4 rounded-xl text-xs font-semibold text-center transition-all min-h-[48px] border inline-flex items-center justify-center shrink-0 w-24 sm:w-28"
+               style="color:var(--text-secondary);border-color:var(--border-medium);background:var(--bg-surface)">
+                Batal
+            </a>
+            <button type="submit"
+                    :disabled="submitting"
+                    :class="submitting ? 'opacity-70 cursor-not-allowed' : ''"
+                    class="flex-1 py-3 px-5 rounded-xl text-xs sm:text-sm font-bold text-white text-center transition-all min-h-[48px] shadow-sm inline-flex items-center justify-center gap-2"
+                    style="background:var(--accent)">
+                <svg x-show="submitting" class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+                <span x-text="submitting ? 'Menyimpan...' : 'Simpan'">Simpan</span>
+            </button>
+        </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const firstError = document.querySelector('.is-invalid, .border-red-500, [aria-invalid="true"]');
+    if (firstError) {
+        setTimeout(function () {
+            firstError.focus();
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+    }
+});
+</script>
 @endsection

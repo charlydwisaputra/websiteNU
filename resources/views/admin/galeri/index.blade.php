@@ -14,7 +14,7 @@
             <p class="text-sm mt-1" style="color:var(--text-muted)">Kelola dokumentasi foto kegiatan organisasi berdasarkan kategori.</p>
         </div>
         <a href="{{ route('admin.galeri.create') }}"
-           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white transition-all min-h-[44px]"
            style="background:var(--accent)"
            onmouseover="this.style.background='var(--accent-hover)'"
            onmouseout="this.style.background='var(--accent)'">
@@ -47,13 +47,13 @@
                 </div>
                 <input type="text" name="search" value="{{ request('search') }}"
                        placeholder="Cari keterangan foto..."
-                       class="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm font-medium outline-none transition-all"
+                       class="w-full pl-10 pr-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
                        style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)"
                        onfocus="this.style.borderColor='var(--accent)'"
                        onblur="this.style.borderColor='var(--border-medium)'">
             </div>
             <select name="category"
-                    class="form-select-custom px-4 py-2.5 rounded-xl text-sm font-medium outline-none transition-all sm:w-52"
+                    class="form-select-custom px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all sm:w-52 min-h-[44px]"
                     style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
                 <option value="">Semua Kategori Banom</option>
                 @foreach(['Muslimat','Fatayat','GP Ansor','IPNU','IPPNU','PMII'] as $cat)
@@ -61,7 +61,7 @@
                 @endforeach
             </select>
             <button type="submit"
-                    class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+                    class="px-6 py-3 rounded-xl text-xs sm:text-sm font-semibold text-white transition-all min-h-[44px] flex items-center justify-center"
                     style="background:var(--text-primary)"
                     onmouseover="this.style.opacity='.88'"
                     onmouseout="this.style.opacity='1'">
@@ -69,7 +69,7 @@
             </button>
             @if(request('search') || request('category'))
             <a href="{{ route('admin.galeri.index') }}"
-               class="px-4 py-2.5 rounded-xl text-sm font-semibold text-center transition-all"
+               class="px-5 py-3 rounded-xl text-xs sm:text-sm font-semibold text-center transition-all min-h-[44px] inline-flex items-center justify-center"
                style="background:var(--bg-surface-elevated);color:var(--text-secondary);border:1px solid var(--border-light)">
                 Reset
             </a>
@@ -105,7 +105,7 @@
                 </div>
                 <div class="flex items-center justify-end gap-2 pt-3" style="border-top:1px solid var(--border-light)">
                     <a href="{{ route('admin.galeri.edit', $galeri->id) }}"
-                       class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                       class="px-3.5 py-2 rounded-lg text-xs font-semibold transition-all min-h-[36px] sm:min-h-[32px] inline-flex items-center"
                        style="background:var(--accent-subtle);color:var(--accent)"
                        onmouseover="this.style.background='var(--accent-subtle-hover)'"
                        onmouseout="this.style.background='var(--accent-subtle)'">Edit</a>
@@ -113,7 +113,7 @@
                           class="inline" onsubmit="return confirm('Yakin hapus foto ini?')">
                         @csrf @method('DELETE')
                         <button type="submit"
-                                class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                                class="px-3.5 py-2 rounded-lg text-xs font-semibold transition-all min-h-[36px] sm:min-h-[32px] inline-flex items-center"
                                 style="background:rgba(239,68,68,0.08);color:#ef4444"
                                 onmouseover="this.style.background='rgba(239,68,68,0.14)'"
                                 onmouseout="this.style.background='rgba(239,68,68,0.08)'">Hapus</button>

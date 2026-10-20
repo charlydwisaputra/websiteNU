@@ -24,7 +24,7 @@ class DemoContentSeeder extends Seeder
 
     private function seedAuthor(): void
     {
-        User::updateOrCreate(
+        User::firstOrCreate(
             ['email' => 'redaksi@nukalisari.id'],
             [
                 'name' => 'Redaksi NU Kalisari',
@@ -46,9 +46,10 @@ class DemoContentSeeder extends Seeder
         ];
 
         foreach ($pengurus as $data) {
-            Anggota::updateOrCreate(
-                ['name' => $data['name'], 'position' => $data['position']],
+            Anggota::firstOrCreate(
+                ['name' => $data['name']],
                 [
+                    'position' => $data['position'],
                     'region' => $data['region'],
                     'status' => 'Aktif',
                     'is_public' => true,
@@ -91,7 +92,7 @@ class DemoContentSeeder extends Seeder
         ];
 
         foreach ($articles as $i => $data) {
-            Berita::updateOrCreate(
+            Berita::firstOrCreate(
                 ['title' => $data['title']],
                 [
                     'category' => $data['category'],
@@ -135,7 +136,7 @@ class DemoContentSeeder extends Seeder
         ];
 
         foreach ($agendas as $data) {
-            Agenda::updateOrCreate(
+            Agenda::firstOrCreate(
                 ['judul' => $data['judul']],
                 $data
             );
@@ -154,7 +155,7 @@ class DemoContentSeeder extends Seeder
         ];
 
         foreach ($items as $data) {
-            Galeri::updateOrCreate(
+            Galeri::firstOrCreate(
                 ['title' => $data['title']],
                 [
                     'category' => $data['category'],

@@ -1,341 +1,466 @@
 @extends('layouts.admin')
 
+@section('hide_bottom_nav', true)
+
 @section('content')
+@php
+    $sec1ErrorCount = ($errors->has('name') ? 1 : 0) + ($errors->has('photo') ? 1 : 0);
+    $sec2ErrorCount = 0;
+    foreach (['banom_id', 'position', 'role', 'status', 'urutan', 'is_pengurus'] as $f) {
+        if ($errors->has($f)) $sec2ErrorCount++;
+    }
+    $sec3ErrorCount = 0;
+    foreach (['wilayah', 'region', 'tampil_wilayah', 'phone', 'email', 'address', 'joined_at', 'is_public'] as $f) {
+        if ($errors->has($f)) $sec3ErrorCount++;
+    }
+@endphp
 
-<div class="max-w-4xl mx-auto space-y-6 pb-12">
+<div class="max-w-3xl mx-auto space-y-6 pb-28 md:pb-12"
+     x-data="{
+         openSections: {
+             identitas: true,
+             organisasi: {{ $sec2ErrorCount > 0 ? 'true' : 'false' }},
+             wilayah: {{ $sec3ErrorCount > 0 ? 'true' : 'false' }}
+         },
+         previewUrl: null,
+         submitting: false,
+         toggleSection(sec) {
+             this.openSections[sec] = !this.openSections[sec];
+         }
+     }">
 
-    {{-- Header --}}
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm">
-        <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-[#087A4B] text-xs font-bold mb-3 border border-emerald-100/60">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Tambah Anggota Baru
-            </div>
-            <h1 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Formulir Pendaftaran Anggota</h1>
-            <p class="text-sm text-slate-500 mt-1">Isi data lengkap anggota organisasi di bawah ini.</p>
-        </div>
+    {{-- Breadcrumb & Back --}}
+    <div class="flex items-center justify-between gap-3">
         <a href="{{ route('admin.anggota.index') }}"
-           class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-2xl transition-all active:scale-95 shrink-0">
+           class="inline-flex items-center gap-2 text-xs font-semibold py-2 px-3 rounded-xl transition-all min-h-[44px] border"
+           style="background:var(--bg-surface);color:var(--text-secondary);border-color:var(--border-medium)"
+           onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'"
+           onmouseout="this.style.color='var(--text-secondary)';this.style.borderColor='var(--border-medium)'">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
             </svg>
-            Kembali
+            Kembali ke Daftar Anggota
         </a>
+        <span class="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full"
+              style="background:var(--accent-subtle);color:var(--accent)">
+            Pendaftaran Baru
+        </span>
     </div>
 
-    {{-- Validation Errors --}}
+    {{-- Page Header --}}
+    <div>
+        <h1 class="font-serif text-2xl md:text-3xl font-bold tracking-tight" style="color:var(--text-primary)">
+            Tambah Anggota Baru
+        </h1>
+        <p class="text-xs sm:text-sm mt-1 leading-relaxed" style="color:var(--text-muted)">
+            Lengkapi data diri, badan otonom, status, dan penugasan organisasi anggota.
+        </p>
+    </div>
+
+    {{-- Summary Errors Alert --}}
     @if($errors->any())
-        <div class="bg-red-50 border border-red-200/80 text-red-700 px-6 py-4 rounded-3xl shadow-sm flex items-start gap-3">
-            <div class="w-8 h-8 rounded-2xl bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
-                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </div>
-            <div>
-                <p class="font-bold text-sm mb-1">Ada {{ $errors->count() }} kesalahan pada formulir:</p>
-                <ul class="text-xs space-y-0.5 list-disc list-inside text-red-600">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
+    <div class="p-4 rounded-xl flex items-start gap-3 text-sm font-medium"
+         style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.25)">
+        <svg class="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <div>
+            <p class="font-bold">Gagal menyimpan: terdapat {{ $errors->count() }} kolom yang perlu diperbaiki.</p>
+            <ul class="text-xs mt-1 space-y-0.5 list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
+    </div>
     @endif
 
-    <form action="{{ route('admin.anggota.store') }}" method="POST" enctype="multipart/form-data" id="anggota-form">
+    <form action="{{ route('admin.anggota.store') }}" method="POST" enctype="multipart/form-data" id="anggota-form" class="space-y-5" @submit="submitting = true">
         @csrf
 
-        {{-- Section 1: Identitas Anggota --}}
-        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-5">
-            <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                    <svg class="w-4 h-4 text-[#087A4B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-xs font-black text-slate-900 uppercase tracking-wider">Identitas Anggota</p>
-                    <p class="text-xs text-slate-400 font-medium">Nama dan foto profil</p>
-                </div>
-            </div>
-
-            <div class="p-6 md:p-8">
-                <div class="flex flex-col md:flex-row gap-8">
-                    {{-- Photo Upload --}}
-                    <div class="flex flex-col items-center gap-3 shrink-0">
-                        <div id="photo-preview-wrapper"
-                             class="w-28 h-28 rounded-3xl bg-slate-50 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50 transition-all group overflow-hidden relative"
-                             onclick="document.getElementById('photo').click()">
-                            <img id="photo-preview" src="" alt="Preview" class="w-full h-full object-cover absolute inset-0 hidden rounded-3xl">
-                            <div id="photo-placeholder" class="flex flex-col items-center gap-2 pointer-events-none">
-                                <svg class="w-7 h-7 text-slate-300 group-hover:text-emerald-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                <span class="text-[10px] font-bold text-slate-400 group-hover:text-emerald-500 text-center leading-tight">Klik untuk<br>upload foto</span>
-                            </div>
+        {{-- Seksi 1: Identitas & Foto Profil --}}
+        <div class="surface-card rounded-2xl overflow-hidden border" style="border-color:var(--border-light)">
+            <button type="button"
+                    @click="toggleSection('identitas')"
+                    class="w-full px-5 py-4 flex items-center justify-between text-left transition-colors min-h-[44px]"
+                    style="background:var(--bg-surface-elevated)">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                         style="background:var(--accent-subtle);color:var(--accent)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-sm font-bold" style="color:var(--text-primary)">1. Identitas & Foto Profil</h2>
+                            @if($sec1ErrorCount > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400 border border-red-200 dark:border-red-800">
+                                {{ $sec1ErrorCount }} kolom perlu diperbaiki
+                            </span>
+                            @endif
                         </div>
-                        <input type="file" name="photo" id="photo" accept="image/jpeg,image/png,image/jpg" class="hidden" onchange="previewPhoto(this)">
-                        <p class="text-[10px] text-slate-400 font-medium text-center leading-tight">JPG / PNG<br>Maks. 2MB</p>
-                        @error('photo') <p class="text-xs text-red-500 font-semibold text-center">{{ $message }}</p> @enderror
+                        <p class="text-[11px]" style="color:var(--text-muted)">Nama lengkap dan foto kartu anggota</p>
                     </div>
+                </div>
+                <svg class="w-4 h-4 transition-transform duration-200" :class="openSections.identitas ? 'rotate-180' : ''"
+                     style="color:var(--text-muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
 
-                    {{-- Nama Lengkap --}}
-                    <div class="flex-1 flex flex-col justify-center gap-1.5">
-                        <label for="name" class="text-xs font-black text-slate-700 uppercase tracking-wider">
-                            Nama Lengkap <span class="text-red-400">*</span>
-                        </label>
-                        <input type="text" name="name" id="name" value="{{ old('name') }}" required
-                               placeholder="Cth: Ahmad Fauzi Hidayatullah"
-                               class="w-full px-4 py-3.5 bg-slate-50/60 border @error('name') border-red-400 @else border-slate-200/80 @enderror focus:bg-white focus:border-[#087A4B] focus:ring-2 focus:ring-emerald-500/20 rounded-2xl text-sm font-bold text-slate-800 placeholder:text-slate-400 placeholder:font-normal outline-none transition-all">
-                        @error('name') <p class="text-xs text-red-500 font-semibold flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>{{ $message }}</p> @enderror
-                        <p class="text-[11px] text-slate-400 font-medium">Masukkan nama lengkap sesuai KTP</p>
+            <div x-show="openSections.identitas" x-collapse class="p-5 sm:p-6 space-y-5">
+                {{-- Foto Profil dengan Pratinjau --}}
+                <div>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider mb-2" style="color:var(--text-muted)">
+                        Foto Profil (Kamera / Galeri HP)
+                    </label>
+                    <div class="flex flex-col sm:flex-row items-center gap-4">
+                        <div class="w-24 h-24 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center border font-bold text-lg"
+                             style="background:var(--bg-surface-elevated);border-color:var(--border-medium);color:var(--text-muted)">
+                            <template x-if="previewUrl">
+                                <img :src="previewUrl" class="w-full h-full object-cover" alt="Preview Foto">
+                            </template>
+                            <template x-if="!previewUrl">
+                                <span class="text-xs text-center px-2" style="color:var(--text-muted)">Belum ada foto</span>
+                            </template>
+                        </div>
+                        <div class="flex-1 w-full space-y-1.5">
+                            <input type="file" name="photo" id="photo"
+                                   accept="image/*"
+                                   @change="if ($event.target.files.length) { previewUrl = URL.createObjectURL($event.target.files[0]); }"
+                                   class="w-full text-xs cursor-pointer py-2 min-h-[44px]"
+                                   style="color:var(--text-secondary)">
+                            <p class="text-[11px]" style="color:var(--text-muted)">
+                                Format: JPG, PNG, WEBP. Maksimal 2MB. Di HP dapat langsung membuka kamera.
+                            </p>
+                            @error('photo')
+                            <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
+                </div>
+
+                {{-- Nama Lengkap --}}
+                <div class="space-y-1.5">
+                    <label for="name" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Nama Lengkap <span style="color:#ef4444">*</span>
+                    </label>
+                    <input type="text" name="name" id="name" value="{{ old('name') }}" required
+                           placeholder="Cth: Ahmad Fauzan Mustofa"
+                           class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px] @error('name') border-red-500 is-invalid @enderror"
+                           style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)"
+                           onfocus="this.style.borderColor='var(--accent)'"
+                           onblur="this.style.borderColor='var(--border-medium)'">
+                    @error('name')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
         </div>
 
-        {{-- Section 2: Badan Otonom --}}
-        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-5">
-            <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                    <svg class="w-4 h-4 text-[#087A4B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-xs font-black text-slate-900 uppercase tracking-wider">Badan Otonom (Banom)</p>
-                    <p class="text-xs text-slate-400 font-medium">Pilih organisasi / banom yang sesuai</p>
-                </div>
-            </div>
-
-            <div class="p-6 md:p-8">
-                <input type="hidden" name="role" id="role-input" value="{{ old('role') }}" required>
-                @php
-                    $banoms = config('organisasi.banom');
-                @endphp
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="banom-grid">
-                    @foreach($banoms as $b)
-                        <button type="button"
-                                onclick="selectBanom('{{ $b['singkatan'] }}')"
-                                data-banom="{{ $b['singkatan'] }}"
-                                class="banom-pill relative flex flex-col items-start gap-1 p-4 rounded-2xl border-2 border-slate-100 bg-slate-50/50 hover:border-emerald-300 hover:bg-emerald-50 transition-all text-left group {{ old('role') == $b['singkatan'] ? 'border-[#087A4B] bg-emerald-50 selected' : '' }}">
-                            <img src="{{ asset('storage/logo-organisasi/' . $b['logo']) }}" alt="{{ $b['singkatan'] }}" class="w-8 h-8 object-contain mb-1">
-                            <span class="text-sm font-bold text-slate-800 group-[.selected]:text-[#087A4B]">{{ $b['nama'] }}</span>
-                            <span class="text-[10px] text-slate-400 leading-tight font-medium">{{ Str::limit($b['deskripsi'], 40) }}</span>
-                            <div class="absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-slate-200 flex items-center justify-center banom-check {{ old('role') == $b['value'] ? 'border-[#087A4B] bg-[#087A4B]' : '' }}">
-                                <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                </svg>
-                            </div>
-                        </button>
-                    @endforeach
-                </div>
-                @error('role') <p class="text-xs text-red-500 font-semibold mt-3 flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>{{ $message }}</p> @enderror
-            </div>
-        </div>
-
-        {{-- Section 3: Detail Keanggotaan --}}
-        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-5">
-            <div class="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                    <svg class="w-4 h-4 text-[#087A4B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-xs font-black text-slate-900 uppercase tracking-wider">Detail Keanggotaan</p>
-                    <p class="text-xs text-slate-400 font-medium">Wilayah, status, dan tanggal bergabung</p>
-                </div>
-            </div>
-
-            <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                {{-- Wilayah --}}
-                <div class="space-y-1.5">
-                    <label for="wilayah" class="text-xs font-black text-slate-700 uppercase tracking-wider">Wilayah / Cabang</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                        </div>
-                        <input type="text" name="wilayah" id="wilayah" value="{{ old('wilayah') }}"
-                               placeholder="Cth: Kalisari, Bandung Barat"
-                               class="w-full pl-10 pr-4 py-3.5 bg-slate-50/60 border @error('wilayah') border-red-400 @else border-slate-200/80 @enderror focus:bg-white focus:border-[#087A4B] focus:ring-2 focus:ring-emerald-500/20 rounded-2xl text-sm font-bold text-slate-800 placeholder:text-slate-400 placeholder:font-normal outline-none transition-all">
+        {{-- Seksi 2: Organisasi & Penugasan --}}
+        <div class="surface-card rounded-2xl overflow-hidden border" style="border-color:var(--border-light)">
+            <button type="button"
+                    @click="toggleSection('organisasi')"
+                    class="w-full px-5 py-4 flex items-center justify-between text-left transition-colors min-h-[44px]"
+                    style="background:var(--bg-surface-elevated)">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                         style="background:var(--accent-subtle);color:var(--accent)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
                     </div>
-                    @error('wilayah') <p class="text-xs text-red-500 font-semibold">{{ $message }}</p> @enderror
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-sm font-bold" style="color:var(--text-primary)">2. Organisasi & Penugasan</h2>
+                            @if($sec2ErrorCount > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400 border border-red-200 dark:border-red-800">
+                                {{ $sec2ErrorCount }} kolom perlu diperbaiki
+                            </span>
+                            @endif
+                        </div>
+                        <p class="text-[11px]" style="color:var(--text-muted)">Badan otonom, jabatan, status, dan nomor urut</p>
+                    </div>
+                </div>
+                <svg class="w-4 h-4 transition-transform duration-200" :class="openSections.organisasi ? 'rotate-180' : ''"
+                     style="color:var(--text-muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+
+            <div x-show="openSections.organisasi" x-collapse class="p-5 sm:p-6 space-y-5">
+                {{-- Badan Otonom --}}
+                <div class="space-y-1.5">
+                    <label for="banom_id" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Pilihan Badan Otonom (Banom)
+                    </label>
+                    <select name="banom_id" id="banom_id"
+                            class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                            style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                        <option value="">-- Bukan Anggota Banom Khusus / Pengurus Ranting --</option>
+                        @foreach($banoms as $b)
+                        <option value="{{ $b->id }}" {{ old('banom_id') == $b->id ? 'selected' : '' }}>
+                            {{ $b->nama }} ({{ $b->singkatan }})
+                        </option>
+                        @endforeach
+                    </select>
+                    @error('banom_id')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                {{-- Tanggal Bergabung --}}
+                {{-- Jabatan / Posisi --}}
                 <div class="space-y-1.5">
-                    <label for="joined_at" class="text-xs font-black text-slate-700 uppercase tracking-wider">Tanggal Bergabung</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                        </div>
-                        <input type="date" name="joined_at" id="joined_at" value="{{ old('joined_at') }}"
-                               class="w-full pl-10 pr-4 py-3.5 bg-slate-50/60 border @error('joined_at') border-red-400 @else border-slate-200/80 @enderror focus:bg-white focus:border-[#087A4B] focus:ring-2 focus:ring-emerald-500/20 rounded-2xl text-sm font-bold text-slate-700 outline-none transition-all">
-                    </div>
-                    @error('joined_at') <p class="text-xs text-red-500 font-semibold">{{ $message }}</p> @enderror
+                    <label for="position" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Jabatan / Posisi Organisasi
+                    </label>
+                    <input type="text" name="position" id="position" value="{{ old('position', old('role')) }}"
+                           placeholder="Cth: Ketua, Sekretaris, Anggota, Koordinator"
+                           class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                           style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                    @error('position')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- Status Keanggotaan --}}
                 <div class="space-y-1.5">
-                    <label class="text-xs font-black text-slate-700 uppercase tracking-wider">
-                        Status Keanggotaan <span class="text-red-400">*</span>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Status Keanggotaan <span style="color:#ef4444">*</span>
                     </label>
-                    <div class="flex gap-2 flex-wrap">
-                        @php
-                            $statuses = [
-                                ['val' => 'Aktif',    'color' => 'emerald', 'dot' => 'bg-emerald-500'],
-                                ['val' => 'Nonaktif', 'color' => 'slate',   'dot' => 'bg-slate-400'],
-                                ['val' => 'Alumni',   'color' => 'blue',    'dot' => 'bg-blue-500'],
-                                ['val' => 'Pending',  'color' => 'amber',   'dot' => 'bg-amber-500'],
-                            ];
-                        @endphp
-                        @foreach($statuses as $s)
-                            <label class="cursor-pointer">
-                                <input type="radio" name="status" value="{{ $s['val'] }}"
-                                       class="sr-only peer"
-                                       {{ old('status', 'Aktif') == $s['val'] ? 'checked' : '' }}>
-                                <span class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border-2 border-slate-200 bg-slate-50 font-bold text-xs text-slate-600 peer-checked:border-[#087A4B] peer-checked:bg-emerald-50 peer-checked:text-[#087A4B] transition-all cursor-pointer hover:border-slate-300 select-none">
-                                    <span class="w-2 h-2 rounded-full {{ $s['dot'] }}"></span>
-                                    {{ $s['val'] }}
-                                </span>
-                            </label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        @foreach(['Aktif', 'Pending', 'Alumni', 'Nonaktif'] as $st)
+                        <label class="flex items-center gap-2 p-3 rounded-xl border cursor-pointer transition-all min-h-[44px]"
+                               style="background:var(--bg-surface-elevated);border-color:var(--border-medium)">
+                            <input type="radio" name="status" value="{{ $st }}"
+                                   {{ old('status', 'Aktif') === $st ? 'checked' : '' }}
+                                   class="text-[var(--accent)] focus:ring-[var(--accent)]">
+                            <span class="text-xs font-semibold" style="color:var(--text-primary)">{{ $st }}</span>
+                        </label>
                         @endforeach
                     </div>
-                    @error('status') <p class="text-xs text-red-500 font-semibold">{{ $message }}</p> @enderror
+                    @error('status')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                {{-- Visibilitas Publik --}}
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-slate-700 uppercase tracking-wider">
-                        Tampil di Halaman Publik? <span class="text-red-400">*</span>
-                    </label>
-                    <div class="flex items-center gap-4 mt-1">
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <div class="relative">
-                                <input type="checkbox" id="is_public_toggle" class="sr-only peer" onchange="togglePublic(this)"
-                                       {{ old('is_public', '1') == '1' ? 'checked' : '' }}>
-                                <div class="w-12 h-6 bg-slate-200 rounded-full peer peer-checked:bg-[#087A4B] transition-colors duration-200"></div>
-                                <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 peer-checked:translate-x-6"></div>
-                            </div>
-                            <span id="public-label" class="text-sm font-bold {{ old('is_public', '1') == '1' ? 'text-[#087A4B]' : 'text-slate-500' }}">
-                                {{ old('is_public', '1') == '1' ? 'Ya, Tampilkan' : 'Sembunyikan' }}
-                            </span>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {{-- Urutan Tampil --}}
+                    <div class="space-y-1.5">
+                        <label for="urutan" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                            Nomor Urut Tampil
                         </label>
-                        <input type="hidden" name="is_public" id="is_public" value="{{ old('is_public', '1') }}">
+                        <input type="number" name="urutan" id="urutan" value="{{ old('urutan', 0) }}" min="0"
+                               class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                               style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                        <p class="text-[10px]" style="color:var(--text-muted)">Angka lebih kecil tampil lebih awal.</p>
+                        @error('urutan')
+                        <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                        @enderror
                     </div>
-                    <p class="text-[11px] text-slate-400 font-medium">Jika aktif, profil anggota akan muncul di halaman publik</p>
-                    @error('is_public') <p class="text-xs text-red-500 font-semibold">{{ $message }}</p> @enderror
-                </div>
 
+                    {{-- Flag Tampil di Pengurus Inti --}}
+                    <div class="space-y-1.5 flex flex-col justify-end">
+                        <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer min-h-[44px]"
+                               style="background:var(--bg-surface-elevated);border-color:var(--border-medium)">
+                            <input type="checkbox" name="is_pengurus" value="1"
+                                   {{ old('is_pengurus') ? 'checked' : '' }}
+                                   class="rounded text-[var(--accent)] focus:ring-[var(--accent)] w-4 h-4">
+                            <div>
+                                <span class="text-xs font-semibold block" style="color:var(--text-primary)">Pengurus Inti Ranting</span>
+                                <span class="text-[10px] block" style="color:var(--text-muted)">Tampilkan di bagan struktur pengurus utama</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
 
-        {{-- Action Buttons --}}
-        <div class="flex items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-            <button type="reset" onclick="resetForm()"
-                    class="inline-flex items-center gap-2 px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs rounded-2xl transition-all active:scale-95">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        {{-- Seksi 3: Wilayah & Kontak --}}
+        <div class="surface-card rounded-2xl overflow-hidden border" style="border-color:var(--border-light)">
+            <button type="button"
+                    @click="toggleSection('wilayah')"
+                    class="w-full px-5 py-4 flex items-center justify-between text-left transition-colors min-h-[44px]"
+                    style="background:var(--bg-surface-elevated)">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                         style="background:var(--accent-subtle);color:var(--accent)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-sm font-bold" style="color:var(--text-primary)">3. Wilayah & Kontak</h2>
+                            @if($sec3ErrorCount > 0)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400 border border-red-200 dark:border-red-800">
+                                {{ $sec3ErrorCount }} kolom perlu diperbaiki
+                            </span>
+                            @endif
+                        </div>
+                        <p class="text-[11px]" style="color:var(--text-muted)">RT/RW, kontak, alamat, dan visibilitas direktori</p>
+                    </div>
+                </div>
+                <svg class="w-4 h-4 transition-transform duration-200" :class="openSections.wilayah ? 'rotate-180' : ''"
+                     style="color:var(--text-muted)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                 </svg>
-                Reset Form
             </button>
-            <button type="submit" id="submit-btn"
-                    class="inline-flex items-center gap-2 px-8 py-3 bg-[#087A4B] hover:bg-emerald-700 text-white font-bold text-sm rounded-2xl shadow-lg shadow-emerald-500/25 transition-all active:scale-95">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+
+            <div x-show="openSections.wilayah" x-collapse class="p-5 sm:p-6 space-y-5">
+                {{-- Wilayah RT/RW --}}
+                <div class="space-y-1.5">
+                    <label for="wilayah" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Wilayah Lingkungan / RT RW
+                    </label>
+                    <input type="text" name="wilayah" id="wilayah" value="{{ old('wilayah', old('region')) }}"
+                           placeholder="Cth: RT 03 / RW 02 Kalisari"
+                           class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                           style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                    @error('wilayah')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {{-- No Telepon/WhatsApp --}}
+                    <div class="space-y-1.5">
+                        <label for="phone" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                            Nomor WhatsApp / HP
+                        </label>
+                        <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
+                               placeholder="Cth: 081234567890"
+                               class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                               style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                        @error('phone')
+                        <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Email --}}
+                    <div class="space-y-1.5">
+                        <label for="email" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                            Email Anggota
+                        </label>
+                        <input type="email" name="email" id="email" value="{{ old('email') }}"
+                               placeholder="Cth: fauzan@example.com"
+                               class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                               style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                        @error('email')
+                        <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                {{-- Alamat Lengkap --}}
+                <div class="space-y-1.5">
+                    <label for="address" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Alamat Domisili Lengkap
+                    </label>
+                    <textarea name="address" id="address" rows="3"
+                              placeholder="Jl. Kalisari Raya No. ..., RT ..., RW ..."
+                              class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all resize-y"
+                              style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">{{ old('address') }}</textarea>
+                    @error('address')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Tanggal Bergabung --}}
+                <div class="space-y-1.5">
+                    <label for="joined_at" class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
+                        Tanggal Bergabung Organisasi
+                    </label>
+                    <input type="date" name="joined_at" id="joined_at" value="{{ old('joined_at') }}"
+                           class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
+                           style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
+                    @error('joined_at')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Visibilitas Publik --}}
+                <div class="p-3.5 rounded-xl border flex items-center justify-between gap-4"
+                     style="background:var(--bg-surface-elevated);border-color:var(--border-medium)">
+                    <div>
+                        <p class="text-xs font-semibold" style="color:var(--text-primary)">Tampilkan di Direktori Publik</p>
+                        <p class="text-[11px]" style="color:var(--text-muted)">Jika dicentang, profil anggota dapat dilihat masyarakat umum.</p>
+                    </div>
+                    <input type="hidden" name="is_public" value="0">
+                    <input type="checkbox" name="is_public" value="1" id="is_public"
+                           {{ old('is_public', '1') == '1' ? 'checked' : '' }}
+                           class="rounded text-[var(--accent)] focus:ring-[var(--accent)] w-5 h-5">
+                </div>
+
+                {{-- Privasi Wilayah di Publik --}}
+                <div class="p-3.5 rounded-xl border flex items-center justify-between gap-4"
+                     style="background:var(--bg-surface-elevated);border-color:var(--border-medium)">
+                    <div>
+                        <p class="text-xs font-semibold" style="color:var(--text-primary)">Tampilkan wilayah di publik</p>
+                        <p class="text-[11px]" style="color:var(--text-muted)">Jika dicentang, informasi wilayah/RT-RW akan ditampilkan pada direktori publik.</p>
+                    </div>
+                    <input type="hidden" name="tampil_wilayah" value="0">
+                    <input type="checkbox" name="tampil_wilayah" value="1" id="tampil_wilayah"
+                           {{ old('tampil_wilayah', '0') == '1' ? 'checked' : '' }}
+                           class="rounded text-[var(--accent)] focus:ring-[var(--accent)] w-5 h-5">
+                </div>
+            </div>
+        </div>
+
+        {{-- Desktop Action Buttons (md+) --}}
+        <div class="hidden md:flex items-center justify-end gap-3 pt-4 border-t" style="border-color:var(--border-light)">
+            <a href="{{ route('admin.anggota.index') }}"
+               class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all min-h-[44px] inline-flex items-center border"
+               style="color:var(--text-secondary);border-color:var(--border-medium);background:var(--bg-surface)">
+                Batal
+            </a>
+            <button type="submit"
+                    :disabled="submitting"
+                    :class="submitting ? 'opacity-70 cursor-not-allowed' : ''"
+                    class="px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white transition-all min-h-[44px] inline-flex items-center gap-2 shadow-sm"
+                    style="background:var(--accent)">
+                <svg x-show="submitting" class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
                 </svg>
-                Simpan Data Anggota
+                <span x-text="submitting ? 'Menyimpan...' : 'Simpan Data Anggota'">Simpan Data Anggota</span>
             </button>
         </div>
 
+        {{-- Mobile Sticky Action Bar (Hanya HP, md:hidden, Hormati Safe Area, Solid / Backdrop-blur) --}}
+        <div class="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t p-3 flex items-center gap-2.5 shadow-2xl"
+             style="background:var(--bg-overlay);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-color:var(--border-light);padding-bottom:max(0.75rem,env(safe-area-inset-bottom))">
+            <a href="{{ route('admin.anggota.index') }}"
+               class="py-3 px-4 rounded-xl text-xs font-semibold text-center transition-all min-h-[48px] border inline-flex items-center justify-center shrink-0 w-24 sm:w-28"
+               style="color:var(--text-secondary);border-color:var(--border-medium);background:var(--bg-surface)">
+                Batal
+            </a>
+            <button type="submit"
+                    :disabled="submitting"
+                    :class="submitting ? 'opacity-70 cursor-not-allowed' : ''"
+                    class="flex-1 py-3 px-5 rounded-xl text-xs sm:text-sm font-bold text-white text-center transition-all min-h-[48px] shadow-sm inline-flex items-center justify-center gap-2"
+                    style="background:var(--accent)">
+                <svg x-show="submitting" class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
+                <span x-text="submitting ? 'Menyimpan...' : 'Simpan'">Simpan</span>
+            </button>
+        </div>
     </form>
 </div>
 
 <script>
-    // â”€â”€ Banom Pill Selector â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    function selectBanom(value) {
-        document.getElementById('role-input').value = value;
-        document.querySelectorAll('.banom-pill').forEach(function(pill) {
-            const isSelected = pill.dataset.banom === value;
-            const check = pill.querySelector('.banom-check');
-            pill.classList.toggle('border-[#087A4B]', isSelected);
-            pill.classList.toggle('bg-emerald-50', isSelected);
-            pill.classList.toggle('border-slate-100', !isSelected);
-            pill.classList.toggle('bg-slate-50/50', !isSelected);
-            if (check) {
-                check.classList.toggle('border-[#087A4B]', isSelected);
-                check.classList.toggle('bg-[#087A4B]', isSelected);
-                check.classList.toggle('border-slate-200', !isSelected);
-                check.classList.toggle('bg-transparent', !isSelected);
-            }
-            // Text color
-            const nameEl = pill.querySelector('span:nth-child(2)');
-            if (nameEl) nameEl.classList.toggle('text-[#087A4B]', isSelected);
-        });
+document.addEventListener('DOMContentLoaded', function () {
+    const firstError = document.querySelector('.is-invalid, .border-red-500, [aria-invalid="true"]');
+    if (firstError) {
+        setTimeout(function () {
+            firstError.focus();
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
     }
-
-    // â”€â”€ Photo Preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    function previewPhoto(input) {
-        const preview = document.getElementById('photo-preview');
-        const placeholder = document.getElementById('photo-placeholder');
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.classList.remove('hidden');
-                placeholder.classList.add('hidden');
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    // â”€â”€ Toggle Publik â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    function togglePublic(checkbox) {
-        const hidden = document.getElementById('is_public');
-        const label = document.getElementById('public-label');
-        if (checkbox.checked) {
-            hidden.value = '1';
-            label.textContent = 'Ya, Tampilkan';
-            label.classList.remove('text-slate-500');
-            label.classList.add('text-[#087A4B]');
-        } else {
-            hidden.value = '0';
-            label.textContent = 'Sembunyikan';
-            label.classList.remove('text-[#087A4B]');
-            label.classList.add('text-slate-500');
-        }
-    }
-
-    // â”€â”€ Reset Form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    function resetForm() {
-        document.getElementById('role-input').value = '';
-        document.querySelectorAll('.banom-pill').forEach(function(pill) {
-            const check = pill.querySelector('.banom-check');
-            pill.classList.remove('border-[#087A4B]', 'bg-emerald-50');
-            pill.classList.add('border-slate-100', 'bg-slate-50/50');
-            if (check) {
-                check.classList.remove('border-[#087A4B]', 'bg-[#087A4B]');
-                check.classList.add('border-slate-200');
-            }
-        });
-        // reset photo preview
-        document.getElementById('photo-preview').classList.add('hidden');
-        document.getElementById('photo-placeholder').classList.remove('hidden');
-    }
-
-    // â”€â”€ Loading state on submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    document.getElementById('anggota-form').addEventListener('submit', function() {
-        const btn = document.getElementById('submit-btn');
-        btn.disabled = true;
-        btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Menyimpan...';
-        btn.classList.add('opacity-75');
-    });
+});
 </script>
-
 @endsection

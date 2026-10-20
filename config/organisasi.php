@@ -1,16 +1,100 @@
 <?php
 
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Identitas Umum Organisasi
+    |--------------------------------------------------------------------------
+    | Ubah teks di sini. Setelah mengubah, jalankan: php artisan config:clear
+    */
     'nama' => 'NU Kalisari',
     'deskripsi' => 'Ruang digital untuk mengenal, terhubung, dan bergerak bersama masyarakat Kalisari.',
     'alamat' => 'Desa Kalisari, Kec. Cilongok, Kab. Banyumas, Jawa Tengah',
     'email' => 'halo@nukalisari.id',
     'lokasi' => ['Kalisari', 'Cilongok', 'Banyumas', 'Jawa Tengah'],
+    'lokasi_lat' => env('ORGANISASI_LAT', -7.4218),
+    'lokasi_lng' => env('ORGANISASI_LNG', 109.1608),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pengaturan Peta Lokasi Sekretariat
+    |--------------------------------------------------------------------------
+    | Koordinat dan tingkat perbesaran (zoom) peta pada halaman Tentang.
+    | Ubah data di sini. Setelah mengubah, jalankan: php artisan config:clear
+    */
+    'peta' => [
+        'lat' => env('ORGANISASI_LAT', -7.4218),
+        'lng' => env('ORGANISASI_LNG', 109.1608),
+        'zoom' => 14,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Konten Halaman Tentang: Deskripsi Banner
+    |--------------------------------------------------------------------------
+    | Kalimat pembuka pada banner utama halaman Tentang Kami.
+    | Ubah teks di sini. Setelah mengubah, jalankan: php artisan config:clear
+    */
+    'tentang_deskripsi' => 'Kami adalah pengurus dan warga Nahdlatul Ulama Ranting Kalisari. Bersama merawat tradisi, memberdayakan umat, dan menghidupkan nilai-nilai Ahlussunnah wal Jamaah di tengah masyarakat.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Konten Halaman Tentang: Sejarah Singkat
+    |--------------------------------------------------------------------------
+    | Paragraf-paragraf sejarah perkembangan Ranting NU Kalisari.
+    | Ubah teks di sini. Setelah mengubah, jalankan: php artisan config:clear
+    */
+    'sejarah' => [
+        'Pengurus Ranting Nahdlatul Ulama Kalisari merupakan representasi organisasi NU di tingkat desa yang berperan mengoordinasikan kehidupan keagamaan, sosial, dan kemasyarakatan bagi warga Nahdliyin di wilayah Kalisari, Kecamatan Cilongok, Kabupaten Banyumas, Jawa Tengah.',
+        'Sejak awal berdirinya, ranting ini aktif menggerakkan berbagai kegiatan keagamaan seperti pengajian, tahlilan, ziarah, dan musyawarah rutin sebagai pilar penguat silaturahmi antarwarga.',
+        'Seiring perkembangan zaman, NU Ranting Kalisari terus beradaptasi dengan memanfaatkan teknologi informasi untuk memperluas jangkauan dakwah dan memperkuat pelayanan sosial, tanpa meninggalkan nilai-nilai tradisi mulia yang telah mengakar.',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Konten Halaman Tentang: Kutipan Sejarah
+    |--------------------------------------------------------------------------
+    | Kutipan yang disorot di dalam kotak kutipan seksi Sejarah.
+    | Ubah teks di sini. Setelah mengubah, jalankan: php artisan config:clear
+    */
+    'sejarah_kutipan' => 'Wadah bagi para kiai, ustadz, dan tokoh masyarakat setempat untuk bersama-sama merawat tradisi keagamaan Ahlussunnah wal Jamaah.',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Konten Halaman Tentang: Visi & Misi
+    |--------------------------------------------------------------------------
+    | Pernyataan visi dan butir-butir misi organisasi.
+    | Ubah teks di sini. Setelah mengubah, jalankan: php artisan config:clear
+    */
+    'visi' => 'Terwujudnya masyarakat Kalisari yang religius, berkeadilan, dan sejahtera berdasarkan nilai-nilai Ahlussunnah wal Jamaah.',
+
+    'misi' => [
+        'Memperkuat kehidupan keagamaan dan tradisi Ahlussunnah wal Jamaah di lingkungan masyarakat.',
+        'Meningkatkan kualitas pendidikan dan pemberdayaan umat melalui dakwah dan pelatihan.',
+        'Membangun solidaritas sosial melalui kegiatan gotong royong, bakti sosial, dan santunan.',
+        'Mengembangkan kader-kader organisasi yang kompeten, berintegritas, dan siap mengabdi.',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Media Sosial
+    |--------------------------------------------------------------------------
+    | Tautan akun media sosial resmi organisasi.
+    | Ubah data di sini. Setelah mengubah, jalankan: php artisan config:clear
+    */
     'sosial' => [
         'facebook' => 'https://facebook.com/#',
         'instagram' => 'https://instagram.com/#',
         'youtube' => 'https://youtube.com/#',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Badan Otonom (Banom)
+    |--------------------------------------------------------------------------
+    | Data bawaan untuk 6 badan otonom NU.
+    | Ubah data di sini. Setelah mengubah, jalankan: php artisan config:clear
+    */
     'banom' => [
         [
             'nama' => 'Muslimat NU',
@@ -53,6 +137,37 @@ return [
             'singkatan' => 'PMII',
             'logo' => 'PMII.png',
             'koordinator' => 'Hendra Kusuma',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Kegiatan Rutin Organisasi
+    |--------------------------------------------------------------------------
+    | Agenda berkala masyarakat dan pengurus (icon: calendar | clock | lokasi).
+    | Ubah data di sini. Setelah mengubah, jalankan: php artisan config:clear
+    */
+    'kegiatan_rutin' => [
+        [
+            'nama' => 'Pengajian Selapanan',
+            'peserta' => 'Seluruh warga',
+            'lokasi' => 'Mushola Al-Hikmah',
+            'jadwal' => 'Setiap Ahad Legi',
+            'icon' => 'calendar',
+        ],
+        [
+            'nama' => 'Yasinan & Tahlilan',
+            'peserta' => 'Bapak-bapak',
+            'lokasi' => 'Bergilir per RT',
+            'jadwal' => 'Setiap Kamis malam',
+            'icon' => 'clock',
+        ],
+        [
+            'nama' => 'Rapat Pengurus',
+            'peserta' => 'Pengurus ranting',
+            'lokasi' => 'Balai Desa Kalisari',
+            'jadwal' => 'Minggu ke-2 setiap bulan',
+            'icon' => 'lokasi',
         ],
     ],
 ];

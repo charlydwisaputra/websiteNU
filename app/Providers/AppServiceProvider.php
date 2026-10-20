@@ -26,5 +26,9 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('tanggal', function ($expression) {
             return "<?php echo \\Carbon\\Carbon::parse($expression)->isoFormat('D MMM Y'); ?>";
         });
+
+        Blade::directive('inisial', function ($expression) {
+            return "<?php echo \\App\\Helpers\\InitialHelper::getInitials($expression); ?>";
+        });
     }
 }

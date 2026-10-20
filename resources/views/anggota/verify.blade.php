@@ -58,7 +58,7 @@
                         <img src="{{ asset('storage/'.$anggota->photo) }}" alt="{{ $anggota->name }}"
                              class="w-full h-full object-cover">
                     @else
-                        {{ strtoupper(substr($anggota->name, 0, 2)) }}
+                        @inisial($anggota->name)
                     @endif
                 </div>
 

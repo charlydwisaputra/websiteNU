@@ -15,7 +15,7 @@ test('welcome page renders empty state when no pengurus exists', function () {
     $response->assertSee(route('anggota'));
 });
 
-test('welcome page renders top 8 pengurus with initials or photos and responsive snap layout', function () {
+test('welcome page renders top 6 pengurus with initials or photos and 3-column layout', function () {
     // Create 10 active public members with positions A through J
     $letters = range('A', 'J');
     foreach ($letters as $letter) {
@@ -33,21 +33,20 @@ test('welcome page renders top 8 pengurus with initials or photos and responsive
     $response->assertSee('Pengurus');
     $response->assertDontSee('Belum ada data pengurus yang ditampilkan.');
 
-    // Top 8 (A through H) should be present
-    foreach (range('A', 'H') as $letter) {
+    // Top 6 (A through F) should be present
+    foreach (range('A', 'F') as $letter) {
         $response->assertSee("Pengurus {$letter}");
         $response->assertSee("Jabatan {$letter}");
     }
 
-    // 9 and 10 (I and J) should not be rendered
+    // 7 through 10 (G through J) should not be rendered
+    $response->assertDontSee('Pengurus G');
+    $response->assertDontSee('Pengurus H');
     $response->assertDontSee('Pengurus I');
     $response->assertDontSee('Pengurus J');
 
-    // Assert layout classes
-    $response->assertSee('flex-[0_0_40%]', false);
-    $response->assertSee('snap-x');
-    $response->assertSee('snap-mandatory');
-    $response->assertSee('scrollbar-none');
-    $response->assertSee('md:grid-cols-4');
+    // Assert layout classes: 2 cols on mobile, 3 cols on desktop (3+3)
+    $response->assertSee('grid-cols-2');
+    $response->assertSee('md:grid-cols-3');
     $response->assertSee('Lihat Semua Anggota');
 });

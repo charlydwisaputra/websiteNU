@@ -60,8 +60,8 @@
         --bg-overlay:          rgba(8, 8, 19, 0.9);
 
         --text-primary:        var(--light-background);
-        --text-secondary:      var(--frozen);
-        --text-muted:          #7A8599;
+        --text-secondary:      #B4C4BC; /* High contrast secondary text (WCAG AA > 7:1) */
+        --text-muted:          #9CB0A4; /* High contrast muted text (WCAG AA > 5:1) */
         --text-inverted:       var(--black-iris);
 
         --border-light:        rgba(160, 189, 219, 0.12);
@@ -87,6 +87,16 @@
         --shadow-card:       0 2px 8px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
         --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
         --shadow-focus:      0 0 0 3px rgba(0, 179, 115, 0.25);
+    }
+
+    /* WCAG AA High Contrast Placeholder Rules */
+    ::placeholder {
+        color: #5A6577 !important;
+        opacity: 0.9 !important;
+    }
+    .dark ::placeholder {
+        color: #9CB0A4 !important;
+        opacity: 0.95 !important;
     }
 
     /* ─────────────────────────────────────────
