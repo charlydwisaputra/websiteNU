@@ -183,9 +183,9 @@
                         Visi & Misi
                     </h2>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 items-start">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 items-stretch">
                         <!-- Kartu Visi: Hijau pekat dengan latar samar flag-nu.jpg (overlay 85-90%) & teks putih kontras tinggi -->
-                        <div class="md:self-start relative overflow-hidden flex flex-col p-6 sm:p-7 rounded-2xl bg-[#063323] text-white shadow-md shadow-emerald-950/15 border border-emerald-700/50 group">
+                        <div class="md:self-auto relative overflow-hidden flex flex-col h-full p-6 sm:p-7 rounded-2xl bg-[#063323] text-white shadow-md shadow-emerald-950/15 border border-emerald-700/50 group">
                             
                             @if(file_exists(public_path('images/flag-nu.jpg')))
                             <!-- Latar samar flag-nu.jpg di sisi kanan atas (overlay 85-90%, lambang tidak tertumpuk teks) -->
@@ -218,7 +218,7 @@
                         </div>
 
                         <!-- Kartu Misi: Daftar bernomor dengan lencana angka bulat -->
-                        <div class="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 shadow-sm flex flex-col justify-between">
+                        <div class="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 shadow-sm flex flex-col h-full">
                             <div>
                                 <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-4 border border-emerald-100 dark:border-emerald-800/30">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

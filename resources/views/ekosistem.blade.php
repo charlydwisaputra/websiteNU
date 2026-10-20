@@ -49,8 +49,8 @@
             <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(5,150,105,0.22),transparent_70%)] pointer-events-none"></div>
         </div>
 
-        <!-- Transisi ke konten: memudar ke warna latar halaman -->
-        <div class="absolute bottom-0 inset-x-0 h-12 sm:h-14 pointer-events-none" style="background: linear-gradient(to top, var(--bg-base) 0%, transparent 100%)"></div>
+        <!-- Transisi ke konten: memudar ke warna latar halaman — diperluas & diperhalus agar tidak ada pita gelap di light mode -->
+        <div class="absolute bottom-0 inset-x-0 h-20 sm:h-24 pointer-events-none" style="background: linear-gradient(to top, var(--bg-base) 0%, color-mix(in srgb, var(--bg-base) 70%, transparent) 55%, transparent 100%)"></div>
 
         <!-- Teks banner -->
         <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
@@ -271,7 +271,7 @@
 
                         <!-- Tombol LIHAT ANGGOTA (Bentuk tombol seragam di desktop dan mobile, target sentuh min. 44px) -->
                         <a href="{{ route('anggota', ['badan' => $org['slug']]) }}"
-                           class="w-full min-h-[44px] py-2.5 px-4 rounded-xl text-center text-xs font-semibold uppercase tracking-wider bg-black/5 dark:bg-white/5 text-slate-800 dark:text-slate-200 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 dark:hover:text-white transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                           class="w-full min-h-[44px] py-2.5 px-4 rounded-xl text-center text-xs font-semibold uppercase tracking-wider border border-emerald-600 text-emerald-700 dark:border-white/10 dark:text-slate-200 bg-transparent dark:bg-white/5 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 dark:hover:text-white hover:border-emerald-600 transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                            aria-label="Lihat anggota {{ $org['nama'] }}">
                             <span>Lihat Anggota</span>
                             <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

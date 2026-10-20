@@ -89,74 +89,79 @@
             </div>
         </div>
 
-        {{-- Search + Filter --}}
-        <div class="w-full max-w-[1100px] mx-auto mb-8 md:mb-10 reveal">
+        {{-- Search + Filter: sticky di bawah navbar saat scroll --}}
+        <div class="sticky top-[60px] sm:top-[68px] z-30 w-full py-3 sm:py-4 -mt-3 sm:-mt-4 mb-6 md:mb-8"
+             style="background: color-mix(in srgb, var(--bg-base) 92%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+            <div class="w-full max-w-[1100px] mx-auto px-0">
 
-            {{-- Search Bar --}}
-            <form action="{{ route('anggota') }}" method="GET" class="w-full max-w-xl mx-auto mb-6 relative group">
-                <div class="absolute inset-y-0 left-0 pl-4 sm:pl-5 flex items-center pointer-events-none text-slate-400">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                </div>
-                <input type="search" name="search" id="search-input"
-                       value="{{ request('search') }}"
-                       placeholder="Cari nama, jabatan, atau wilayah..."
-                       aria-label="Cari anggota"
-                       class="block w-full pl-12 sm:pl-14 pr-10 py-3 sm:py-3.5 min-h-[44px] rounded-2xl text-sm font-medium outline-none transition-all bg-white dark:bg-[#070D09] border border-black/10 dark:border-white/10 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500">
-                @if(request('search'))
-                <a href="{{ route('anggota', array_filter(['badan' => $activeBadan])) }}"
-                   class="absolute inset-y-0 right-0 pr-4 flex items-center text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                   title="Hapus pencarian">
-                    &times;
-                </a>
-                @endif
-                <input type="hidden" name="badan" value="{{ $activeBadan }}">
-            </form>
+                {{-- Search Bar --}}
+                <form action="{{ route('anggota') }}" method="GET" class="w-full max-w-xl mx-auto mb-3 relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 sm:pl-5 flex items-center pointer-events-none text-slate-400">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <input type="search" name="search" id="search-input"
+                           value="{{ request('search') }}"
+                           placeholder="Cari nama, jabatan, atau wilayah..."
+                           aria-label="Cari anggota"
+                           class="block w-full pl-12 sm:pl-14 pr-10 py-3 sm:py-3.5 min-h-[44px] rounded-2xl text-sm font-medium outline-none transition-all bg-white dark:bg-[#070D09] border border-black/10 dark:border-white/10 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 shadow-sm">
+                    @if(request('search'))
+                    <a href="{{ route('anggota', array_filter(['badan' => $activeBadan])) }}"
+                       class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                       title="Hapus pencarian">&times;</a>
+                    @endif
+                    <input type="hidden" name="badan" value="{{ $activeBadan }}">
+                </form>
 
-            {{-- Filter Chips Dinamis dari Database (Semua, Pengurus Ranting, Banom) --}}
-            <div class="relative w-full">
-                <div id="filter-chips-container" class="flex gap-2 overflow-x-auto scrollbar-none pb-1 justify-start md:justify-center snap-x snap-mandatory pr-10 md:pr-0">
-                    @foreach($filters as $filter)
-                    @php
-                        $val = $filter['value'];
-                        $label = $filter['label'];
-                        $count = $filter['count'] ?? null;
-                        $isActive = ($val === null && empty($activeBadan)) 
-                            || (!empty($activeBadan) && $val !== null && (
-                                strcasecmp((string)$activeBadan, (string)$val) === 0 
-                                || strcasecmp((string)$activeBadan, (string)$label) === 0
-                                || (!empty($banom) && strcasecmp((string)$banom, (string)$label) === 0)
-                            ));
-                    @endphp
-                    <a href="{{ $val ? route('anggota', array_filter(['badan' => $val, 'search' => request('search')])) : route('anggota', array_filter(['search' => request('search')])) }}"
-                       class="snap-start shrink-0 px-4 sm:px-4.5 py-2 sm:py-2.5 min-h-[40px] sm:min-h-[44px] flex items-center gap-1.5 rounded-full text-xs sm:text-sm font-medium transition-all border {{ $isActive ? 'active-filter-chip bg-emerald-600 border-emerald-600 text-white font-semibold shadow-sm shadow-emerald-950/20' : 'bg-white dark:bg-[#070D09] border-black/10 dark:border-white/10 hover:border-emerald-500/40 text-slate-700 dark:text-slate-300' }}">
-                        <span>{{ $label }}</span>
-                        @if($count !== null)
-                        <span class="text-[11px] {{ $isActive ? 'text-emerald-100 font-bold' : 'text-slate-400 dark:text-slate-500' }}">({{ $count }})</span>
-                        @endif
-                    </a>
-                    @endforeach
+                {{-- Filter Chips: satu baris horizontal scroll di mobile, min-h 44px --}}
+                <div class="relative w-full">
+                    <div id="filter-chips-container"
+                         class="flex gap-2 overflow-x-auto scrollbar-none pb-1 justify-start md:justify-center snap-x snap-mandatory"
+                         style="scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
+                        @foreach($filters as $filter)
+                        @php
+                            $val   = $filter['value'];
+                            $label = $filter['label'];
+                            $count = $filter['count'] ?? null;
+                            $isActive = ($val === null && empty($activeBadan))
+                                || (!empty($activeBadan) && $val !== null && (
+                                    strcasecmp((string)$activeBadan, (string)$val) === 0
+                                    || strcasecmp((string)$activeBadan, (string)$label) === 0
+                                    || (!empty($banom) && strcasecmp((string)$banom, (string)$label) === 0)
+                                ));
+                        @endphp
+                        <a href="{{ $val ? route('anggota', array_filter(['badan' => $val, 'search' => request('search')])) : route('anggota', array_filter(['search' => request('search')])) }}"
+                           class="snap-start shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[44px] rounded-full text-xs sm:text-sm font-semibold transition-all border select-none
+                                  {{ $isActive
+                                      ? 'active-filter-chip bg-emerald-600 border-emerald-600 text-white shadow-sm shadow-emerald-950/20'
+                                      : 'bg-white dark:bg-[#070D09] border-black/10 dark:border-white/10 hover:border-emerald-500/40 text-slate-700 dark:text-slate-300 hover:bg-emerald-50/40 dark:hover:bg-emerald-950/20' }}">
+                            <span>{{ $label }}</span>
+                            @if($count !== null)
+                            <span class="text-[11px] font-bold {{ $isActive ? 'text-emerald-100' : 'text-slate-400 dark:text-slate-500' }}">({{ $count }})</span>
+                            @endif
+                        </a>
+                        @endforeach
+                    </div>
+                    {{-- Fade mask tepi kanan di mobile --}}
+                    <div class="pointer-events-none absolute right-0 top-0 bottom-1 w-10 bg-gradient-to-l from-[var(--bg-base)] to-transparent md:hidden"></div>
                 </div>
-                <!-- Fade mask for horizontal scroll on mobile -->
-                <div class="pointer-events-none absolute right-0 top-0 bottom-1 w-12 bg-gradient-to-l from-[var(--bg-base)] to-transparent md:hidden"></div>
             </div>
         </div>
 
-        {{-- Member grid: Rapi untuk jumlah berapa pun (1-3 anggota, 50+ anggota) --}}
-        <div :class="{
-                'w-full max-w-md mx-auto': {{ $anggotas->count() === 1 ? 'true' : 'false' }},
-                'w-full max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6': {{ $anggotas->count() === 2 ? 'true' : 'false' }},
-                'w-full max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6': {{ $anggotas->count() === 3 ? 'true' : 'false' }},
-                'w-full max-w-[1100px] mx-auto grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5': {{ $anggotas->count() >= 4 ? 'true' : 'false' }}
-             }"
-             class="transition-all duration-300">
+        {{-- Member grid: Semua kartu berukuran sama (col-span-1 selalu), grid seragam --}}
+        <div class="w-full max-w-[1100px] mx-auto
+            {{ $anggotas->count() === 1 ? 'max-w-xs' : '' }}
+            {{ $anggotas->count() === 2 ? 'grid grid-cols-1 sm:grid-cols-2 max-w-2xl gap-4 sm:gap-6' : '' }}
+            {{ $anggotas->count() === 3 ? 'grid grid-cols-1 sm:grid-cols-3 max-w-4xl gap-4 sm:gap-6' : '' }}
+            {{ $anggotas->count() >= 4 ? 'grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5' : '' }}
+            transition-all duration-300">
             @forelse($anggotas as $anggota)
             @php
-                $isLeader = $isTopLeader($anggota);
-                $badge = $anggota->badge;
+                $isLeader    = $isTopLeader($anggota);
+                $badge       = $anggota->badge;
                 $avatarColor = $anggota->avatar_color;
-                $memberJson = [
+                $memberJson  = [
                     'id'              => $anggota->id,
                     'name'            => $anggota->name,
                     'jabatan_lengkap' => $anggota->jabatan_lengkap,
@@ -168,13 +173,17 @@
                     'joined_at'       => $anggota->joined_at ? \Carbon\Carbon::parse($anggota->joined_at)->isoFormat('D MMMM Y') : null,
                 ];
             @endphp
+            {{-- Semua kartu col-span-1 — Pimpinan Ranting hanya diberi aksen warna, bukan lebar berbeda --}}
             <div @click="openModal({{ \Illuminate\Support\Js::from($memberJson) }}, $event.currentTarget)"
                  @keydown.enter="openModal({{ \Illuminate\Support\Js::from($memberJson) }}, $event.currentTarget)"
                  @keydown.space.prevent="openModal({{ \Illuminate\Support\Js::from($memberJson) }}, $event.currentTarget)"
                  role="button"
                  tabindex="0"
                  aria-label="Lihat profil {{ $anggota->name }}"
-                 class="group flex flex-col justify-between text-center surface-card rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#070D09] h-full relative overflow-hidden {{ $isLeader && $topLeadersCount >= 2 && $anggotas->count() >= 4 ? 'col-span-2 sm:col-span-1 md:col-span-1 lg:col-span-2 border-emerald-500/40 dark:border-emerald-500/35 ring-1 ring-emerald-500/20 bg-gradient-to-b from-emerald-50/70 via-white to-white dark:from-[#063323]/35 dark:via-[#070D09] dark:to-[#070D09] shadow-md shadow-emerald-950/10' : 'col-span-1 bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 hover:border-emerald-500/35' }}">
+                 class="group col-span-1 flex flex-col justify-between text-center surface-card rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#070D09] h-full relative overflow-hidden
+                 {{ $isLeader
+                     ? 'border border-emerald-500/40 dark:border-emerald-500/35 ring-1 ring-emerald-500/20 bg-gradient-to-b from-emerald-50/70 via-white to-white dark:from-[#063323]/35 dark:via-[#070D09] dark:to-[#070D09] shadow-md shadow-emerald-950/10'
+                     : 'bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 hover:border-emerald-500/35' }}">
                 
                 {{-- Aksen Khusus Pimpinan Utama Ranting (Syuriyah / Tanfidziyah) --}}
                 @if($isLeader && $anggotas->count() >= 4)
@@ -239,28 +248,68 @@
                 @endif
             </div>
             @empty
-            <div class="col-span-full flex flex-col items-center justify-center py-16 sm:py-20 px-4 rounded-3xl text-center bg-white dark:bg-[#070D09] border border-black/10 dark:border-white/10 shadow-sm max-w-lg mx-auto">
-                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
-                              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
+            {{-- Empty state: berbeda antara pencarian kosong vs belum ada data sama sekali --}}
+            <div class="col-span-full w-full max-w-lg mx-auto">
+                <div class="flex flex-col items-center justify-center py-16 sm:py-20 px-6 rounded-3xl text-center
+                            bg-white dark:bg-[#070D09] border border-black/10 dark:border-white/10 shadow-sm">
+                    @if(request('search') || request('badan') || request('banom'))
+                        {{-- State kosong karena filter / pencarian --}}
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-5
+                                    bg-slate-100 dark:bg-slate-800/60 text-slate-400 dark:text-slate-500
+                                    border border-slate-200/80 dark:border-slate-700/40">
+                            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
+                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold mb-2" style="color:var(--text-primary)">
+                            Tidak ditemukan
+                        </h3>
+                        <p class="text-sm sm:text-base max-w-xs mb-6 leading-relaxed text-slate-500 dark:text-slate-400">
+                            @if(request('search'))
+                                Tidak ada anggota yang cocok dengan kata kunci
+                                <span class="font-semibold text-slate-700 dark:text-slate-200">&ldquo;{{ request('search') }}&rdquo;</span>.
+                            @else
+                                Tidak ada anggota pada filter ini.
+                            @endif
+                            Coba ubah kata kunci atau filter lain.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto justify-center">
+                            @if(request('search'))
+                            <a href="{{ route('anggota', array_filter(['badan' => $activeBadan])) }}"
+                               class="inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] rounded-xl text-sm font-semibold
+                                      border border-black/10 dark:border-white/10 bg-white dark:bg-[#070D09]
+                                      hover:border-emerald-500/50 text-slate-700 dark:text-slate-200 transition-colors">
+                                Hapus kata kunci
+                            </a>
+                            @endif
+                            <a href="{{ route('anggota') }}"
+                               class="inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] rounded-xl text-sm font-semibold
+                                      bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors active:scale-95">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                                Lihat semua anggota
+                            </a>
+                        </div>
+                    @else
+                        {{-- State kosong karena belum ada data sama sekali --}}
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-5
+                                    bg-emerald-500/10 text-emerald-600 dark:text-emerald-400
+                                    border border-emerald-500/20">
+                            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
+                                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-serif text-2xl font-bold mb-2" style="color:var(--text-primary)">
+                            Belum ada anggota
+                        </h3>
+                        <p class="text-sm sm:text-base max-w-xs mb-2 leading-relaxed text-slate-500 dark:text-slate-400">
+                            Data anggota akan segera ditambahkan oleh pengurus.
+                        </p>
+                    @endif
                 </div>
-                <h3 class="font-serif text-2xl font-bold mb-2" style="color:var(--text-primary)">
-                    Tidak ada anggota yang cocok
-                </h3>
-                <p class="text-sm sm:text-base max-w-md mb-6 leading-relaxed text-slate-600 dark:text-slate-400">
-                    Data anggota akan segera ditambahkan oleh pengurus. Silakan coba kata kunci lain atau pilih filter yang berbeda.
-                </p>
-                @if(request('search') || request('badan') || request('banom'))
-                    <a href="{{ route('anggota') }}"
-                       class="px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm active:scale-95">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
-                        Lihat semua anggota
-                    </a>
-                @endif
             </div>
             @endforelse
         </div>

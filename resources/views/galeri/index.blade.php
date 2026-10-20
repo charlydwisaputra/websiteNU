@@ -106,7 +106,7 @@
                              style="background: linear-gradient(to left, var(--bg-base) 45%, var(--bg-base-transparent));"></div>
                     </div>
 
-                    <!-- Kolom Pencarian -->
+                    <!-- Kolom Pencarian: penuh lebar di mobile, 288px di xl ke atas -->
                     <div class="relative w-full xl:w-72 shrink-0">
                         <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -127,9 +127,9 @@
                 <!-- GRID FOTO: Dinamis dan rapi untuk data sedikit (1-3 foto) maupun banyak (30+ foto) -->
                 <div :class="{
                         'max-w-xl mx-auto': filtered.length === 1,
-                        'grid grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto gap-4 sm:gap-6': filtered.length === 2,
-                        'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6': filtered.length === 3,
-                        'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6': filtered.length >= 4
+                        'grid grid-cols-2 sm:grid-cols-2 max-w-3xl mx-auto gap-3 sm:gap-6': filtered.length === 2,
+                        'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6': filtered.length === 3,
+                        'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6': filtered.length >= 4
                      }"
                      class="w-full transition-all duration-300"
                      x-show="filtered.length > 0">
@@ -161,7 +161,8 @@
 
                                 <!-- Foto asli atau placeholder -->
                                 <img :src="item.photo" 
-                                     :alt="item.title || 'Dokumentasi NU Kalisari'" 
+                                     alt="" 
+                                     :aria-label="item.title || 'Dokumentasi NU Kalisari'"
                                      @load="imgLoaded = true"
                                      x-on:error="imgLoaded = true"
                                      class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:group-hover:scale-100 motion-reduce:transition-none"
