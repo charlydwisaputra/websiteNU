@@ -139,7 +139,7 @@ test('pengurus syuriyah muncul sebelum tanfidziyah sesuai urutan', function () {
         ->toBeLessThan(strpos($html, 'Urutan Kedua Ketua'));
 });
 
-test('aria-label kartu pengurus adalah Lihat daftar anggota bukan nama individu', function () {
+test('kartu pengurus adalah div dan tidak memiliki aria-label link', function () {
     Anggota::factory()->create([
         'name' => 'KH. Uji Aria Label',
         'position' => 'Rais Syuriyah',
@@ -150,6 +150,6 @@ test('aria-label kartu pengurus adalah Lihat daftar anggota bukan nama individu'
 
     $response = $this->get(route('tentang'));
 
-    $response->assertSee('aria-label="Lihat daftar anggota"', false);
+    $response->assertDontSee('aria-label="Lihat daftar anggota"', false);
     $response->assertDontSee('aria-label="Lihat profil anggota KH. Uji Aria Label"', false);
 });

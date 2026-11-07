@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class BeritaController extends Controller
@@ -40,17 +41,24 @@ class BeritaController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'category' => 'required|string|in:Kegiatan,Pengumuman,Organisasi,Sosial',
+            'category' => ['required', 'string', Rule::in(Berita::CATEGORIES)],
             'content' => 'required',
             'status' => 'required|in:published,draft',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'images' => 'nullable|array|max:10',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('photos/berita', 'public');
+        $allImages = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $allImages[] = $file->store('photos/berita', 'public');
+            }
         }
 
-        // Gunakan auth()->user()->id untuk menghindari error Intelephense
+        // Foto pertama jadi sampul utama
+        $validated['image'] = $allImages[0] ?? null;
+        $validated['images'] = count($allImages) > 1 ? array_slice($allImages, 1) : null;
+
         $validated['author_id'] = Auth::id();
 
         Berita::create($validated);
@@ -71,10 +79,14 @@ class BeritaController extends Controller
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'category' => 'required|string|in:Kegiatan,Pengumuman,Organisasi,Sosial',
+            'category' => ['required', 'string', Rule::in(Berita::CATEGORIES)],
             'content' => 'required',
             'status' => 'required|in:published,draft',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'images' => 'nullable|array|max:10',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            'delete_images' => 'nullable|array',
+            'delete_images.*' => 'string',
         ]);
 
         if ($request->hasFile('image')) {
@@ -83,6 +95,25 @@ class BeritaController extends Controller
             }
             $validated['image'] = $request->file('image')->store('photos/berita', 'public');
         }
+
+        // Handle existing images — remove deleted ones
+        $existingImages = $berita->images ?? [];
+        $deleteImages = $request->input('delete_images', []);
+        foreach ($deleteImages as $path) {
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+            $existingImages = array_filter($existingImages, fn ($img) => $img !== $path);
+        }
+
+        // Append newly uploaded images
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $existingImages[] = $file->store('photos/berita', 'public');
+            }
+        }
+
+        $validated['images'] = array_values($existingImages) ?: null;
 
         $berita->update($validated);
 
@@ -96,6 +127,13 @@ class BeritaController extends Controller
         if ($berita->image && Storage::disk('public')->exists($berita->image)) {
             Storage::disk('public')->delete($berita->image);
         }
+
+        foreach ($berita->images ?? [] as $img) {
+            if (Storage::disk('public')->exists($img)) {
+                Storage::disk('public')->delete($img);
+            }
+        }
+
         $berita->delete();
 
         return redirect()->route('admin.berita.index')->with('success', 'Berita berhasil dihapus.');

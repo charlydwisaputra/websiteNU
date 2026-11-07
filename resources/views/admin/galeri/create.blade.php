@@ -3,7 +3,7 @@
 @section('hide_bottom_nav', true)
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6 pb-28 md:pb-12" x-data="{ submitting: false }">
+<div class="max-w-4xl mx-auto space-y-6 pb-28 md:pb-12" x-data="galeriUpload()">
 
     {{-- Breadcrumb & Back --}}
     <div class="flex items-center justify-between gap-3">
@@ -26,7 +26,7 @@
             Tambah Foto Dokumentasi
         </h1>
         <p class="text-xs sm:text-sm mt-1" style="color:var(--text-muted)">
-            Unggah dokumentasi kegiatan terbaru untuk galeri publik NU Kalisari.
+            Unggah satu atau lebih foto dokumentasi kegiatan untuk galeri publik NU Kalisari.
         </p>
     </div>
 
@@ -105,33 +105,83 @@
                 @enderror
             </div>
 
-            <!-- File Upload Foto -->
+            <!-- File Upload Multi-Foto -->
             <div class="space-y-2">
                 <label class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
                     File Foto Dokumentasi <span style="color:#ef4444">*</span>
+                    <span class="font-normal ml-1">(bisa pilih banyak sekaligus)</span>
                 </label>
+
+                <!-- Drop Zone -->
                 <div class="border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-colors relative"
                      style="border-color:var(--border-medium);background:var(--bg-surface-elevated)"
-                     onclick="document.getElementById('image').click()">
-                    <input type="file" name="image" id="image" accept="image/*" class="hidden" onchange="previewImage(event)" required>
-                    
-                    <div id="upload-placeholder">
+                     @click="$refs.fileInput.click()"
+                     @dragover.prevent="dragOver = true"
+                     @dragleave="dragOver = false"
+                     @drop.prevent="handleDrop($event)"
+                     :style="dragOver ? 'border-color:var(--accent);background:rgba(var(--accent-rgb),0.05)' : ''">
+
+                    <input type="file" name="images[]" id="images" accept="image/*" multiple
+                           class="hidden" x-ref="fileInput" @change="handleFiles($event.target.files)" required>
+
+                    <!-- Placeholder (saat belum ada foto) -->
+                    <div x-show="previews.length === 0" id="upload-placeholder">
                         <svg class="mx-auto h-10 w-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--text-muted)">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                         <p class="text-xs font-medium" style="color:var(--text-secondary)">Klik atau seret foto ke area ini</p>
-                        <p class="text-[11px] mt-1" style="color:var(--text-muted)">Mendukung JPG, PNG, WEBP. Maksimal 2MB. Di HP dapat langsung membuka kamera.</p>
+                        <p class="text-[11px] mt-1" style="color:var(--text-muted)">Mendukung JPG, PNG, WEBP. Maks 5MB per foto. Bisa pilih banyak foto sekaligus.</p>
                     </div>
 
-                    <div id="preview-container" class="hidden">
-                        <img id="image-preview" src="#" alt="Pratinjau Foto" class="max-h-56 mx-auto rounded-xl object-contain mb-2 shadow-sm border" style="border-color:var(--border-light)">
-                        <p id="file-name" class="text-xs font-medium" style="color:var(--accent)"></p>
-                        <p class="text-[11px] mt-1" style="color:var(--text-muted)">Klik untuk mengganti foto</p>
+                    <!-- Info saat ada foto terpilih -->
+                    <div x-show="previews.length > 0" class="text-xs font-medium" style="color:var(--accent)">
+                        <svg class="mx-auto h-6 w-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Klik untuk menambah lebih banyak foto
                     </div>
                 </div>
-                @error('image')
+
+                @error('images')
                     <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
                 @enderror
+                @error('images.*')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                @enderror
+
+                <!-- Preview Grid -->
+                <div x-show="previews.length > 0" class="mt-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-xs font-semibold" style="color:var(--text-secondary)">
+                            <span x-text="previews.length"></span> foto dipilih
+                        </p>
+                        <button type="button" @click="clearAll()"
+                                class="text-[11px] font-semibold px-3 py-1 rounded-lg transition-all"
+                                style="color:#ef4444;background:rgba(239,68,68,0.08)">
+                            Hapus Semua
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                        <template x-for="(preview, index) in previews" :key="index">
+                            <div class="relative group rounded-xl overflow-hidden aspect-square"
+                                 style="background:var(--bg-surface-elevated)">
+                                <img :src="preview.url" :alt="preview.name"
+                                     class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <button type="button" @click.stop="removeFile(index)"
+                                            class="w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="absolute bottom-0 left-0 right-0 px-1.5 py-1 text-[9px] font-medium text-white truncate"
+                                     style="background:linear-gradient(transparent,rgba(0,0,0,0.6))"
+                                     x-text="preview.name"></div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
             </div>
 
             <!-- Desktop Action Buttons (md+) -->
@@ -142,19 +192,19 @@
                     Batal
                 </a>
                 <button type="submit"
-                        :disabled="submitting"
-                        :class="submitting ? 'opacity-70 cursor-not-allowed' : ''"
+                        :disabled="submitting || previews.length === 0"
+                        :class="(submitting || previews.length === 0) ? 'opacity-70 cursor-not-allowed' : ''"
                         class="px-7 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white transition-all min-h-[44px] inline-flex items-center gap-2 shadow-sm"
                         style="background:var(--accent)">
                     <svg x-show="submitting" class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
                     </svg>
-                    <span x-text="submitting ? 'Menyimpan...' : 'Simpan Foto'">Simpan Foto</span>
+                    <span x-text="submitting ? 'Menyimpan...' : 'Simpan ' + previews.length + ' Foto'">Simpan Foto</span>
                 </button>
             </div>
 
-            <!-- Mobile Sticky Action Bar (Hanya HP, md:hidden, Hormati Safe Area, Solid / Backdrop-blur) -->
+            <!-- Mobile Sticky Action Bar -->
             <div class="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t p-3 flex items-center gap-2.5 shadow-2xl"
                  style="background:var(--bg-overlay);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-color:var(--border-light);padding-bottom:max(0.75rem,env(safe-area-inset-bottom))">
                 <a href="{{ route('admin.galeri.index') }}"
@@ -163,15 +213,15 @@
                     Batal
                 </a>
                 <button type="submit"
-                        :disabled="submitting"
-                        :class="submitting ? 'opacity-70 cursor-not-allowed' : ''"
+                        :disabled="submitting || previews.length === 0"
+                        :class="(submitting || previews.length === 0) ? 'opacity-70 cursor-not-allowed' : ''"
                         class="flex-1 py-3 px-5 rounded-xl text-xs sm:text-sm font-bold text-white text-center transition-all min-h-[48px] shadow-sm inline-flex items-center justify-center gap-2"
                         style="background:var(--accent)">
                     <svg x-show="submitting" class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
                     </svg>
-                    <span x-text="submitting ? 'Menyimpan...' : 'Simpan Foto'">Simpan Foto</span>
+                    <span x-text="submitting ? 'Menyimpan...' : 'Simpan ' + previews.length + ' Foto'">Simpan</span>
                 </button>
             </div>
         </form>
@@ -179,18 +229,49 @@
 </div>
 
 <script>
-function previewImage(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('image-preview').src = e.target.result;
-            document.getElementById('file-name').textContent = file.name;
-            document.getElementById('preview-container').classList.remove('hidden');
-            document.getElementById('upload-placeholder').classList.add('hidden');
-        };
-        reader.readAsDataURL(file);
-    }
+function galeriUpload() {
+    return {
+        previews: [],
+        files: [],
+        dragOver: false,
+        submitting: false,
+
+        handleFiles(newFiles) {
+            Array.from(newFiles).forEach(file => {
+                if (this.files.some(f => f.name === file.name && f.size === file.size)) return;
+                this.files.push(file);
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.previews.push({ url: e.target.result, name: file.name });
+                };
+                reader.readAsDataURL(file);
+            });
+            this.syncInput();
+        },
+
+        handleDrop(event) {
+            this.dragOver = false;
+            this.handleFiles(event.dataTransfer.files);
+        },
+
+        removeFile(index) {
+            this.previews.splice(index, 1);
+            this.files.splice(index, 1);
+            this.syncInput();
+        },
+
+        clearAll() {
+            this.previews = [];
+            this.files = [];
+            this.syncInput();
+        },
+
+        syncInput() {
+            const dt = new DataTransfer();
+            this.files.forEach(f => dt.items.add(f));
+            this.$refs.fileInput.files = dt.files;
+        }
+    };
 }
 
 document.addEventListener('DOMContentLoaded', function () {

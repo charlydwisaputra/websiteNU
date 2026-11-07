@@ -10,6 +10,8 @@ class Berita extends Model
 {
     use HasFactory;
 
+    public const CATEGORIES = ['Kegiatan', 'Pengumuman', 'Organisasi', 'Sosial', 'Tausiyah'];
+
     protected $table = 'beritas';
 
     protected $fillable = [
@@ -18,7 +20,12 @@ class Berita extends Model
         'content',
         'status',
         'image',
+        'images',
         'author_id',
+    ];
+
+    protected $casts = [
+        'images' => 'array',
     ];
 
     protected $appends = ['reading_time'];

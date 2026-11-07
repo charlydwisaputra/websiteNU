@@ -45,24 +45,34 @@ class GaleriController extends Controller
         return view('admin.galeri.create');
     }
 
-    // Admin: Simpan Galeri Baru
+    // Admin: Simpan Galeri Baru (1 event = 1 record, bisa banyak foto)
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'nullable|string|max:255',
-            'category' => 'nullable|string|in:Muslimat,Fatayat,GP Ansor,IPNU,IPPNU,PMII',
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'title' => 'required|string|max:255',
+            'category' => 'nullable|string|in:Muslimat,Fatayat,GP Ansor,IPNU,IPPNU,PMII,Lainnya',
+            'description' => 'nullable|string|max:1000',
+            'images' => 'required|array|min:1|max:20',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        $photoPath = $request->file('photo')->store('galeri', 'public');
+        $photoPaths = [];
+        foreach ($request->file('images') as $file) {
+            $photoPaths[] = $file->store('galeri', 'public');
+        }
 
         Galeri::create([
             'title' => $request->title,
             'category' => $request->category,
-            'photo' => $photoPath,
+            'description' => $request->description,
+            'photo' => $photoPaths[0],  // cover = foto pertama
+            'photos' => $photoPaths,     // semua foto
         ]);
 
-        return redirect()->route('admin.galeri.index')->with('success', 'Galeri berhasil ditambahkan.');
+        $count = count($photoPaths);
+
+        return redirect()->route('admin.galeri.index')
+            ->with('success', "Album \"{$request->title}\" berhasil ditambahkan dengan {$count} foto.");
     }
 
     // Admin: Form Edit Galeri
@@ -77,41 +87,63 @@ class GaleriController extends Controller
     public function update(Request $request, int $id)
     {
         $request->validate([
-            'title' => 'nullable|string|max:255',
-            'category' => 'nullable|string|in:Muslimat,Fatayat,GP Ansor,IPNU,IPPNU,PMII',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'title' => 'required|string|max:255',
+            'category' => 'nullable|string|in:Muslimat,Fatayat,GP Ansor,IPNU,IPPNU,PMII,Lainnya',
+            'description' => 'nullable|string|max:1000',
+            'new_images' => 'nullable|array|max:20',
+            'new_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            'delete_photos' => 'nullable|array',
+            'delete_photos.*' => 'string',
         ]);
 
         $galeri = Galeri::findOrFail($id);
 
-        $photoPath = $galeri->photo;
-        if ($request->hasFile('photo')) {
-            if ($photoPath && Storage::disk('public')->exists($photoPath)) {
-                Storage::disk('public')->delete($photoPath);
+        // Hapus foto yang diminta dihapus
+        $existingPhotos = $galeri->photos ?? ($galeri->photo ? [$galeri->photo] : []);
+        $deletePhotos = $request->input('delete_photos', []);
+
+        foreach ($deletePhotos as $path) {
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
             }
-            $photoPath = $request->file('photo')->store('galeri', 'public');
+            $existingPhotos = array_filter($existingPhotos, fn ($img) => $img !== $path);
         }
+
+        // Tambah foto baru
+        if ($request->hasFile('new_images')) {
+            foreach ($request->file('new_images') as $file) {
+                $existingPhotos[] = $file->store('galeri', 'public');
+            }
+        }
+
+        $allPhotos = array_values($existingPhotos);
 
         $galeri->update([
             'title' => $request->title,
             'category' => $request->category,
-            'photo' => $photoPath,
+            'description' => $request->description,
+            'photo' => $allPhotos[0] ?? null,
+            'photos' => $allPhotos ?: null,
         ]);
 
-        return redirect()->route('admin.galeri.index')->with('success', 'Galeri berhasil diperbarui.');
+        return redirect()->route('admin.galeri.index')->with('success', 'Album galeri berhasil diperbarui.');
     }
 
-    // Admin: Hapus Galeri
+    // Admin: Hapus Galeri (seluruh album beserta semua fotonya)
     public function destroy(int $id)
     {
         $galeri = Galeri::findOrFail($id);
 
-        if ($galeri->photo && Storage::disk('public')->exists($galeri->photo)) {
-            Storage::disk('public')->delete($galeri->photo);
+        // Hapus semua file foto dari storage
+        $allPhotos = $galeri->photos ?? ($galeri->photo ? [$galeri->photo] : []);
+        foreach ($allPhotos as $photoPath) {
+            if ($photoPath && Storage::disk('public')->exists($photoPath)) {
+                Storage::disk('public')->delete($photoPath);
+            }
         }
 
         $galeri->delete();
 
-        return redirect()->route('admin.galeri.index')->with('success', 'Galeri berhasil dihapus.');
+        return redirect()->route('admin.galeri.index')->with('success', 'Album galeri berhasil dihapus.');
     }
 }

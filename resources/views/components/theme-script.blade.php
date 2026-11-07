@@ -6,21 +6,20 @@
 <meta name="color-scheme" content="light dark">
 <script>
 (function () {
+    document.documentElement.classList.add('js');
+
+    var stored = null;
     try {
-        var stored = localStorage.getItem('theme');
-        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var isDark = stored ? (stored === 'dark') : prefersDark;
-        
-        if (isDark) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-        document.documentElement.classList.add('js');
-    } catch (e) {
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.add('dark');
-        }
+        stored = localStorage.getItem('theme');
+    } catch (e) {}
+
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var isDark = stored ? (stored === 'dark') : prefersDark;
+
+    if (isDark) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
     }
 
     /* Expose toggle globally so any button can call it */

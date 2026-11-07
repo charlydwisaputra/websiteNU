@@ -71,7 +71,7 @@
                         class="form-select-custom px-4 py-2.5 rounded-xl text-sm font-medium outline-none transition-all min-h-[44px] w-44"
                         style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
                     <option value="">Semua Kategori</option>
-                    @foreach(['Kegiatan','Pengumuman','Organisasi','Sosial'] as $cat)
+                    @foreach (\App\Models\Berita::CATEGORIES as $cat)
                     <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
                     @endforeach
                 </select>
@@ -455,7 +455,7 @@
                     <select name="category" class="w-full px-4 py-3 rounded-xl text-base font-medium outline-none transition-all min-h-[44px]"
                             style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
                         <option value="">Semua Kategori</option>
-                        @foreach(['Kegiatan','Pengumuman','Organisasi','Sosial'] as $cat)
+                        @foreach (\App\Models\Berita::CATEGORIES as $cat)
                         <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
                         @endforeach
                     </select>

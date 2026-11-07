@@ -115,9 +115,11 @@
         activeLightbox: null,
         openLightbox(item) {
             this.activeLightbox = item;
+            document.documentElement.classList.toggle('overflow-hidden', true);
         },
         closeLightbox() {
             this.activeLightbox = null;
+            document.documentElement.classList.toggle('overflow-hidden', false);
         }
     }">
         <!-- HERO -->
@@ -179,9 +181,11 @@
                         Jelajahi Warta
                     </a>
                     {{-- Tombol sekunder dengan backdrop-blur dan border lebih jelas --}}
-                    <a href="#agenda" class="w-full sm:w-auto inline-flex btn-active-scale items-center justify-center px-8 py-3.5 min-h-[44px] rounded-xl text-sm font-medium transition-all bg-black/35 hover:bg-black/50 sm:bg-white/15 sm:hover:bg-white/25 backdrop-blur-md border border-white/60 hover:border-white/90 text-white shadow-md shadow-black/20">
-                        Lihat Agenda
-                    </a>
+                    @if($agendas->isNotEmpty())
+                        <a href="#agenda" class="w-full sm:w-auto inline-flex btn-active-scale items-center justify-center px-8 py-3.5 min-h-[44px] rounded-xl text-sm font-medium transition-all bg-black/35 hover:bg-black/50 sm:bg-white/15 sm:hover:bg-white/25 backdrop-blur-md border border-white/60 hover:border-white/90 text-white shadow-md shadow-black/20">
+                            Lihat Agenda
+                        </a>
+                    @endif
                 </div>
             </div>
         </section>
@@ -194,7 +198,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center reveal-up">
                     <div class="lg:col-span-7">
-                        <h2 class="font-serif text-[26px] sm:text-3xl md:text-[clamp(2.25rem,5vw,3.5rem)] font-medium leading-[1.2] md:leading-tight mb-3 md:mb-6 line-clamp-4 md:line-clamp-none" style="color: var(--text-primary)">
+                        <h2 class="font-serif text-[26px] sm:text-3xl md:text-[clamp(2.25rem,5vw,3.5rem)] font-medium leading-[1.2] md:leading-tight mb-3 md:mb-6" style="color: var(--text-primary)">
                             Membangun ruang yang memberdayakan masyarakat melalui nilai Ahlussunnah wal Jamaah
                         </h2>
                         <p class="text-sm sm:text-base md:text-lg opacity-90 leading-relaxed mb-4 md:mb-6 max-w-2xl" style="color: var(--text-secondary)">
@@ -202,7 +206,7 @@
                         </p>
                         <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
                             @foreach(config('organisasi.lokasi') as $lokasi)
-                                <span class="inline-flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 md:px-3 md:py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 rounded-lg border border-emerald-200/80 dark:border-emerald-800/60 shadow-sm text-[11px] sm:text-xs md:text-[14px] font-medium shrink-0 md:shrink">
+                                <span class="inline-flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 md:px-3 md:py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 rounded-lg border border-emerald-200/80 dark:border-emerald-800/60 shadow-sm text-xs md:text-[14px] font-medium shrink-0 md:shrink">
                                     <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                     {{ $lokasi }}
                                 </span>
@@ -221,7 +225,7 @@
                                 <div class="font-serif text-[28px] sm:text-[32px] lg:text-3xl font-bold text-emerald-700 dark:text-emerald-400 leading-none mb-1 sm:mb-1.5">
                                     {{ $stats['anggota_display'] ?? $stats['anggota'] ?? $stats[0]['value'] ?? 0 }}
                                 </div>
-                                <div class="text-[11px] sm:text-xs lg:text-sm font-medium leading-tight whitespace-nowrap" style="color: var(--text-secondary)">
+                                <div class="text-xs lg:text-sm font-medium leading-tight" style="color: var(--text-secondary)">
                                     <span class="lg:hidden">Anggota</span>
                                     <span class="hidden lg:inline">Anggota & Warga Aktif</span>
                                 </div>
@@ -237,7 +241,7 @@
                                 <div class="font-serif text-[28px] sm:text-[32px] lg:text-3xl font-bold text-emerald-700 dark:text-emerald-400 leading-none mb-1 sm:mb-1.5">
                                     {{ $stats['kegiatan_display'] ?? $stats['kegiatan'] ?? $stats[2]['value'] ?? 0 }}
                                 </div>
-                                <div class="text-[11px] sm:text-xs lg:text-sm font-medium leading-tight whitespace-nowrap" style="color: var(--text-secondary)">
+                                <div class="text-xs lg:text-sm font-medium leading-tight" style="color: var(--text-secondary)">
                                     <span class="lg:hidden">Kegiatan</span>
                                     <span class="hidden lg:inline">Kegiatan Rutin / Bulan</span>
                                 </div>
@@ -253,7 +257,7 @@
                                 <div class="font-serif text-[28px] sm:text-[32px] lg:text-3xl font-bold text-emerald-700 dark:text-emerald-400 leading-none mb-1 sm:mb-1.5">
                                     {{ $stats['banom_display'] ?? $stats['banom'] ?? $stats[1]['value'] ?? 0 }}
                                 </div>
-                                <div class="text-[10px] sm:text-xs lg:text-sm font-medium leading-tight whitespace-nowrap tracking-tight" style="color: var(--text-secondary)">
+                                <div class="text-xs lg:text-sm font-medium leading-tight" style="color: var(--text-secondary)">
                                     <span class="lg:hidden">Badan Otonom</span>
                                     <span class="hidden lg:inline">Badan Otonom & Lembaga</span>
                                 </div>
@@ -265,55 +269,54 @@
         </section>
 
         <!-- EKOSISTEM (MENAMPILKAN SEMUA 6 BADAN OTONOM) -->
-        <section class="py-10 md:py-20 bg-slate-50/50 dark:bg-slate-900/20 border-b border-black/5 dark:border-white/5 overflow-hidden">
+        <section class="py-10 md:py-20 bg-[var(--bg-section-alt)] dark:bg-white/[0.025] border-b border-black/5 dark:border-white/5 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="mb-3 md:mb-8 reveal-up">
                     <h2 class="font-serif text-3xl md:text-[clamp(2.5rem,5vw,4rem)] font-medium leading-tight" style="color: var(--text-primary)">Ekosistem</h2>
                 </div>
 
-                {{-- Mobile view (<= 767px): 2-column grid, 6 banom (2x3), tinggi seragam, area sentuh min 44px --}}
-                <div class="grid grid-cols-2 gap-3 mb-6 md:hidden reveal-up">
+                <div class="lg:max-w-5xl rounded-2xl overflow-hidden bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 divide-y divide-black/5 dark:divide-white/10 mb-6 md:mb-8 reveal-up">
                     @foreach(config('organisasi.banom') as $banom)
                     @php
                         $banomLogoUrl = \App\Models\Banom::resolveLogoUrl($banom['logo'] ?? null, $banom['singkatan'] ?? $banom['nama'] ?? null);
+                        $koordinator = $banom['koordinator'] ?? $banom['coordinator'] ?? null;
+                        $hasKoordinator = !empty($koordinator) && !str_contains($koordinator, 'ISI:');
                     @endphp
-                    <a href="{{ route('ekosistem') }}" class="p-3.5 rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 hover:border-emerald-500/30 transition-all card-hover flex flex-col items-center justify-center text-center cursor-pointer min-h-[110px] h-full">
-                        <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mb-2 text-emerald-600 dark:text-emerald-400 font-medium text-lg overflow-hidden shrink-0">
-                            @if(!empty($banomLogoUrl))
-                                <img src="{{ $banomLogoUrl }}" alt="Logo {{ $banom['nama'] }}" width="48" height="48" class="w-full h-full object-contain p-1.5 dark:brightness-200 dark:contrast-100" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/brand/logo-nu.png') }}';">
-                            @else
-                                {{ substr($banom['nama'], 0, 1) }}
-                            @endif
-                        </div>
-                        <h3 class="font-serif text-xs sm:text-sm font-semibold leading-snug break-words" style="color: var(--text-primary)">{{ $banom['nama'] }}</h3>
-                    </a>
-                    @endforeach
-                </div>
+                    <a href="{{ route('ekosistem') }}" class="group flex items-start md:items-center gap-4 md:gap-6 px-4 py-3 md:px-6 md:py-5 hover:bg-emerald-50/60 dark:hover:bg-white/[0.03] transition-colors">
+                        {{-- Nomor Urut Desktop --}}
+                        <span class="hidden md:block w-8 shrink-0 font-serif text-lg text-emerald-700/50 dark:text-emerald-400/50 tabular-nums">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
 
-                {{-- Desktop view (>= 768px): 6 Banom in 3-column grid (or 2-column on tablet) --}}
-                <div class="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 md:mb-10 reveal-up">
-                    @foreach(config('organisasi.banom') as $banom)
-                    @php
-                        $banomLogoUrl = \App\Models\Banom::resolveLogoUrl($banom['logo'] ?? null, $banom['singkatan'] ?? $banom['nama'] ?? null);
-                    @endphp
-                    <a href="{{ route('ekosistem') }}" class="p-6 rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 hover:border-emerald-500/30 transition-all card-hover block cursor-pointer">
-                        <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mb-6 text-emerald-600 dark:text-emerald-400 font-medium text-xl overflow-hidden">
+                        {{-- Logo Banom --}}
+                        <div class="w-12 h-12 md:w-16 md:h-16 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-medium text-lg md:text-2xl overflow-hidden shrink-0">
                             @if(!empty($banomLogoUrl))
-                                <img src="{{ $banomLogoUrl }}" alt="Logo {{ $banom['nama'] }}" width="48" height="48" class="w-full h-full object-contain p-1.5 dark:brightness-200 dark:contrast-100" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/brand/logo-nu.png') }}';">
+                                <img src="{{ $banomLogoUrl }}" alt="Logo {{ $banom['nama'] }}" width="64" height="64" class="w-full h-full object-contain p-1.5 dark:brightness-200 dark:contrast-100" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/brand/logo-nu.png') }}';">
                             @else
                                 {{ substr($banom['nama'], 0, 1) }}
                             @endif
                         </div>
-                        <h3 class="font-serif text-2xl font-medium mb-3" style="color: var(--text-primary)">{{ $banom['nama'] }}</h3>
-                        <p class="text-sm leading-relaxed" style="color: var(--text-secondary)">{{ $banom['deskripsi'] }}</p>
-                        
-                        @php
-                            $koordinator = $banom['koordinator'] ?? $banom['coordinator'] ?? null;
-                            $hasKoordinator = !empty($koordinator) && !str_contains($koordinator, 'ISI:');
-                        @endphp
-                        <div class="mt-4 pt-4 border-t border-black/5 dark:border-white/5 text-[12px] sm:text-[13px] font-medium {{ $hasKoordinator ? 'text-slate-600 dark:text-slate-400' : 'text-slate-500 dark:text-slate-400/80 italic' }}">
-                            {{ $hasKoordinator ? 'Koordinator: ' . $koordinator : 'Belum ada koordinator' }}
+
+                        {{-- Tengah (flex-1 min-w-0) + Koordinator --}}
+                        <div class="flex-1 min-w-0 md:flex md:items-center md:justify-between md:gap-6">
+                            <div class="min-w-0">
+                                <h3 class="font-serif text-xl md:text-2xl font-medium leading-snug transition-colors group-hover:text-emerald-700 dark:group-hover:text-emerald-400" style="color: var(--text-primary)">
+                                    {{ $banom['nama'] }}
+                                </h3>
+                                <p class="hidden md:block text-sm leading-relaxed mt-1 line-clamp-2" style="color: var(--text-secondary)">
+                                    {{ $banom['deskripsi'] }}
+                                </p>
+                            </div>
+                            <div class="mt-0.5 md:mt-0 md:w-56 md:text-right shrink-0 text-xs md:text-sm font-medium {{ $hasKoordinator ? 'text-slate-600 dark:text-slate-400' : 'text-slate-500 dark:text-slate-400/80 italic' }}">
+                                @if($hasKoordinator)
+                                    <span class="hidden md:block text-xs font-normal" style="color: var(--text-muted)">Koordinator</span>
+                                    <span class="md:hidden">Koordinator: </span>{{ $koordinator }}
+                                @else
+                                    Belum ada koordinator
+                                @endif
+                            </div>
                         </div>
+
+                        {{-- Panah Desktop --}}
+                        <span class="hidden md:block text-emerald-600 dark:text-emerald-400 text-lg transition-transform duration-200 group-hover:translate-x-1 shrink-0" aria-hidden="true">&rarr;</span>
                     </a>
                     @endforeach
                 </div>
@@ -326,55 +329,53 @@
             </div>
         </section>
 
+        @if($agendas->isNotEmpty())
         <!-- AGENDA TERDEKAT -->
         <section id="agenda" class="py-10 md:py-20 border-b border-black/5 dark:border-white/5 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="mb-3 md:mb-8 reveal-up">
-                    <h2 class="font-serif text-3xl md:text-[clamp(2.5rem,5vw,4rem)] font-medium leading-tight" style="color: var(--text-primary)">Agenda Terdekat</h2>
+                    <h2 class="font-serif text-3xl md:text-[clamp(2.5rem,5vw,4rem)] font-medium leading-tight" style="color: var(--text-primary)">
+                        Agenda Terdekat
+                    </h2>
                 </div>
 
-                @if($agendas->isEmpty())
-                    <div class="py-10 px-6 rounded-2xl bg-black/5 dark:bg-white/5 text-center border border-black/5 dark:border-white/5 mb-6">
-                        <p class="text-base" style="color: var(--text-secondary)">Belum ada agenda terjadwal.</p>
-                    </div>
-                @else
-                    <div class="flex flex-col md:grid md:grid-cols-3 gap-3.5 sm:gap-4 md:gap-6 mb-6 md:mb-10 reveal-up">
-                        @foreach($agendas as $index => $agenda)
-                        <div class="group w-full md:w-auto p-4 sm:p-5 md:p-6 rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 hover:border-emerald-500/30 transition-colors card-hover flex flex-col justify-between {{ $index >= 3 ? 'hidden md:flex' : '' }}">
-                            <div>
-                                <div class="flex items-center gap-3 mb-3 md:block md:mb-6">
-                                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-500/20 flex flex-col items-center justify-center shrink-0 text-emerald-600 dark:text-emerald-400">
-                                        <span class="text-lg md:text-xl font-bold font-serif leading-none">{{ $agenda->tanggal_mulai->translatedFormat('d') }}</span>
-                                        <span class="text-[10px] md:text-[11px] uppercase tracking-wider font-semibold mt-0.5 leading-none">{{ $agenda->tanggal_mulai->translatedFormat('M') }}</span>
-                                    </div>
-                                    <div class="md:hidden min-w-0 flex-1">
-                                        <h3 class="font-serif text-base sm:text-lg font-medium leading-snug line-clamp-2" style="color: var(--text-primary)">{{ $agenda->judul }}</h3>
-                                    </div>
-                                </div>
-                                <h3 class="hidden md:block font-serif text-2xl font-medium mb-3 line-clamp-2" style="color: var(--text-primary)">{{ $agenda->judul }}</h3>
-                                @if($agenda->deskripsi)
-                                    <p class="text-xs sm:text-sm leading-relaxed line-clamp-2 mb-3 md:mb-4" style="color: var(--text-secondary)">{{ $agenda->deskripsi }}</p>
-                                @endif
-                            </div>
-                            <div class="pt-3 md:pt-4 border-t border-black/5 dark:border-white/5 flex items-center gap-2 text-xs" style="color: var(--text-muted)">
-                                <svg class="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <span class="line-clamp-1">{{ $agenda->lokasi }}</span>
-                            </div>
+                <div class="rounded-2xl overflow-hidden bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 divide-y divide-black/5 dark:divide-white/10 mb-0 reveal-up">
+                    @foreach($agendas as $agenda)
+                    <div class="flex items-start md:items-center gap-4 md:gap-6 px-4 py-4 md:px-6 md:py-5">
+                        {{-- Tanggal Kiri --}}
+                        <div class="w-14 md:w-16 shrink-0 text-center">
+                            <span class="font-serif text-2xl md:text-3xl font-medium leading-none text-emerald-700 dark:text-emerald-400 block">{{ $agenda->tanggal_mulai->translatedFormat('d') }}</span>
+                            <span class="text-xs uppercase tracking-wider font-semibold block mt-1" style="color: var(--text-muted)">{{ $agenda->tanggal_mulai->translatedFormat('M') }}</span>
                         </div>
-                        @endforeach
-                    </div>
-                @endif
 
-                <div>
-                    <a href="{{ route('berita.index', ['category' => 'Kegiatan']) }}" class="inline-flex items-center min-h-[44px] py-2 text-sm font-medium transition-colors text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">
-                        <span class="link-underline">Lihat Semua Agenda &rarr;</span>
-                    </a>
+                        {{-- Konten Tengah --}}
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-serif text-lg md:text-xl font-medium leading-snug line-clamp-2" style="color: var(--text-primary)">
+                                {{ $agenda->judul }}
+                            </h3>
+                            <div class="flex items-center gap-2 text-sm mt-1" style="color: var(--text-secondary)">
+                                <span class="shrink-0">{{ $agenda->tanggal_mulai->translatedFormat('l, H:i') . ' WIB' }}</span>
+                                <span class="shrink-0">&middot;</span>
+                                <span class="inline-flex items-center gap-1 min-w-0">
+                                    <svg class="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    <span class="line-clamp-1">{{ $agenda->lokasi }}</span>
+                                </span>
+                            </div>
+                            @if($agenda->deskripsi)
+                                <p class="hidden md:block text-sm line-clamp-2 mt-1.5" style="color: var(--text-muted)">
+                                    {{ $agenda->deskripsi }}
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                    @endforeach
                 </div>
             </div>
         </section>
+        @endif
 
         <!-- WARTA & KEGIATAN -->
         <section id="warta" class="py-10 md:py-20 border-b border-black/5 dark:border-white/5 overflow-hidden">
@@ -397,7 +398,7 @@
                                 <img src="{{ $featured->image ? asset('storage/' . $featured->image) : $wartaFallback }}" alt="{{ $featured->title }}" width="640" height="360" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105" loading="lazy" onerror="this.onerror=null; this.src='{{ $wartaFallback }}';">
                             </div>
                             <div class="flex flex-col justify-center">
-                                <div class="flex items-center gap-2 mb-2 md:mb-3 text-[10px] font-medium uppercase tracking-widest" style="color: var(--text-muted)">
+                                <div class="flex items-center gap-2 mb-2 md:mb-3 text-xs font-medium uppercase tracking-widest" style="color: var(--text-muted)">
                                     <span>{{ $featured->category ?? 'Warta' }}</span>
                                     <span>·</span>
                                     <span>@tanggal($featured->created_at)</span>
@@ -422,7 +423,7 @@
                                 <img src="{{ $berita->image ? asset('storage/' . $berita->image) : $wartaFallback }}" alt="{{ $berita->title }}" width="112" height="112" class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105" loading="lazy" onerror="this.onerror=null; this.src='{{ $wartaFallback }}';">
                             </div>
                             <div class="flex flex-col py-0.5 justify-center flex-grow min-w-0">
-                                <span class="text-[10px] font-medium uppercase tracking-widest mb-1" style="color: var(--text-muted)">
+                                <span class="text-xs font-medium uppercase tracking-widest mb-1" style="color: var(--text-muted)">
                                     @tanggal($berita->created_at)
                                 </span>
                                 <h4 class="font-serif text-sm sm:text-base md:text-base font-semibold leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2" style="color: var(--text-primary)">
@@ -444,7 +445,7 @@
         </section>
 
         <!-- DOKUMENTASI (GRID 3 KOLOM DESKTOP, 2x2 MOBILE, RASIO 4:3, CAPTION OVERLAY & LIGHTBOX) -->
-        <section class="py-10 md:py-20 bg-slate-50/50 dark:bg-slate-900/20 border-b border-black/5 dark:border-white/5 overflow-hidden">
+        <section class="py-10 md:py-20 bg-[var(--bg-section-alt)] dark:bg-white/[0.025] border-b border-black/5 dark:border-white/5 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="mb-3 md:mb-8 reveal-up">
                     <h2 class="font-serif text-3xl md:text-[clamp(2.5rem,5vw,4rem)] font-medium leading-tight" style="color: var(--text-primary)">Dokumentasi</h2>
@@ -466,18 +467,14 @@
                             $tanggalFormatted = $galeri->created_at ? $galeri->created_at->translatedFormat('d F Y') : '';
                         @endphp
                         <div class="group aspect-[4/3] relative rounded-2xl overflow-hidden bg-emerald-50 dark:bg-emerald-900/10 border border-black/5 dark:border-white/5 cursor-pointer card-hover {{ $index >= 4 ? 'hidden' : ($index == 3 ? 'block md:hidden' : '') }}"
-                             @click="openLightbox({
-                                 src: '{{ $galeriSrc }}',
-                                 title: '{{ addslashes($galeri->title) }}',
-                                 date: '{{ $tanggalFormatted }}'
-                             })">
+                             @click="openLightbox(@js(['src' => $galeriSrc, 'title' => $galeri->title, 'date' => $tanggalFormatted]))">
                             <img src="{{ $galeriSrc }}" alt="{{ $galeri->title }}" width="600" height="450" class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105" loading="lazy" onerror="this.onerror=null; this.src='{{ $imgFallback }}';">
                             
                             {{-- Caption Overlay (Judul + Tanggal): tidak ada teks 'Dokumentasi NU Kalisari' di atas foto asli --}}
                             <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent flex flex-col justify-end p-3 sm:p-4 text-white">
                                 <span class="font-serif text-xs sm:text-base font-semibold leading-snug line-clamp-1 drop-shadow-sm">{{ $galeri->title }}</span>
                                 @if($tanggalFormatted)
-                                    <span class="text-[10px] sm:text-xs text-white/80 font-normal mt-0.5 drop-shadow-sm">{{ $tanggalFormatted }}</span>
+                                    <span class="text-xs text-white/80 font-normal mt-0.5 drop-shadow-sm">{{ $tanggalFormatted }}</span>
                                 @endif
                             </div>
                         </div>
@@ -505,33 +502,62 @@
                         <p class="text-base" style="color: var(--text-secondary)">Belum ada data pengurus yang ditampilkan.</p>
                     </div>
                 @else
-                    {{-- Grid 3 kolom (3+3 = 6 kartu) di desktop, 2 kolom di mobile, kartu bisa diklik --}}
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-4 md:gap-6 mb-6 md:mb-10 reveal-up">
-                        @foreach($penguruses->take(6) as $pengurus)
-                        <a href="{{ route('tentang') }}#pengurus" class="group p-4 sm:p-5 md:p-6 rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 hover:border-emerald-500/30 transition-all card-hover flex flex-col items-center text-center cursor-pointer">
-                            {{-- Foto bulat / Inisial --}}
-                            <div class="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full mb-3 sm:mb-4 overflow-hidden shrink-0 flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-500/20 dark:border-emerald-500/30">
+                    @php
+                        $semua = $penguruses->take(6)->values();
+                        $pimpinan = $semua->filter(fn($p) => in_array(strtolower(trim($p->position)), ['rais syuriyah','ketua tanfidziyah']))->values();
+                        if ($pimpinan->count() < 2) { $pimpinan = $semua->take(2)->values(); }
+                        $lainnya = $semua->reject(fn($p) => $pimpinan->contains('id', $p->id))->values();
+                    @endphp
+
+                    {{-- Pimpinan (2 Kartu Unggulan) --}}
+                    <div class="grid grid-cols-2 gap-3 md:gap-6 mb-3 md:mb-6 reveal-up">
+                        @foreach($pimpinan as $pengurus)
+                        <a href="{{ route('tentang') }}#pengurus" class="group p-5 md:p-8 rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 hover:border-emerald-500/30 flex flex-col items-center text-center transition-all card-hover">
+                            <div class="w-20 h-20 md:w-28 md:h-28 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-500/20 dark:border-emerald-500/30">
                                 @if($pengurus->photo)
-                                    <img src="{{ asset('storage/' . $pengurus->photo) }}" alt="{{ $pengurus->name }}" width="80" height="80" class="w-full h-full rounded-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
+                                    <img src="{{ asset('storage/' . $pengurus->photo) }}" alt="{{ $pengurus->name }}" width="112" height="112" class="w-full h-full rounded-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
                                 @else
-                                    <span class="text-base sm:text-xl md:text-2xl font-bold font-serif text-emerald-700 dark:text-emerald-200">
+                                    <span class="text-2xl md:text-4xl font-bold font-serif text-emerald-700 dark:text-emerald-200">
                                         @inisial($pengurus->name)
                                     </span>
                                 @endif
                             </div>
-
-                            {{-- Nama: 2 baris di mobile tanpa dipotong --}}
-                            <h3 class="font-serif text-sm sm:text-base md:text-lg font-semibold line-clamp-2 mb-1 transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400 break-words" style="color: var(--text-primary)">
+                            <h3 class="font-serif text-base md:text-2xl font-semibold mt-3 md:mt-5 break-words transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400" style="color: var(--text-primary)">
                                 {{ $pengurus->name }}
                             </h3>
-
-                            {{-- Jabatan --}}
-                            <p class="text-[11px] sm:text-xs md:text-sm font-medium line-clamp-1" style="color: var(--text-muted)">
+                            <span class="mt-2 inline-block px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
                                 {{ $pengurus->position }}
-                            </p>
+                            </span>
                         </a>
                         @endforeach
                     </div>
+
+                    {{-- Pengurus Lainnya (Daftar List Panel) --}}
+                    @if($lainnya->isNotEmpty())
+                    <div class="rounded-2xl overflow-hidden bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 divide-y divide-black/5 dark:divide-white/10 mb-6 md:mb-10 reveal-up">
+                        @foreach($lainnya as $pengurus)
+                        <a href="{{ route('tentang') }}#pengurus" class="group flex items-center gap-4 px-4 py-3 md:px-6 md:py-4 hover:bg-emerald-50/60 dark:hover:bg-white/[0.03] transition-colors">
+                            <div class="w-11 h-11 md:w-12 md:h-12 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-500/20 dark:border-emerald-500/30">
+                                @if($pengurus->photo)
+                                    <img src="{{ asset('storage/' . $pengurus->photo) }}" alt="{{ $pengurus->name }}" width="48" height="48" class="w-full h-full rounded-full object-cover" loading="lazy">
+                                @else
+                                    <span class="text-sm md:text-base font-bold font-serif text-emerald-700 dark:text-emerald-200">
+                                        @inisial($pengurus->name)
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="flex-1 min-w-0 md:flex md:items-center md:justify-between md:gap-4">
+                                <h4 class="font-serif text-base md:text-lg font-semibold truncate transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400" style="color: var(--text-primary)">
+                                    {{ $pengurus->name }}
+                                </h4>
+                                <p class="text-xs md:text-sm font-medium mt-0.5 md:mt-0 md:ml-auto md:text-right shrink-0" style="color: var(--text-muted)">
+                                    {{ $pengurus->position }}
+                                </p>
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
+                    @endif
                 @endif
 
                 <div>
@@ -543,59 +569,66 @@
         </section>
 
         <!-- CTA PENUTUP -->
-        <section class="py-10 md:py-16 reveal-up px-4 sm:px-6 lg:px-8 text-left max-w-7xl mx-auto overflow-hidden">
-            <h2 class="font-serif text-3xl sm:text-4xl md:text-[clamp(2.5rem,5vw,4.5rem)] font-medium mb-2 md:mb-5 leading-tight" style="color: var(--text-primary)">Hadir dan beri makna</h2>
-            <p class="text-sm sm:text-base md:text-lg mb-5 md:mb-8 max-w-xl leading-relaxed" style="color: var(--text-secondary)">
-                Ingin bertanya, berkolaborasi, atau bergabung? Hubungi pengurus kami.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                @if(config('site.whatsapp'))
-                <a href="https://wa.me/{{ config('site.whatsapp') }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto inline-flex btn-active-scale items-center justify-center gap-2 px-6 py-3 min-h-[44px] rounded-xl text-sm font-semibold transition-colors bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                    Hubungi via WhatsApp
-                </a>
-                @endif
-                <a href="mailto:{{ config('organisasi.email') }}" class="w-full sm:w-auto inline-flex btn-active-scale items-center justify-center gap-2 px-6 py-3 min-h-[44px] rounded-xl text-sm font-semibold transition-colors border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500/80 dark:text-emerald-400 dark:hover:bg-emerald-950/40">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                    Hubungi via Email
-                </a>
+        <section class="motif reveal-up overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 text-left">
+                <h2 class="font-serif text-3xl sm:text-4xl md:text-[clamp(2.5rem,5vw,4.5rem)] font-medium mb-2 md:mb-5 leading-tight" style="color: var(--text-primary)">Hadir dan beri makna</h2>
+                <p class="text-sm sm:text-base md:text-lg mb-5 md:mb-8 max-w-xl leading-relaxed" style="color: var(--text-secondary)">
+                    Ingin bertanya, berkolaborasi, atau bergabung? Hubungi pengurus kami.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    @if(config('site.whatsapp'))
+                    <a href="https://wa.me/{{ config('site.whatsapp') }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto inline-flex btn-active-scale items-center justify-center gap-2 px-6 py-3 min-h-[44px] rounded-xl text-sm font-semibold transition-colors bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        Hubungi via WhatsApp
+                    </a>
+                    @endif
+                    <a href="mailto:{{ config('organisasi.email') }}" class="w-full sm:w-auto inline-flex btn-active-scale items-center justify-center gap-2 px-6 py-3 min-h-[44px] rounded-xl text-sm font-semibold transition-colors border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500/80 dark:text-emerald-400 dark:hover:bg-emerald-950/40">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        Hubungi via Email
+                    </a>
+                </div>
             </div>
         </section>
 
         <!-- LIGHTBOX MODAL (DOKUMENTASI) -->
-        <div x-show="activeLightbox" 
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             @keydown.escape.window="closeLightbox()"
-             class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
-             style="display: none;"
-             @click="closeLightbox()">
-            <div class="relative max-w-4xl w-full flex flex-col items-center" @click.stop>
-                <button type="button" @click="closeLightbox()" class="absolute -top-12 right-0 text-white/80 hover:text-white p-2 rounded-full focus:outline-none transition-colors" aria-label="Tutup lightbox">
-                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-                <div class="overflow-hidden rounded-2xl shadow-2xl bg-black/60 border border-white/10 w-full flex flex-col">
-                    <div class="max-h-[75vh] flex items-center justify-center bg-black/50 overflow-hidden">
-                        <img :src="activeLightbox?.src" :alt="activeLightbox?.title" class="max-h-[75vh] w-auto max-w-full object-contain mx-auto">
-                    </div>
-                    <div class="p-4 bg-slate-950/95 border-t border-white/10 text-white flex items-center justify-between gap-4">
-                        <div class="min-w-0">
-                            <h4 class="font-serif text-lg font-medium text-white truncate" x-text="activeLightbox?.title"></h4>
-                            <p class="text-xs text-white/70 mt-0.5" x-text="activeLightbox?.date"></p>
+        <template x-teleport="body">
+            <div x-show="activeLightbox" 
+                 role="dialog"
+                 aria-modal="true"
+                 aria-label="Pratinjau dokumentasi"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @keydown.escape.window="closeLightbox()"
+                 class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
+                 style="display: none;"
+                 @click="closeLightbox()">
+                <div class="relative max-w-4xl w-full flex flex-col items-center" @click.stop>
+                    <button type="button" @click="closeLightbox()" class="absolute -top-12 right-0 text-white/80 hover:text-white p-2 rounded-full focus:outline-none transition-colors" aria-label="Tutup lightbox">
+                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                    <div class="overflow-hidden rounded-2xl shadow-2xl bg-black/60 border border-white/10 w-full flex flex-col">
+                        <div class="max-h-[75vh] flex items-center justify-center bg-black/50 overflow-hidden">
+                            <img :src="activeLightbox?.src" :alt="activeLightbox?.title" class="max-h-[75vh] w-auto max-w-full object-contain mx-auto">
                         </div>
-                        <button type="button" @click="closeLightbox()" class="text-xs uppercase tracking-wider px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors shrink-0 font-medium">
-                            Tutup
-                        </button>
+                        <div class="p-4 bg-slate-950/95 border-t border-white/10 text-white flex items-center justify-between gap-4">
+                            <div class="min-w-0">
+                                <h4 class="font-serif text-lg font-medium text-white truncate" x-text="activeLightbox?.title"></h4>
+                                <p class="text-xs text-white/70 mt-0.5" x-text="activeLightbox?.date"></p>
+                            </div>
+                            <button type="button" @click="closeLightbox()" class="text-xs uppercase tracking-wider px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors shrink-0 font-medium">
+                                Tutup
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </template>
     </main>
 
     @include("layouts.public-footer")

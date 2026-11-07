@@ -23,7 +23,7 @@
     {{-- Variabel banner ($hasBannerImage, $bannerWebp1920, dll.) dikirim dari FrontController::tentang() --}}
 
     <!-- 1. BANNER HALAMAN: Foto udara lahan dan desa Kalisari dengan perlakuan warna hijau NU & overlay gradasi -->
-    <header id="hero-section" class="relative w-full h-[36svh] min-h-[290px] max-h-[380px] md:h-[45svh] md:min-h-[380px] md:max-h-[480px] flex items-center justify-start overflow-hidden pt-16 md:pt-20">
+    <header id="hero-section" class="relative w-full min-h-[320px] md:min-h-[420px] flex items-end justify-start overflow-hidden">
         <!-- Media latar: Foto udara desa atau gradasi hijau cadangan jika file tidak ditemukan -->
         <div class="absolute inset-0 z-0 overflow-hidden bg-gradient-to-br from-[#063323] via-[#031d14] to-[#010e09]">
             @if($hasBannerImage)
@@ -60,37 +60,31 @@
         </div>
 
         <!-- Transisi ke konten yang mulus: memudar sempurna ke warna latar halaman -->
-        <div class="absolute bottom-0 inset-x-0 h-12 sm:h-14 pointer-events-none" style="background: linear-gradient(to top, var(--bg-base) 0%, transparent 100%)"></div>
+        <div class="absolute bottom-0 inset-x-0 h-20 sm:h-24 pointer-events-none" style="background: linear-gradient(to top, var(--bg-base) 0%, color-mix(in srgb, var(--bg-base) 70%, transparent) 55%, transparent 100%)"></div>
 
         <!-- Teks banner -->
-        <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 backdrop-blur-sm mb-3">
+        <div class="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-white pt-28 md:pt-36 pb-24 sm:pb-28">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-black/40 text-emerald-200 border border-emerald-300/40 backdrop-blur-sm mb-3">
                 <span>Profil & Khidmah</span>
             </div>
             <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-3 text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
                 Tentang Kami
             </h1>
-            <p class="text-sm sm:text-base md:text-lg text-emerald-50/90 font-light max-w-2xl leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+            <p class="text-sm sm:text-base md:text-lg text-emerald-50/90 font-normal max-w-2xl leading-relaxed drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
                 {{ $tentangDeskripsi }}
             </p>
         </div>
     </header>
 
     <!-- CONTENT WRAPPER -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 flex-grow w-full" style="overflow-x: clip">
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 flex-grow w-full space-y-12 md:space-y-16" style="overflow-x: clip">
         
-        <!-- CONTENT GRID (Desktop: Kolom Kiri 8 col, Kolom Kanan Sticky 4 col) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-            
-            <!-- KOLOM UTAMA (KIRI) -->
-            <div class="lg:col-span-8 flex flex-col gap-10 md:gap-12">
-                
-                <!-- 2. SEJARAH SINGKAT -->
-                <section id="sejarah" class="scroll-mt-24">
+        <!-- 2. SEJARAH SINGKAT -->
+        <section id="sejarah" class="scroll-mt-24">
                     <div class="flex items-center gap-2 mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                         <span>Kilasan Perjalanan</span>
                     </div>
-                    <h2 class="font-serif text-2xl sm:text-3xl font-medium mb-4 sm:mb-5" style="color:var(--text-primary)">
+                    <h2 class="font-serif text-3xl md:text-4xl font-medium mb-4 sm:mb-5" style="color:var(--text-primary)">
                         Sejarah Singkat
                     </h2>
 
@@ -101,7 +95,7 @@
                     <div class="grid grid-cols-1 {{ $sejarahPhotoType ? 'lg:grid-cols-12 lg:gap-8 items-stretch' : '' }}">
                         
                         <!-- Teks Sejarah -->
-                        <div class="{{ $sejarahPhotoType ? 'lg:col-span-7' : 'w-full' }} space-y-4 text-sm sm:text-base leading-relaxed text-slate-700 dark:text-slate-300 font-light">
+                        <div class="{{ $sejarahPhotoType ? 'lg:col-span-7' : 'w-full' }} space-y-4 text-sm sm:text-base leading-relaxed text-slate-700 dark:text-slate-300 font-normal">
                             <p>{{ $sejarahParagraphs[0] ?? '' }}</p>
                             
                             @if($sejarahPhotoType)
@@ -125,7 +119,7 @@
                                 </div>
                                 @if($sejarahPhotoType === 'galeri' && !empty($realCaption))
                                 <div class="mt-1.5 px-1">
-                                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2">
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium line-clamp-2">
                                         {{ $realCaption }}
                                     </p>
                                 </div>
@@ -174,18 +168,15 @@
                     </div>
                 </section>
 
-                <!-- 3. VISI & MISI: Desktop 2 kolom, Mobile ditumpuk (Visi dulu) -->
+                <!-- 3. VISI & MISI: Desktop grid 12 kolom (Visi 5, Misi 7) -->
                 <section id="visi-misi" class="scroll-mt-24">
-                    <div class="flex items-center gap-2 mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                        <span>Arah & Cita-Cita</span>
-                    </div>
-                    <h2 class="font-serif text-2xl sm:text-3xl font-medium mb-4 sm:mb-6" style="color:var(--text-primary)">
+                    <h2 class="font-serif text-3xl md:text-4xl font-medium mb-4 sm:mb-6" style="color:var(--text-primary)">
                         Visi & Misi
                     </h2>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 items-stretch">
-                        <!-- Kartu Visi: Hijau pekat dengan latar samar flag-nu.jpg (overlay 85-90%) & teks putih kontras tinggi -->
-                        <div class="md:self-auto relative overflow-hidden flex flex-col h-full p-6 sm:p-7 rounded-2xl bg-[#063323] text-white shadow-md shadow-emerald-950/15 border border-emerald-700/50 group">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                        <!-- Kartu Visi: Hijau pekat dengan latar samar flag-nu.jpg (lg:col-span-5, tinggi mengikuti isi) -->
+                        <div class="lg:col-span-5 relative overflow-hidden flex flex-col p-6 sm:p-7 rounded-2xl bg-[#063323] text-white shadow-md shadow-emerald-950/15 border border-emerald-700/50 group">
                             
                             @if(file_exists(public_path('images/flag-nu.jpg')))
                             <!-- Latar samar flag-nu.jpg di sisi kanan atas (overlay 85-90%, lambang tidak tertumpuk teks) -->
@@ -203,36 +194,25 @@
                             </div>
 
                             <div class="relative z-10">
-                                <div class="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-sm flex items-center justify-center text-white mb-4 border border-white/20">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                </div>
-                                <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-300">Pandangan Ke Depan</span>
-                                <h3 class="font-serif text-2xl font-medium text-white mt-1 mb-3">Visi</h3>
-                                <p class="text-sm sm:text-base leading-relaxed text-emerald-50 font-light">
-                                    {{ $visi }}
-                                </p>
+                                <span class="text-xs font-semibold uppercase tracking-wider text-emerald-300">Pandangan Ke Depan</span>
+                                <h3 class="font-serif text-xl font-medium text-emerald-200/90 mt-1 mb-4">Visi</h3>
+                                <blockquote class="font-serif text-2xl lg:text-3xl font-medium leading-snug text-white">
+                                    &ldquo;{{ $visi }}&rdquo;
+                                </blockquote>
                             </div>
                         </div>
 
-                        <!-- Kartu Misi: Daftar bernomor dengan lencana angka bulat -->
-                        <div class="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 shadow-sm flex flex-col h-full">
+                        <!-- Kartu Misi: Daftar bernomor dengan lencana angka bulat (lg:col-span-7) -->
+                        <div class="lg:col-span-7 p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 shadow-sm flex flex-col">
                             <div>
-                                <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-4 border border-emerald-100 dark:border-emerald-800/30">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                                    </svg>
-                                </div>
-                                <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Langkah Strategis</span>
+                                <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Langkah Strategis</span>
                                 <h3 class="font-serif text-2xl font-medium mt-1 mb-4" style="color:var(--text-primary)">Misi</h3>
                                 
                                 <ol class="space-y-3.5">
                                     @foreach($misi as $idx => $butirMisi)
                                     <li class="flex items-start gap-3">
                                         <span class="w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 font-semibold text-xs flex items-center justify-center shrink-0 mt-0.5 border border-emerald-200 dark:border-emerald-800/40">{{ $idx + 1 }}</span>
-                                        <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-light">
+                                        <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
                                             {{ $butirMisi }}
                                         </p>
                                     </li>
@@ -245,13 +225,10 @@
 
                 <!-- 4. SUSUNAN PENGURUS: Dikelompokkan Syuriyah & Tanfidziyah, Foto 1:1, Inisial cadangan, Urut urutan -->
                 <section id="pengurus" class="scroll-mt-24">
-                    <div class="flex items-center gap-2 mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                        <span>Amanah Organisasi</span>
-                    </div>
-                    <h2 class="font-serif text-2xl sm:text-3xl font-medium mb-1" style="color:var(--text-primary)">
+                    <h2 class="font-serif text-3xl md:text-4xl font-medium mb-1" style="color:var(--text-primary)">
                         Susunan Pengurus
                     </h2>
-                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-light mb-6">
+                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal mb-6">
                         Masa khidmah Pengurus Ranting Nahdlatul Ulama Kalisari.
                     </p>
 
@@ -265,36 +242,34 @@
                                     Syuriyah
                                 </h3>
                             </div>
-                            <span class="text-[13px] text-slate-600 dark:text-slate-300 font-normal pl-4 sm:pl-0">
+                            <span class="text-sm text-slate-600 dark:text-slate-300 font-normal pl-4 sm:pl-0">
                                 Bimbingan & Pengawasan Spiritual
                             </span>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             @foreach($syuriyahList as $p)
-                            <a href="{{ route('anggota') }}" 
-                               class="flex items-center gap-3 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:shadow-emerald-950/5 dark:hover:shadow-black/40 active:scale-[0.98] group cursor-pointer block no-underline"
-                               aria-label="Lihat daftar anggota">
+                            <div class="flex items-center gap-3.5 sm:gap-4 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl {{ $loop->first ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-200/70 dark:border-emerald-800/50' : 'bg-white dark:bg-[#070D09] border-black/5 dark:border-white/10' }} border hover:border-emerald-500/40 dark:hover:border-emerald-500/40 transition-colors group">
                                 
                                 <!-- Foto Profil Bulat 1:1 atau Inisial 2 Huruf (Warna terang kontras > 4.5:1 di dark mode) -->
-                                <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 bg-emerald-50 dark:bg-[#031d13] border border-emerald-200/70 dark:border-emerald-800/80 flex items-center justify-center relative select-none aspect-square">
+                                <div class="{{ $loop->first ? 'w-14 h-14' : 'w-11 h-11 sm:w-12 sm:h-12' }} rounded-full overflow-hidden shrink-0 bg-emerald-50 dark:bg-[#031d13] border border-emerald-200/70 dark:border-emerald-800/80 flex items-center justify-center relative select-none aspect-square">
                                     @if(!empty($p['photo']))
                                     <img src="{{ asset('storage/' . $p['photo']) }}" 
                                          alt="{{ $p['nama'] }}" 
                                          class="w-full h-full object-cover rounded-full"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                     @endif
-                                    <span class="{{ !empty($p['photo']) ? 'hidden' : 'flex' }} w-full h-full items-center justify-center text-emerald-800 dark:text-emerald-300 font-serif text-sm sm:text-base font-bold">
+                                    <span class="{{ !empty($p['photo']) ? 'hidden' : 'flex' }} w-full h-full items-center justify-center text-emerald-800 dark:text-emerald-300 font-serif {{ $loop->first ? 'text-lg' : 'text-sm sm:text-base' }} font-bold">
                                         @inisial($p['nama'])
                                     </span>
                                 </div>
 
                                 <div class="min-w-0 flex-1">
-                                    <p class="text-sm sm:text-base font-medium leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate" style="color:var(--text-primary)">
+                                    <p class="{{ $loop->first ? 'font-serif text-lg font-semibold' : 'text-sm sm:text-base font-medium' }} leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate" style="color:var(--text-primary)">
                                         {{ $p['nama'] }}
                                     </p>
                                     <p class="text-xs text-slate-600 dark:text-slate-300 mt-0.5">{{ $p['jabatan'] }}</p>
                                 </div>
-                            </a>
+                            </div>
                             @endforeach
                         </div>
                     </div>
@@ -310,36 +285,34 @@
                                     Tanfidziyah
                                 </h3>
                             </div>
-                            <span class="text-[13px] text-slate-600 dark:text-slate-300 font-normal pl-4 sm:pl-0">
+                            <span class="text-sm text-slate-600 dark:text-slate-300 font-normal pl-4 sm:pl-0">
                                 Pelaksana Program Kerja & Organisasi
                             </span>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             @foreach($tanfidziyahList as $p)
-                            <a href="{{ route('anggota') }}" 
-                               class="flex items-center gap-3 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 hover:border-emerald-500/40 dark:hover:border-emerald-500/40 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:shadow-emerald-950/5 dark:hover:shadow-black/40 active:scale-[0.98] group cursor-pointer block no-underline"
-                               aria-label="Lihat daftar anggota">
+                            <div class="flex items-center gap-3.5 sm:gap-4 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl {{ $loop->first ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-200/70 dark:border-emerald-800/50' : 'bg-white dark:bg-[#070D09] border-black/5 dark:border-white/10' }} border hover:border-emerald-500/40 dark:hover:border-emerald-500/40 transition-colors group">
                                 
                                 <!-- Foto Profil Bulat 1:1 atau Inisial 2 Huruf (Warna terang kontras > 4.5:1 di dark mode) -->
-                                <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 bg-emerald-50 dark:bg-[#031d13] border border-emerald-200/70 dark:border-emerald-800/80 flex items-center justify-center relative select-none aspect-square">
+                                <div class="{{ $loop->first ? 'w-14 h-14' : 'w-11 h-11 sm:w-12 sm:h-12' }} rounded-full overflow-hidden shrink-0 bg-emerald-50 dark:bg-[#031d13] border border-emerald-200/70 dark:border-emerald-800/80 flex items-center justify-center relative select-none aspect-square">
                                     @if(!empty($p['photo']))
                                     <img src="{{ asset('storage/' . $p['photo']) }}" 
                                          alt="{{ $p['nama'] }}" 
                                          class="w-full h-full object-cover rounded-full"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                     @endif
-                                    <span class="{{ !empty($p['photo']) ? 'hidden' : 'flex' }} w-full h-full items-center justify-center text-emerald-800 dark:text-emerald-300 font-serif text-sm sm:text-base font-bold">
+                                    <span class="{{ !empty($p['photo']) ? 'hidden' : 'flex' }} w-full h-full items-center justify-center text-emerald-800 dark:text-emerald-300 font-serif {{ $loop->first ? 'text-lg' : 'text-sm sm:text-base' }} font-bold">
                                         @inisial($p['nama'])
                                     </span>
                                 </div>
 
                                 <div class="min-w-0 flex-1">
-                                    <p class="text-sm sm:text-base font-medium leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate" style="color:var(--text-primary)">
+                                    <p class="{{ $loop->first ? 'font-serif text-lg font-semibold' : 'text-sm sm:text-base font-medium' }} leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate" style="color:var(--text-primary)">
                                         {{ $p['nama'] }}
                                     </p>
                                     <p class="text-xs text-slate-600 dark:text-slate-300 mt-0.5">{{ $p['jabatan'] }}</p>
                                 </div>
-                            </a>
+                            </div>
                             @endforeach
                         </div>
                     </div>
@@ -357,13 +330,10 @@
 
                 <!-- 5. KEGIATAN RUTIN: 3 Kartu Desktop, Ditumpuk Mobile -->
                 <section id="kegiatan-rutin" class="scroll-mt-24">
-                    <div class="flex items-center gap-2 mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                        <span>Agenda Berkala</span>
-                    </div>
-                    <h2 class="font-serif text-2xl sm:text-3xl font-medium mb-1" style="color:var(--text-primary)">
+                    <h2 class="font-serif text-3xl md:text-4xl font-medium mb-1" style="color:var(--text-primary)">
                         Kegiatan Rutin
                     </h2>
-                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-light mb-5">
+                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal mb-5">
                         Aktivitas pembinaan dan pertemuan rutin warga Nahdliyin Kalisari.
                     </p>
 
@@ -384,17 +354,17 @@
                                     </div>
                                     
                                     <!-- Chip Hari / Jadwal -->
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40 text-right">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40 text-right">
                                         {{ $k['jadwal'] }}
                                     </span>
                                 </div>
 
-                                <h4 class="font-serif text-lg font-medium group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug mb-2" style="color:var(--text-primary)">
+                                <h3 class="font-serif text-lg font-medium group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug mb-2" style="color:var(--text-primary)">
                                     {{ $k['nama'] }}
-                                </h4>
+                                </h3>
 
                                 <!-- Lokasi / Peserta -->
-                                <div class="space-y-1 text-xs text-slate-600 dark:text-slate-400 font-light">
+                                <div class="space-y-1 text-xs text-slate-600 dark:text-slate-400 font-normal">
                                     <div class="flex items-center gap-1.5">
                                         <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
                                         <span class="truncate">{{ $k['lokasi'] ?? ($k['detail'] ?? '-') }}</span>
@@ -410,103 +380,219 @@
                     </div>
                 </section>
 
-                <!-- 6. KONTAK & LOKASI (MOBILE ONLY: tampil setelah Kegiatan Rutin) -->
-                <div class="block lg:hidden">
-                    @include('components.tentang-kontak-card')
+        @if(!empty($banoms) && count($banoms) > 0)
+        <!-- Deretan Logo Banom yang Menaut ke Ekosistem (Area Sentuh Min 44px) -->
+        <section class="pt-8 sm:pt-10 border-t border-black/5 dark:border-white/5">
+            <div class="flex items-center gap-3 flex-wrap">
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Ekosistem:</span>
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    @foreach($banoms as $b)
+                    <a href="{{ route('ekosistem') }}" 
+                       class="w-11 h-11 min-w-[44px] min-h-[44px] p-2 rounded-xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 hover:border-emerald-500/50 hover:scale-105 active:scale-95 transition-all flex items-center justify-center shadow-xs" 
+                       title="{{ $b['nama'] }} ({{ $b['singkatan'] }}) — Buka Ekosistem"
+                       aria-label="{{ $b['nama'] }}">
+                        <img src="{{ $b['logo_url'] }}" alt="Logo {{ $b['nama'] }} ({{ $b['singkatan'] }})" width="28" height="28" class="w-full h-full object-contain pointer-events-none" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/brand/logo-nu.png') }}';">
+                    </a>
+                    @endforeach
                 </div>
-
-            </div>
-
-            <!-- 6. KOLOM KANAN DESKTOP: Sticky Kontak & Lokasi -->
-            <div class="hidden lg:block lg:col-span-4">
-                <div class="sticky top-28">
-                    @include('components.tentang-kontak-card')
-                </div>
-            </div>
-
-        </div>
-
-        <!-- 8. OPSIONAL: STRIP STATISTIK SINGKAT & LOGO BADAN OTONOM (Hanya tampil jika ada datanya) -->
-        @php
-            $hasStats = !empty($stats['anggota']['raw']) || !empty($stats['banom']['raw']);
-            $hasBanoms = !empty($banoms) && count($banoms) > 0;
-        @endphp
-
-        @if($hasStats || $hasBanoms)
-        <section class="mt-12 sm:mt-16 pt-8 sm:pt-10 border-t border-black/5 dark:border-white/5">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                
-                @if($hasStats)
-                <!-- Strip Statistik Singkat (Satu label saja per angka: 'Anggota' & 'Badan Otonom', angka 32px serif) -->
-                <div class="flex flex-wrap items-center gap-6 sm:gap-8">
-                    @if(!empty($stats['anggota']['raw']))
-                    <div class="flex items-center gap-3.5">
-                        <span class="font-serif text-[32px] font-semibold text-emerald-700 dark:text-emerald-400 leading-none">
-                            {{ $stats['anggota']['formatted'] ?? $stats['anggota']['raw'] }}
-                        </span>
-                        <div class="border-l border-black/10 dark:border-white/10 pl-3">
-                            <p class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">Anggota</p>
-                        </div>
-                    </div>
-                    @endif
-
-                    @if(!empty($stats['banom']['raw']))
-                    <div class="flex items-center gap-3.5">
-                        <span class="font-serif text-[32px] font-semibold text-emerald-700 dark:text-emerald-400 leading-none">
-                            {{ $stats['banom']['formatted'] ?? $stats['banom']['raw'] }}
-                        </span>
-                        <div class="border-l border-black/10 dark:border-white/10 pl-3">
-                            <p class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">Badan Otonom</p>
-                        </div>
-                    </div>
-                    @endif
-                </div>
-                @endif
-
-                @if($hasBanoms)
-                <!-- Deretan Logo Banom yang Menaut ke Ekosistem (Area Sentuh Min 44px) -->
-                <div class="flex items-center gap-3 flex-wrap">
-                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Ekosistem:</span>
-                    <div class="flex items-center gap-2.5 flex-wrap">
-                        @foreach($banoms as $b)
-                        <a href="{{ route('ekosistem') }}" 
-                           class="w-11 h-11 min-w-[44px] min-h-[44px] p-2 rounded-xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 hover:border-emerald-500/50 hover:scale-105 active:scale-95 transition-all flex items-center justify-center shadow-xs" 
-                           title="{{ $b['nama'] }} ({{ $b['singkatan'] }}) — Buka Ekosistem"
-                           aria-label="{{ $b['nama'] }}">
-                            <img src="{{ $b['logo_url'] }}" alt="Logo {{ $b['nama'] }} ({{ $b['singkatan'] }})" width="28" height="28" class="w-full h-full object-contain pointer-events-none" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/brand/logo-nu.png') }}';">
-                        </a>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
-
             </div>
         </section>
         @endif
 
-        <!-- 7. PENUTUP HALAMAN (CTA Hadir dan beri makna, konsisten dengan Beranda) -->
-        <section class="mt-12 sm:mt-16 pt-10 sm:pt-14 border-t border-black/5 dark:border-white/5 text-left">
-            <h2 class="font-serif text-3xl sm:text-4xl md:text-[clamp(2.5rem,5vw,4rem)] font-medium mb-2 md:mb-4 leading-tight" style="color: var(--text-primary)">
-                Hadir dan beri makna
-            </h2>
-            <p class="text-sm sm:text-base md:text-lg mb-6 sm:mb-8 max-w-xl leading-relaxed text-slate-600 dark:text-slate-400 font-light">
-                Ingin bertanya, berkolaborasi, atau bergabung? Hubungi pengurus kami.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                @if(config('site.whatsapp'))
-                <a href="https://wa.me/{{ config('site.whatsapp') }}" target="_blank" rel="noopener noreferrer" 
-                   class="w-full sm:w-auto inline-flex btn-active-scale items-center justify-center gap-2 px-6 py-3 min-h-[44px] rounded-xl text-sm font-semibold transition-colors bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-950/10">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                    <span>Hubungi via WhatsApp</span>
-                </a>
-                @endif
-                <a href="mailto:{{ config('organisasi.email') }}" 
-                   class="w-full sm:w-auto inline-flex btn-active-scale items-center justify-center gap-2 px-6 py-3 min-h-[44px] rounded-xl text-sm font-semibold transition-colors border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500/80 dark:text-emerald-400 dark:hover:bg-emerald-950/40">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                    <span>Hubungi via Email</span>
-                </a>
+        @php
+            $lat = config('organisasi.peta.lat', config('organisasi.lokasi_lat', -7.4218));
+            $lng = config('organisasi.peta.lng', config('organisasi.lokasi_lng', 109.1608));
+            $hasCoordinates = !empty($lat) && !empty($lng) && is_numeric($lat) && is_numeric($lng);
+
+            $mapLink = $hasCoordinates 
+                ? "https://www.google.com/maps?q={$lat},{$lng}"
+                : "https://maps.google.com/?q=" . urlencode(config('organisasi.alamat'));
+        @endphp
+
+        <!-- 6. PENUTUP: KONTAK & LOKASI + HADIR DAN BERI MAKNA -->
+        <section id="kontak" class="mt-12 sm:mt-16 pt-10 sm:pt-14 border-t border-black/5 dark:border-white/5 scroll-mt-24 text-left">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                
+                <!-- KIRI (lg:col-span-5) -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div>
+                        <div class="inline-flex items-center gap-2 mb-2 text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                            <span>Sekretariat & Silaturahmi</span>
+                        </div>
+                        <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium mb-3 leading-tight" style="color: var(--text-primary)">
+                            Hadir dan beri makna
+                        </h2>
+                        <p class="text-sm sm:text-base leading-relaxed text-slate-600 dark:text-slate-400 font-normal">
+                            Ingin bertanya, berkolaborasi, atau bergabung? Hubungi pengurus kami atau silaturahmi langsung ke sekretariat.
+                        </p>
+                    </div>
+
+                    <div class="space-y-4 pt-4 border-t border-black/5 dark:border-white/5">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">Alamat</p>
+                            <p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300 font-normal">{{ config('organisasi.alamat') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">Email</p>
+                            <a href="mailto:{{ config('organisasi.email') }}" class="inline-flex items-center min-h-[44px] text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:underline">
+                                {{ config('organisasi.email') }}
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                        @if(config('site.whatsapp'))
+                        <a href="https://wa.me/{{ config('site.whatsapp') }}" target="_blank" rel="noopener noreferrer" 
+                           class="w-full sm:w-auto inline-flex btn-active-scale items-center justify-center gap-2 px-5 py-3 min-h-[44px] rounded-xl text-sm font-semibold transition-colors bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-950/10">
+                            <span>Hubungi via WhatsApp</span>
+                        </a>
+                        @endif
+                        <a href="mailto:{{ config('organisasi.email') }}" 
+                           class="w-full sm:w-auto inline-flex btn-active-scale items-center justify-center gap-2 px-5 py-3 min-h-[44px] rounded-xl text-sm font-semibold transition-colors border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500/80 dark:text-emerald-400 dark:hover:bg-emerald-950/40">
+                            <span>Hubungi via Email</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- KANAN (lg:col-span-7) -->
+                <div class="lg:col-span-7 w-full">
+                    <div class="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 shadow-sm space-y-4">
+                        @if($hasCoordinates)
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">Peta Lokasi</p>
+                            
+                            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+                            <style>
+                                .dark .leaflet-tile-pane {
+                                    filter: brightness(0.75) contrast(1.05) saturate(0.85);
+                                }
+                                .leaflet-control-zoom {
+                                    border: 0 !important;
+                                    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+                                    border-radius: 8px !important;
+                                    overflow: hidden !important;
+                                }
+                            </style>
+
+                            @once
+                            <script>
+                                (function() {
+                                    function registerMapEmbed() {
+                                        if (window.Alpine && !window.Alpine._mapEmbedRegistered) {
+                                            window.Alpine._mapEmbedRegistered = true;
+                                            window.Alpine.data('mapEmbed', (config = {}) => ({
+                                                active: false, map: null, observer: null, resizeObserver: null,
+                                                lat: config.lat || -7.4218, lng: config.lng || 109.1608, zoom: config.zoom || 14,
+                                                pinUrl: config.pinUrl || '/images/pin-hijau.svg',
+                                                init() { this.loadLeaflet(); this.setupObserver(); },
+                                                loadLeaflet() {
+                                                    if (typeof L === 'undefined') {
+                                                        const s = document.createElement('script');
+                                                        s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+                                                        s.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+                                                        s.crossOrigin = '';
+                                                        s.onload = () => this.setupMap();
+                                                        document.head.appendChild(s);
+                                                    } else { this.setupMap(); }
+                                                },
+                                                setupMap() {
+                                                    if (this.map) return;
+                                                    const c = this.$refs.mapContainer;
+                                                    if (!c) return;
+                                                    this.map = L.map(c, {
+                                                        attributionControl: false, zoomControl: true, scrollWheelZoom: false,
+                                                        dragging: false, touchZoom: false, doubleClickZoom: false, boxZoom: false,
+                                                    }).setView([this.lat, this.lng], this.zoom);
+                                                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(this.map);
+                                                    const pinIcon = L.icon({ iconUrl: this.pinUrl, iconSize: [32, 40], iconAnchor: [16, 40], popupAnchor: [0, -40] });
+                                                    L.marker([this.lat, this.lng], { icon: pinIcon }).addTo(this.map);
+                                                    if (window.ResizeObserver) {
+                                                        this.resizeObserver = new ResizeObserver(() => { if (this.map) this.map.invalidateSize(); });
+                                                        this.resizeObserver.observe(c);
+                                                    }
+                                                },
+                                                setupObserver() {
+                                                    this.observer = new IntersectionObserver((entries) => {
+                                                        entries.forEach((e) => { if (!e.isIntersecting) this.toggleActive(false); });
+                                                    }, { threshold: 0.1 });
+                                                    this.observer.observe(this.$el);
+                                                },
+                                                toggleActive(state) {
+                                                    this.active = state;
+                                                    if (!this.map) return;
+                                                    const h = state ? 'enable' : 'disable';
+                                                    this.map.dragging[h](); this.map.touchZoom[h](); this.map.scrollWheelZoom[h]();
+                                                },
+                                                destroy() {
+                                                    if (this.resizeObserver) this.resizeObserver.disconnect();
+                                                    if (this.observer) this.observer.disconnect();
+                                                    if (this.map) { this.map.remove(); this.map = null; }
+                                                },
+                                            }));
+                                        }
+                                    }
+                                    if (window.Alpine) { registerMapEmbed(); } else { document.addEventListener('alpine:init', registerMapEmbed); }
+                                })();
+                            </script>
+                            @endonce
+
+                            <!-- Container Peta Interaktif dengan Pelindung Scroll & Auto-Lock -->
+                            <div x-data="mapEmbed({
+                                    lat: {{ (float)$lat }},
+                                    lng: {{ (float)$lng }},
+                                    zoom: 14,
+                                    pinUrl: @js(asset('images/pin-hijau.svg'))
+                                 })"
+                                 @click.outside="toggleActive(false)"
+                                 class="relative rounded-xl overflow-hidden border border-black/5 dark:border-white/10 shadow-xs bg-slate-100 dark:bg-slate-900 group">
+                                
+                                <div x-ref="mapContainer" class="w-full h-[220px] sm:h-[260px] md:h-[280px] z-0"></div>
+
+                                <div x-show="!active" 
+                                     @click="toggleActive(true)"
+                                     class="absolute inset-0 bg-black/15 dark:bg-black/35 backdrop-blur-[1px] flex items-center justify-center cursor-pointer transition-opacity z-10 p-3"
+                                     role="button"
+                                     tabindex="0"
+                                     @keydown.enter="toggleActive(true)"
+                                     @keydown.space.prevent="toggleActive(true)"
+                                     aria-label="Ketuk untuk mengaktifkan interaksi peta">
+                                    <div class="px-3.5 py-2 rounded-xl bg-white/95 dark:bg-[#070D09]/95 text-slate-800 dark:text-slate-100 text-xs font-medium shadow-md border border-black/10 dark:border-white/10 flex items-center gap-2 select-none group-hover:scale-105 transition-transform">
+                                        <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/>
+                                        </svg>
+                                        <span>Ketuk untuk membuka interaksi peta</span>
+                                    </div>
+                                </div>
+
+                                <button x-show="active" 
+                                        x-cloak
+                                        @click.stop="toggleActive(false)"
+                                        type="button"
+                                        class="absolute top-2 right-2 z-20 px-2.5 py-1 rounded-lg bg-white/95 dark:bg-[#070D09]/95 text-xs font-medium text-slate-700 dark:text-slate-200 border border-black/10 dark:border-white/10 shadow-sm hover:bg-white dark:hover:bg-black transition-colors"
+                                        aria-label="Kunci peta">
+                                    Kunci peta
+                                </button>
+                            </div>
+
+                            <div class="mt-1 text-xs text-slate-400 dark:text-slate-500 text-right">
+                                <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" class="hover:underline">© OpenStreetMap kontributor</a>
+                            </div>
+                        </div>
+                        @endif
+
+                        <div class="pt-2">
+                            <a href="{{ $mapLink }}" target="_blank" rel="noopener noreferrer" 
+                               class="w-full inline-flex justify-center items-center gap-2 px-5 py-3 min-h-[44px] bg-emerald-600 hover:bg-emerald-700 active:scale-95 rounded-xl text-sm font-semibold transition-all text-white shadow-sm shadow-emerald-950/10 group">
+                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <span>Buka di Peta</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 

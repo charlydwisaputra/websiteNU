@@ -54,6 +54,24 @@ test('validasi form berita dan upload foto dengan Storage::fake serta penghapusa
     Storage::disk('public')->assertExists($berita->image);
 });
 
+test('admin dapat menyimpan berita dengan kategori Tausiyah', function () {
+    $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+    $response = $this->actingAs($admin)->post(route('admin.berita.store'), [
+        'title' => 'Tausiyah Ramadhan',
+        'category' => 'Tausiyah',
+        'content' => 'Isi tausiyah menyambut bulan suci.',
+        'status' => 'published',
+    ]);
+
+    $response->assertRedirect(route('admin.berita.index'));
+    $response->assertSessionHas('success');
+
+    $berita = Berita::where('title', 'Tausiyah Ramadhan')->first();
+    expect($berita)->not->toBeNull();
+    expect($berita->category)->toBe('Tausiyah');
+});
+
 test('form anggota mendukung jabatan, pilihan banom, status, urutan, dan is_pengurus serta menghapus foto lama saat diganti', function () {
     Storage::fake('public');
     $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

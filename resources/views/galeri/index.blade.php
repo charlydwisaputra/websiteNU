@@ -31,11 +31,13 @@
 
     @php
         $galeriItems = $galeris->map(function($g) {
-            $photoUrl = $g->photo ?: $g->image;
-            if ($photoUrl && !str_starts_with($photoUrl, 'http')) {
-                $photoUrl = asset('storage/' . ltrim($photoUrl, '/'));
-            } elseif (!$photoUrl) {
+            $cover = $g->cover;
+            if ($cover && !str_starts_with($cover, 'http')) {
+                $photoUrl = asset('storage/' . ltrim($cover, '/'));
+            } elseif (!$cover) {
                 $photoUrl = asset('storage/galeri/placeholder.svg');
+            } else {
+                $photoUrl = $cover;
             }
 
             return [
@@ -43,6 +45,7 @@
                 'title'       => $g->title ?? 'Dokumentasi Kegiatan',
                 'category'    => $g->category ?: 'Umum',
                 'photo'       => $photoUrl,
+                'photo_count' => count($g->all_photos),
                 'description' => $g->description ?? null,
                 'date'        => optional($g->created_at)->isoFormat('D MMM Y') ?? '',
             ];

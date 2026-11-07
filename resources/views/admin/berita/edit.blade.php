@@ -85,8 +85,8 @@
                         class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px] @error('category') border-red-500 is-invalid @enderror"
                         style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
                     <option value="">Pilih Kategori</option>
-                    @foreach(['Berita Utama', 'Kegiatan', 'Pengumuman', 'Artikel', 'Tausiyah'] as $cat)
-                        <option value="{{ $cat }}" {{ old('category', $berita->category) === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @foreach (\App\Models\Berita::CATEGORIES as $cat)
+                        <option value="{{ $cat }}" {{ old('category', $berita->category ?? '') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
                     @endforeach
                 </select>
                 @error('category')

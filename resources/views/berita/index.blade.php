@@ -37,7 +37,7 @@
              ])) }},
              get categories() {
                  const cats = Array.from(new Set(this.rawItems.map(i => i.category).filter(Boolean)));
-                 const preferred = ['Kegiatan', 'Pengumuman', 'Organisasi', 'Sosial'];
+                 const preferred = {{ \Illuminate\Support\Js::from(\App\Models\Berita::CATEGORIES) }};
                  const ordered = ['Semua', ...preferred.filter(c => cats.includes(c))];
                  cats.forEach(c => { if (!ordered.includes(c)) ordered.push(c); });
                  return ordered;

@@ -1,7 +1,7 @@
 @props(['prayer'])
 
 @if($prayer && !empty($prayer['timings']))
-<section class="border-b border-black/5 dark:border-white/5 bg-slate-50/70 dark:bg-[#060B08] transition-colors"
+<section class="border-b border-black/5 dark:border-white/5 bg-[var(--bg-section-alt)] dark:bg-[#060B08] transition-colors"
     x-data="{
         timings: {{ \Illuminate\Support\Js::from($prayer['timings']) }},
         hijri: {{ \Illuminate\Support\Js::from($prayer['hijri'] ?? []) }},
@@ -10,14 +10,16 @@
         countdownText: '',
         init() {
             this.updateNext();
-            setInterval(() => this.updateNext(), 20000);
+            setInterval(() => this.updateNext(), 10000);
         },
         updateNext() {
-            const now = new Date();
-            const nowMin = now.getHours() * 60 + now.getMinutes();
+            const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date());
+            const nowMin = Number(parts.find(p => p.type==='hour').value) * 60 + Number(parts.find(p => p.type==='minute').value);
             let found = '';
             let nextMin = 0;
-            const entries = Object.entries(this.timings).filter(([_, t]) => !!t);
+            const entries = ['Subuh', 'Dzuhur', 'Ashar', 'Maghrib', 'Isya']
+                .map(name => [name, this.timings[name]])
+                .filter(([_, t]) => !!t);
 
             for (const [name, time] of entries) {
                 const [h, m] = time.split(':').map(Number);
@@ -70,7 +72,7 @@
                     </span>
                 </template>
                 <template x-if="isFallback">
-                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50">
+                    <span title="Jadwal perkiraan, belum dari sumber resmi" class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/50">
                         Jadwal Standar
                     </span>
                 </template>
@@ -87,7 +89,7 @@
         </div>
 
         {{-- Prayer times strip: 5-column grid on mobile (fits 360px-430px without cards cut off) & desktop (left-aligned name, right-aligned time, balanced padding) --}}
-        <div class="grid grid-cols-5 gap-1.5 sm:gap-2.5 md:gap-3 w-full">
+        <div class="grid grid-cols-5 gap-1 sm:gap-2.5 md:gap-3 w-full">
             <template x-for="[name, time] in Object.entries(timings)" :key="name">
                 <div :id="'prayer-card-' + name"
                      class="min-w-0 flex flex-col sm:flex-row items-center justify-center sm:justify-between text-center sm:text-left px-1 py-2 sm:px-3.5 sm:py-2.5 md:px-4 md:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm transition-all border select-none"
@@ -95,10 +97,10 @@
                          ? 'bg-emerald-700 text-white border-emerald-700 font-semibold shadow-md shadow-emerald-950/20 ring-2 ring-emerald-600/30 dark:bg-emerald-700 dark:border-emerald-600'
                          : 'bg-white dark:bg-[#101813] border-black/5 dark:border-white/10 hover:border-emerald-500/25 dark:hover:border-white/20'"
                      :style="nextPrayer !== name ? 'color: var(--text-primary)' : ''">
-                    <span class="font-semibold text-[11px] sm:text-sm leading-tight tracking-tight truncate w-full sm:w-auto text-center sm:text-left"
+                    <span class="font-semibold text-xs sm:text-sm leading-tight tracking-tight truncate w-full sm:w-auto text-center sm:text-left"
                           :class="nextPrayer === name ? 'text-white' : 'text-slate-800 dark:text-slate-100'"
                           x-text="name"></span>
-                    <span class="text-[10px] sm:text-xs md:text-sm leading-tight font-mono mt-0.5 sm:mt-0 font-medium shrink-0 sm:ml-auto text-center sm:text-right"
+                    <span class="text-xs sm:text-sm leading-tight font-mono mt-0.5 sm:mt-0 font-medium shrink-0 sm:ml-auto text-center sm:text-right"
                           :class="nextPrayer === name ? 'text-white font-semibold' : 'text-slate-600 dark:text-slate-300'"
                           x-text="time"></span>
                 </div>
@@ -108,7 +110,7 @@
 </section>
 @else
 {{-- Tampilan Cadangan ketika jadwal salat tidak tersedia --}}
-<section class="border-b border-black/5 dark:border-white/5 bg-slate-50/70 dark:bg-[#060B08]">
+<section class="border-b border-black/5 dark:border-white/5 bg-[var(--bg-section-alt)] dark:bg-[#060B08]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
         <span class="inline-flex items-center gap-1.5 font-semibold text-emerald-700 dark:text-emerald-400">
             <svg class="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,4 +1,4 @@
-<footer class="mt-auto relative z-10 overflow-hidden bg-[#0B3D2E] border-t border-white/5">
+<footer class="mt-auto relative z-10 overflow-hidden bg-[#0B3D2E] border-t border-white/5 motif motif--light">
     <div class="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
 

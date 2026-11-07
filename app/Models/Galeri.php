@@ -12,10 +12,35 @@ class Galeri extends Model
 
     protected $fillable = [
         'title',
-        'image',
-        'photo',
         'category',
+        'description',
+        'photo',
+        'photos',
     ];
+
+    protected $casts = [
+        'photos' => 'array',
+    ];
+
+    /**
+     * Foto cover (foto pertama dari array, atau kolom photo lama).
+     */
+    public function getCoverAttribute(): ?string
+    {
+        $photos = $this->photos ?? [];
+
+        return $photos[0] ?? $this->photo ?? null;
+    }
+
+    /**
+     * Semua foto dalam album (gabungan photos + photo lama).
+     *
+     * @return string[]
+     */
+    public function getAllPhotosAttribute(): array
+    {
+        return $this->photos ?? ($this->photo ? [$this->photo] : []);
+    }
 
     protected static function booted(): void
     {

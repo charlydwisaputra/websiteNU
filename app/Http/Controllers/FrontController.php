@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Services\SiteStats;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -19,12 +20,23 @@ class FrontController extends Controller
 {
     public function index()
     {
-        $agendas = class_exists(Agenda::class)
-            ? Agenda::where('tanggal_mulai', '>=', now()->startOfDay())
+        if (class_exists(Agenda::class)) {
+            $hasTanggalSelesai = Schema::hasColumn('agendas', 'tanggal_selesai');
+
+            $agendas = Agenda::when(
+                $hasTanggalSelesai,
+                fn ($query) => $query->where(function ($q) {
+                    $q->where('tanggal_selesai', '>=', now())
+                        ->orWhere(fn ($sq) => $sq->whereNull('tanggal_selesai')->where('tanggal_mulai', '>=', now()->startOfDay()));
+                }),
+                fn ($query) => $query->where('tanggal_mulai', '>=', now()->startOfDay())
+            )
                 ->orderBy('tanggal_mulai', 'asc')
-                ->take(5)
-                ->get()
-            : collect();
+                ->take(3)
+                ->get();
+        } else {
+            $agendas = collect();
+        }
         $beritas = class_exists(Berita::class) ? Berita::where('status', 'published')->latest()->take(5)->get() : collect();
         $galeris = class_exists(Galeri::class) ? Galeri::latest()->take(8)->get() : collect();
         $penguruses = class_exists(Anggota::class)

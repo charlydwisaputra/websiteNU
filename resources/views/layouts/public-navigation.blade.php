@@ -341,7 +341,7 @@
             @endauth
 
             <!-- Mobile Menu Button (44px min area) -->
-            <button id="mobile-menu-btn" type="button" aria-label="Buka menu" aria-expanded="false" class="nav-icon-btn w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex lg:hidden items-center justify-center cursor-pointer">
+            <button id="mobile-menu-btn" type="button" aria-label="Buka menu" aria-expanded="false" aria-controls="mobile-menu" class="nav-icon-btn w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex lg:hidden items-center justify-center cursor-pointer">
                 <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
@@ -356,7 +356,7 @@
     <div id="mobile-menu-backdrop" aria-hidden="true"></div>
 
     <!-- MOBILE MENU PANEL -->
-    <div id="mobile-menu" class="nav-mobile-panel hidden absolute top-[calc(100%+8px)] left-4 right-4 max-h-[calc(100vh-100px)] overflow-y-auto rounded-3xl p-3 sm:p-4 lg:hidden" style="z-index: 51;">
+    <div id="mobile-menu" class="nav-mobile-panel hidden absolute top-[calc(100%+8px)] left-4 right-4 max-h-[calc(100dvh-100px)] overflow-y-auto rounded-3xl p-3 sm:p-4 lg:hidden" style="z-index: 51;">
 
         {{-- Panel header: label only, no close button --}}
         <div class="px-3 pt-1 pb-2 mb-1 border-b border-black/5 dark:border-white/5">

@@ -5,8 +5,23 @@
 @section('content')
 <div class="max-w-3xl mx-auto space-y-6 pb-28 md:pb-12"
      x-data="{
-         previewUrl: null,
-         submitting: false
+         submitting: false,
+         previews: [],
+         files: [],
+         dragOver: false,
+         handleFiles(newFiles) {
+             Array.from(newFiles).forEach(file => {
+                 if (this.files.some(f => f.name===file.name && f.size===file.size)) return;
+                 this.files.push(file);
+                 const reader = new FileReader();
+                 reader.onload = (e) => this.previews.push({ url: e.target.result, name: file.name });
+                 reader.readAsDataURL(file);
+             });
+             this.syncInput();
+         },
+         handleDrop(e) { this.dragOver=false; this.handleFiles(e.dataTransfer.files); },
+         removeFile(i) { this.previews.splice(i,1); this.files.splice(i,1); this.syncInput(); },
+         syncInput() { const dt=new DataTransfer(); this.files.forEach(f=>dt.items.add(f)); this.$refs.imgInput.files=dt.files; }
      }">
 
     {{-- Breadcrumb & Back --}}
@@ -84,8 +99,8 @@
                         class="w-full px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px] @error('category') border-red-500 is-invalid @enderror"
                         style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
                     <option value="">Pilih Kategori</option>
-                    @foreach(['Berita Utama', 'Kegiatan', 'Pengumuman', 'Artikel', 'Tausiyah'] as $cat)
-                        <option value="{{ $cat }}" {{ old('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @foreach (\App\Models\Berita::CATEGORIES as $cat)
+                        <option value="{{ $cat }}" {{ old('category', $berita->category ?? '') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
                     @endforeach
                 </select>
                 @error('category')
@@ -151,30 +166,76 @@
             @enderror
         </div>
 
-        {{-- Gambar / Thumbnail dengan Pratinjau --}}
+        {{-- Foto Sampul / Thumbnail --}}
         <div class="space-y-2">
             <label class="block text-[11px] font-semibold uppercase tracking-wider" style="color:var(--text-muted)">
-                Foto Sampul / Thumbnail (Kamera / Galeri HP)
+                Foto Sampul / Thumbnail (Utama)
             </label>
             <div class="flex flex-col sm:flex-row items-center gap-4">
                 <div class="w-full sm:w-36 h-28 rounded-xl overflow-hidden shrink-0 flex items-center justify-center border font-bold text-xs"
                      style="background:var(--bg-surface-elevated);border-color:var(--border-medium);color:var(--text-muted)">
-                    <template x-if="previewUrl">
-                        <img :src="previewUrl" class="w-full h-full object-cover" alt="Pratinjau Gambar">
+                    <template x-if="previews.length > 0">
+                        <img :src="previews[0].url" class="w-full h-full object-cover" alt="Pratinjau Foto Utama">
                     </template>
-                    <template x-if="!previewUrl">
+                    <template x-if="previews.length === 0">
                         <span class="text-center px-2">Pratinjau Foto</span>
                     </template>
                 </div>
                 <div class="flex-1 w-full space-y-1.5">
-                    <input type="file" name="image" id="image" accept="image/*"
-                           @change="if ($event.target.files.length) { previewUrl = URL.createObjectURL($event.target.files[0]); }"
-                           class="w-full text-xs cursor-pointer py-2 min-h-[44px]"
-                           style="color:var(--text-secondary)">
-                    <p class="text-[11px]" style="color:var(--text-muted)">Format: JPG, PNG, WEBP. Maksimal 2MB. Di HP dapat mengambil foto kamera langsung.</p>
-                    @error('image')
+                    <div class="border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-colors"
+                         style="border-color:var(--border-medium);background:var(--bg-surface-elevated)"
+                         @click="$refs.imgInput.click()"
+                         @dragover.prevent="dragOver=true"
+                         @dragleave="dragOver=false"
+                         @drop.prevent="handleDrop($event)"
+                         :style="dragOver ? 'border-color:var(--accent)' : ''">
+                        <input type="file" name="images[]" id="images" accept="image/*" multiple
+                               class="hidden" x-ref="imgInput" @change="handleFiles($event.target.files)">
+                        <p class="text-xs font-medium" style="color:var(--text-secondary)">
+                            <span x-show="previews.length === 0">Klik atau seret foto ke sini</span>
+                            <span x-show="previews.length > 0" x-text="previews.length + ' foto dipilih — klik untuk tambah lagi'"></span>
+                        </p>
+                        <p class="text-[11px] mt-0.5" style="color:var(--text-muted)">JPG, PNG, WEBP. Maks 5MB per foto. Bisa pilih banyak sekaligus.</p>
+                    </div>
+                    @error('images')
                     <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
                     @enderror
+                    @error('images.*')
+                    <p class="text-xs font-medium" style="color:var(--status-danger-fg)">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            {{-- Preview Grid --}}
+            <div x-show="previews.length > 0" class="mt-2">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-xs font-semibold" style="color:var(--text-secondary)">
+                        <span x-text="previews.length"></span> foto dipilih
+                        <span class="font-normal" style="color:var(--text-muted)">· Foto pertama jadi sampul</span>
+                    </p>
+                    <button type="button" @click="previews=[]; files=[]; syncInput()"
+                            class="text-[11px] font-semibold px-3 py-1 rounded-lg"
+                            style="color:#ef4444;background:rgba(239,68,68,0.08)">Hapus Semua</button>
+                </div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                    <template x-for="(preview, i) in previews" :key="i">
+                        <div class="relative group rounded-xl overflow-hidden aspect-square border-2"
+                             :style="i===0 ? 'border-color:var(--accent)' : 'border-color:transparent'"
+                             style="background:var(--bg-surface-elevated)">
+                            <img :src="preview.url" :alt="preview.name" class="w-full h-full object-cover">
+                            <div x-show="i===0" class="absolute top-1 left-1">
+                                <span class="text-[9px] font-bold text-white px-1.5 py-0.5 rounded-md" style="background:var(--accent)">Utama</span>
+                            </div>
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <button type="button" @click.stop="removeFile(i)"
+                                        class="w-7 h-7 rounded-full bg-red-500 text-white flex items-center justify-center">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>

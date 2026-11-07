@@ -7,26 +7,29 @@
         --frozen:           #A8B8B0;
         --nu-green:         #008C5A;
         --deep-green:       #005A3C;
+        --cream:            #F6F1E7;
+        --cream-deep:       #EDE5D3;
         --light-background: #F4F7F6;
         --white:            #FFFFFF;
 
         /* ─────────────────────────────────────────
            LIGHT MODE
         ───────────────────────────────────────── */
-        --bg-base:             var(--light-background);
-        --bg-base-transparent: rgba(244, 247, 246, 0);
+        --bg-base:             var(--cream);
+        --bg-base-transparent: rgba(246, 241, 231, 0);
         --bg-surface:          var(--white);
-        --bg-surface-elevated: #EBEFEF;
-        --bg-overlay:          rgba(244, 247, 246, 0.85);
+        --bg-surface-elevated: var(--cream-deep);
+        --bg-section-alt:      var(--cream-deep);
+        --bg-overlay:          rgba(246, 241, 231, 0.85);
 
         --text-primary:        var(--black-iris);
         --text-secondary:      #4A5568;
         --text-muted:          #5A6577;
         --text-inverted:       var(--white);
 
-        --border-light:        rgba(8, 8, 19, 0.08);
-        --border-medium:       rgba(8, 8, 19, 0.16);
-        --border-strong:       rgba(8, 8, 19, 0.24);
+        --border-light:        rgba(5, 10, 7, 0.08);
+        --border-medium:       rgba(5, 10, 7, 0.16);
+        --border-strong:       rgba(5, 10, 7, 0.24);
 
         --accent:              var(--nu-green);
         --accent-hover:        var(--deep-green);
@@ -40,12 +43,12 @@
         --status-error-fg:     #DC2626;
 
         /* Shadows */
-        --shadow-xs:         0 1px 2px rgba(8, 8, 19, 0.04);
-        --shadow-sm:         0 1px 3px rgba(8, 8, 19, 0.05), 0 2px 6px rgba(8, 8, 19, 0.04);
-        --shadow-md:         0 4px 12px rgba(8, 8, 19, 0.07), 0 1px 3px rgba(8, 8, 19, 0.04);
-        --shadow-lg:         0 8px 28px rgba(8, 8, 19, 0.09), 0 2px 6px rgba(8, 8, 19, 0.04);
-        --shadow-card:       0 1px 4px rgba(8, 8, 19, 0.03), 0 2px 10px rgba(8, 8, 19, 0.03);
-        --shadow-card-hover: 0 6px 24px rgba(8, 8, 19, 0.07), 0 2px 8px rgba(8, 8, 19, 0.04);
+        --shadow-xs:         0 1px 2px rgba(5, 10, 7, 0.04);
+        --shadow-sm:         0 1px 3px rgba(5, 10, 7, 0.05), 0 2px 6px rgba(5, 10, 7, 0.04);
+        --shadow-md:         0 4px 12px rgba(5, 10, 7, 0.07), 0 1px 3px rgba(5, 10, 7, 0.04);
+        --shadow-lg:         0 8px 28px rgba(5, 10, 7, 0.09), 0 2px 6px rgba(5, 10, 7, 0.04);
+        --shadow-card:       0 1px 4px rgba(5, 10, 7, 0.03), 0 2px 10px rgba(5, 10, 7, 0.03);
+        --shadow-card-hover: 0 6px 24px rgba(5, 10, 7, 0.07), 0 2px 8px rgba(5, 10, 7, 0.04);
         --shadow-focus:      0 0 0 3px rgba(0, 140, 90, 0.2);
     }
 
@@ -57,6 +60,7 @@
         --bg-base-transparent: rgba(5, 10, 7, 0);
         --bg-surface:          #070D09; /* slightly lighter than black iris */
         --bg-surface-elevated: #0C140E;
+        --bg-section-alt:      rgba(255, 255, 255, 0.025);
         --bg-overlay:          rgba(8, 8, 19, 0.9);
 
         --text-primary:        var(--light-background);
@@ -243,41 +247,6 @@
    ANIMATIONS & INTERACTIONS (PHASE C)
 ───────────────────────────────────────── */
 @layer utilities {
-    /* 1. View Transitions */
-    @view-transition {
-        navigation: auto;
-    }
-    
-    ::view-transition-old(root),
-    ::view-transition-new(root) {
-        animation-duration: 400ms;
-        animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    
-    ::view-transition-old(root) {
-        animation-name: fade-out;
-    }
-    ::view-transition-new(root) {
-        animation-name: fade-in;
-    }
-    
-    @keyframes fade-out {
-        to { opacity: 0; }
-    }
-    @keyframes fade-in {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    /* 2. Removed Hero Zoom for performance */
-    
-    @media (prefers-reduced-motion: reduce) {
-        ::view-transition-old(root),
-        ::view-transition-new(root) {
-            animation: none;
-        }
-    }
-
     /* 3. Reveal Animations */
     html.js .reveal-up {
         opacity: 0;
@@ -295,6 +264,11 @@
     .delay-200 { transition-delay: 200ms; }
     .delay-300 { transition-delay: 300ms; }
     .delay-400 { transition-delay: 400ms; }
+
+    html.js .reveal-up.delay-100 { transition-delay: 100ms; }
+    html.js .reveal-up.delay-200 { transition-delay: 200ms; }
+    html.js .reveal-up.delay-300 { transition-delay: 300ms; }
+    html.js .reveal-up.delay-400 { transition-delay: 400ms; }
 
     /* 4. Moving Underline for Links */
     .link-underline {
@@ -334,3 +308,61 @@
         }
     }
 }
+
+
+/* ─────────────────────────────────────────
+   VIEW TRANSITIONS (TOP-LEVEL)
+───────────────────────────────────────── */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 400ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(root) {
+    animation-name: fade-out;
+}
+::view-transition-new(root) {
+    animation-name: fade-in;
+}
+
+@keyframes fade-out {
+    to { opacity: 0; }
+}
+@keyframes fade-in {
+    from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation: none;
+    }
+}
+
+.motif {
+  position: relative;
+  isolation: isolate;
+}
+.motif::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--accent);
+  opacity: 0.10;
+  -webkit-mask-image: url('/images/motif-khatam.svg');
+  mask-image: url('/images/motif-khatam.svg');
+  -webkit-mask-size: 48px 48px;
+  mask-size: 48px 48px;
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+}
+.motif--light::before { background-color: #fff; opacity: 0.10; }
+@media (prefers-reduced-data: reduce) { .motif::before { display: none; } }
+

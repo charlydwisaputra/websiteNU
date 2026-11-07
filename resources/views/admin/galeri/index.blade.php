@@ -8,10 +8,10 @@
         <div>
             <span class="badge badge-green mb-3">
                 <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background:var(--accent)"></span>
-                Modul Galeri & Dokumentasi
+                Modul Galeri &amp; Dokumentasi
             </span>
             <h1 class="font-serif text-2xl md:text-3xl font-bold tracking-tight" style="color:var(--text-primary)">Data Galeri Foto</h1>
-            <p class="text-sm mt-1" style="color:var(--text-muted)">Kelola dokumentasi foto kegiatan organisasi berdasarkan kategori.</p>
+            <p class="text-sm mt-1" style="color:var(--text-muted)">Kelola album dokumentasi foto kegiatan organisasi.</p>
         </div>
         <a href="{{ route('admin.galeri.create') }}"
            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white transition-all min-h-[44px]"
@@ -21,7 +21,7 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
-            Tambah Foto
+            Tambah Album
         </a>
     </div>
 
@@ -46,7 +46,7 @@
                     </svg>
                 </div>
                 <input type="text" name="search" value="{{ request('search') }}"
-                       placeholder="Cari keterangan foto..."
+                       placeholder="Cari judul album..."
                        class="w-full pl-10 pr-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all min-h-[44px]"
                        style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)"
                        onfocus="this.style.borderColor='var(--accent)'"
@@ -55,8 +55,8 @@
             <select name="category"
                     class="form-select-custom px-4 py-3 rounded-xl text-[16px] sm:text-sm font-medium outline-none transition-all sm:w-52 min-h-[44px]"
                     style="background:var(--bg-surface-elevated);border:1px solid var(--border-medium);color:var(--text-primary)">
-                <option value="">Semua Kategori Banom</option>
-                @foreach(['Muslimat','Fatayat','GP Ansor','IPNU','IPPNU','PMII'] as $cat)
+                <option value="">Semua Kategori</option>
+                @foreach(['Muslimat','Fatayat','GP Ansor','IPNU','IPPNU','PMII','Lainnya'] as $cat)
                 <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
                 @endforeach
             </select>
@@ -77,14 +77,30 @@
         </form>
     </div>
 
-    {{-- Photo grid --}}
+    {{-- Album Grid --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         @forelse($galeris as $galeri)
+        @php
+            $allPhotos = $galeri->all_photos;
+            $cover     = $galeri->cover;
+            $photoCount = count($allPhotos);
+        @endphp
         <div class="surface-card rounded-2xl overflow-hidden flex flex-col group hover-lift">
+            {{-- Cover Photo dengan indikator jumlah foto --}}
             <div class="relative aspect-video overflow-hidden img-zoom-wrap"
                  style="background:var(--bg-surface-elevated)">
-                <img src="{{ asset('storage/'.$galeri->photo) }}" alt="{{ $galeri->title }}"
+                @if($cover)
+                <img src="{{ asset('storage/'.$cover) }}" alt="{{ $galeri->title }}"
                      class="w-full h-full object-cover">
+                @else
+                <div class="w-full h-full flex items-center justify-center" style="color:var(--text-muted)">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                @endif
+
+                {{-- Badge Kategori --}}
                 @if($galeri->category)
                 <div class="absolute top-2.5 left-2.5">
                     <span class="px-2.5 py-1 text-[10px] font-bold rounded-lg text-white"
@@ -93,15 +109,41 @@
                     </span>
                 </div>
                 @endif
+
+                {{-- Badge Jumlah Foto --}}
+                @if($photoCount > 1)
+                <div class="absolute top-2.5 right-2.5">
+                    <span class="px-2 py-1 text-[10px] font-bold rounded-lg text-white flex items-center gap-1"
+                          style="background:rgba(0,0,0,0.65)">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        {{ $photoCount }}
+                    </span>
+                </div>
+                @endif
+
+                {{-- Preview strip untuk album > 1 foto --}}
+                @if($photoCount > 1)
+                <div class="absolute bottom-0 left-0 right-0 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                     style="height:32px;background:rgba(0,0,0,0.5)">
+                    @foreach(array_slice($allPhotos, 1, 4) as $p)
+                    <div class="flex-1 overflow-hidden">
+                        <img src="{{ asset('storage/'.$p) }}" class="w-full h-full object-cover" alt="">
+                    </div>
+                    @endforeach
+                </div>
+                @endif
             </div>
+
             <div class="p-4 flex-1 flex flex-col justify-between gap-3">
                 <div>
                     <p class="text-sm font-semibold line-clamp-2" style="color:var(--text-primary)">
                         {{ $galeri->title ?: 'Tanpa Keterangan' }}
                     </p>
-                    @if($galeri->created_at)
-                    <p class="text-xs mt-1" style="color:var(--text-muted)">@tanggal($galeri->created_at)</p>
-                    @endif
+                    <p class="text-[11px] mt-1" style="color:var(--text-muted)">
+                        {{ $photoCount }} foto &middot; @tanggal($galeri->created_at)
+                    </p>
                 </div>
                 <div class="flex items-center justify-end gap-2 pt-3" style="border-top:1px solid var(--border-light)">
                     <a href="{{ route('admin.galeri.edit', $galeri->id) }}"
@@ -110,8 +152,9 @@
                        onmouseover="this.style.background='var(--accent-subtle-hover)'"
                        onmouseout="this.style.background='var(--accent-subtle)'">Edit</a>
                     <form action="{{ route('admin.galeri.destroy', $galeri->id) }}" method="POST"
-                          class="inline" onsubmit="return confirm('Yakin hapus foto ini?')">
-                        @csrf @method('DELETE')
+                          class="inline" onsubmit="return confirm('Yakin hapus album ini beserta semua {{ $photoCount }} fotonya?')">
+                        @csrf
+                        @method('DELETE')
                         <button type="submit"
                                 class="px-3.5 py-2 rounded-lg text-xs font-semibold transition-all min-h-[36px] sm:min-h-[32px] inline-flex items-center"
                                 style="background:rgba(239,68,68,0.08);color:#ef4444"
@@ -131,12 +174,12 @@
                               d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                 </div>
-                <p class="text-sm font-semibold mb-1" style="color:var(--text-primary)">Belum ada foto galeri</p>
-                <p class="text-xs mb-5" style="color:var(--text-muted)">Foto kegiatan yang ditambahkan akan tampil di sini.</p>
+                <p class="text-sm font-semibold mb-1" style="color:var(--text-primary)">Belum ada album galeri</p>
+                <p class="text-xs mb-5" style="color:var(--text-muted)">Buat album pertama dengan menambah foto kegiatan.</p>
                 <a href="{{ route('admin.galeri.create') }}"
                    class="px-4 py-2 rounded-xl text-xs font-semibold transition-all"
                    style="background:var(--accent-subtle);color:var(--accent)">
-                    + Tambah Foto Pertama
+                    + Tambah Album Pertama
                 </a>
             </div>
         </div>
