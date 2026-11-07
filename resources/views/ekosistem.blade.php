@@ -140,6 +140,16 @@
         <!-- 3. FILTER CHIPS & GRID SECTION -->
         <div x-data="{
             activeFilter: 'semua',
+            filterLabels: {
+                semua: 'Semua Organisasi',
+                perempuan: 'Perempuan',
+                pemuda: 'Pemuda',
+                mahasiswa: 'Mahasiswa'
+            },
+            setFilter(group) {
+                this.activeFilter = group;
+                this.$refs.carousel?.scrollTo({ left: 0, behavior: 'smooth' });
+            },
             matches(group) {
                 if (this.activeFilter === 'semua') return true;
                 return this.activeFilter === group;
@@ -147,43 +157,64 @@
         }" class="w-full">
             
             <!-- Chip Filter: Semua | Perempuan (Muslimat, Fatayat, IPPNU) | Pemuda (GP Ansor, IPNU) | Mahasiswa (PMII) -->
-            <div class="relative w-full mb-8">
-                <div class="flex gap-2 overflow-x-auto scrollbar-none pb-1 justify-start md:justify-center snap-x snap-mandatory pr-10 md:pr-0">
-                    <button type="button" @click="activeFilter = 'semua'"
+            <div class="relative w-full mb-4 sm:mb-6">
+                <div class="flex gap-2 overflow-x-auto scrollbar-none pb-1 justify-start md:justify-center snap-x snap-mandatory -mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0"
+                     style="scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
+                    <button type="button" @click="setFilter('semua')"
+                            :aria-pressed="activeFilter === 'semua'"
                             class="snap-start shrink-0 px-4 sm:px-5 py-2.5 min-h-[44px] flex items-center rounded-full text-xs sm:text-sm font-semibold transition-all border cursor-pointer select-none"
                             :class="activeFilter === 'semua'
-                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm shadow-emerald-950/20'
+                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm shadow-emerald-950/20 ring-2 ring-emerald-500/30'
                                 : 'bg-white dark:bg-[#070D09] text-slate-800 dark:text-slate-100 border-black/10 dark:border-white/10 hover:border-emerald-500/50'">
                         Semua
                     </button>
-                    <button type="button" @click="activeFilter = 'perempuan'"
+                    <button type="button" @click="setFilter('perempuan')"
+                            :aria-pressed="activeFilter === 'perempuan'"
                             class="snap-start shrink-0 px-4 sm:px-5 py-2.5 min-h-[44px] flex items-center rounded-full text-xs sm:text-sm font-semibold transition-all border cursor-pointer select-none"
                             :class="activeFilter === 'perempuan'
-                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm shadow-emerald-950/20'
+                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm shadow-emerald-950/20 ring-2 ring-emerald-500/30'
                                 : 'bg-white dark:bg-[#070D09] text-slate-800 dark:text-slate-100 border-black/10 dark:border-white/10 hover:border-emerald-500/50'">
                         Perempuan <span class="hidden sm:inline text-xs ml-1 font-normal transition-colors" :class="activeFilter === 'perempuan' ? 'text-emerald-100' : 'text-slate-600 dark:text-slate-200'">(Muslimat, Fatayat, IPPNU)</span>
                     </button>
-                    <button type="button" @click="activeFilter = 'pemuda'"
+                    <button type="button" @click="setFilter('pemuda')"
+                            :aria-pressed="activeFilter === 'pemuda'"
                             class="snap-start shrink-0 px-4 sm:px-5 py-2.5 min-h-[44px] flex items-center rounded-full text-xs sm:text-sm font-semibold transition-all border cursor-pointer select-none"
                             :class="activeFilter === 'pemuda'
-                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm shadow-emerald-950/20'
+                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm shadow-emerald-950/20 ring-2 ring-emerald-500/30'
                                 : 'bg-white dark:bg-[#070D09] text-slate-800 dark:text-slate-100 border-black/10 dark:border-white/10 hover:border-emerald-500/50'">
                         Pemuda <span class="hidden sm:inline text-xs ml-1 font-normal transition-colors" :class="activeFilter === 'pemuda' ? 'text-emerald-100' : 'text-slate-600 dark:text-slate-200'">(GP Ansor, IPNU)</span>
                     </button>
-                    <button type="button" @click="activeFilter = 'mahasiswa'"
+                    <button type="button" @click="setFilter('mahasiswa')"
+                            :aria-pressed="activeFilter === 'mahasiswa'"
                             class="snap-start shrink-0 px-4 sm:px-5 py-2.5 min-h-[44px] flex items-center rounded-full text-xs sm:text-sm font-semibold transition-all border cursor-pointer select-none"
                             :class="activeFilter === 'mahasiswa'
-                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm shadow-emerald-950/20'
+                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm shadow-emerald-950/20 ring-2 ring-emerald-500/30'
                                 : 'bg-white dark:bg-[#070D09] text-slate-800 dark:text-slate-100 border-black/10 dark:border-white/10 hover:border-emerald-500/50'">
                         Mahasiswa <span class="hidden sm:inline text-xs ml-1 font-normal transition-colors" :class="activeFilter === 'mahasiswa' ? 'text-emerald-100' : 'text-slate-600 dark:text-slate-200'">(PMII)</span>
                     </button>
+                    <div class="shrink-0 w-2 md:hidden" aria-hidden="true"></div>
                 </div>
                 <!-- Fade mask for horizontal scroll on mobile -->
-                <div class="pointer-events-none absolute right-0 top-0 bottom-1 w-10 bg-gradient-to-l from-[var(--bg-base)] to-transparent md:hidden"></div>
+                <div class="pointer-events-none absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-[var(--bg-base)] to-transparent md:hidden"></div>
             </div>
 
-            <!-- CONTENT GRID -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 items-stretch">
+            <!-- Tautan Lihat Semua Organisasi saat filter kategori aktif -->
+            <div x-show="activeFilter !== 'semua'" x-cloak class="flex items-center justify-between text-xs sm:text-sm mb-3.5 sm:mb-4 px-1 text-slate-600 dark:text-slate-300">
+                <div class="flex items-center gap-1.5">
+                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Menampilkan kategori <strong class="font-semibold text-emerald-700 dark:text-emerald-400" x-text="filterLabels[activeFilter]"></strong></span>
+                </div>
+                <button type="button" @click="setFilter('semua')" class="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline cursor-pointer">
+                    <span>Lihat Semua Organisasi</span>
+                    <span aria-hidden="true">&rarr;</span>
+                </button>
+            </div>
+
+            <!-- CAROUSEL (Mobile) / GRID (Desktop) -->
+            <div class="relative w-full">
+                <div x-ref="carousel"
+                     class="flex md:grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 overflow-x-auto md:overflow-visible scrollbar-none snap-x snap-mandatory overscroll-x-contain -mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0 pb-3 pt-1 md:pb-0 md:pt-0 items-stretch"
+                     style="scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
                 @foreach($banoms as $org)
                 @php
                     $koordinator = $org['koordinator'] ?? $org['coordinator'] ?? null;
@@ -199,24 +230,24 @@
                      x-transition:enter="transition ease-out duration-200"
                      x-transition:enter-start="opacity-0 scale-95"
                      x-transition:enter-end="opacity-100 scale-100"
-                     class="group p-4 sm:p-5 md:p-6 pb-3.5 sm:pb-4 md:pb-4 rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 hover:border-emerald-500/50 dark:hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-950/10 dark:hover:shadow-black/50 flex flex-col justify-between h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">
+                     class="snap-start shrink-0 w-[84vw] max-w-[340px] md:w-auto md:max-w-none md:shrink group p-4 sm:p-5 md:p-6 pb-3.5 sm:pb-4 md:pb-4 rounded-2xl bg-white dark:bg-[#070D09] border border-black/5 dark:border-white/10 hover:border-emerald-500/50 dark:hover:border-emerald-500/50 transition-all duration-300 md:hover:-translate-y-1 md:hover:shadow-xl md:hover:shadow-emerald-950/10 md:dark:hover:shadow-black/50 flex flex-col justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">
                     
                     <!-- BAGIAN ATAS: Logo, Nama, Kategori Sasaran, Anggota, Deskripsi -->
                     <div class="flex-grow flex flex-col">
-                        <div class="flex items-start gap-3 sm:gap-4 mb-2.5 sm:mb-3">
-                            <!-- Kotak ikon logo: ukuran konsisten 56x56 / 64x64 dengan placeholder -->
-                            <div class="w-14 h-14 sm:w-16 sm:h-16 aspect-square shrink-0 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-800/30 flex items-center justify-center p-2.5 overflow-hidden">
+                        <div class="flex items-start gap-3 sm:gap-4 mb-2 sm:mb-3">
+                            <!-- Kotak ikon logo: ukuran konsisten 48x48 di mobile, 64x64 di sm/desktop -->
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 aspect-square shrink-0 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-800/30 flex items-center justify-center p-2 sm:p-2.5 overflow-hidden">
                                 @php
                                     $logoSrc = $org['logo_url'] ?? \App\Models\Banom::resolveLogoUrl($org['logo'] ?? null, $org['singkatan'] ?? $org['nama'] ?? null);
                                 @endphp
                                 @if($logoSrc)
-                                    <img src="{{ $logoSrc }}" alt="" width="48" height="48" decoding="async" class="w-full h-full max-w-[48px] max-h-[48px] sm:max-w-[52px] sm:max-h-[52px] object-contain dark:brightness-200 dark:contrast-100 select-none" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/brand/logo-nu.png') }}';">
+                                    <img src="{{ $logoSrc }}" alt="" width="48" height="48" decoding="async" class="w-full h-full max-w-[40px] max-h-[40px] sm:max-w-[52px] sm:max-h-[52px] object-contain dark:brightness-200 dark:contrast-100 select-none" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/brand/logo-nu.png') }}';">
                                 @else
-                                    <span class="text-emerald-600 dark:text-emerald-400 font-serif text-2xl font-medium select-none">{{ substr($org['nama'], 0, 1) }}</span>
+                                    <span class="text-emerald-600 dark:text-emerald-400 font-serif text-xl sm:text-2xl font-medium select-none">{{ substr($org['nama'], 0, 1) }}</span>
                                 @endif
                             </div>
                             <div class="min-w-0 flex-1">
-                                <h3 class="font-serif text-xl sm:text-2xl font-medium leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" style="color:var(--text-primary)">
+                                <h3 class="font-serif text-lg sm:text-2xl font-medium leading-snug group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors" style="color:var(--text-primary)">
                                     {{ $org['nama'] }}
                                 </h3>
                                 <div class="flex flex-wrap items-center gap-1.5 mt-1">
@@ -235,35 +266,36 @@
                             </div>
                         </div>
                         
-                        <!-- Deskripsi: diberi jarak 12-16px (mb-3 sm:mb-4) sebelum batas garis Koordinator -->
-                        <p class="text-xs sm:text-sm font-normal leading-relaxed text-slate-600 dark:text-slate-300 mb-3 sm:mb-4">
+                        <!-- Deskripsi: ringkas maksimal 2-3 baris di mobile, tampil penuh di desktop -->
+                        <p class="text-xs sm:text-sm font-normal leading-relaxed text-slate-600 dark:text-slate-300 mb-3 sm:mb-4 line-clamp-3 md:line-clamp-none">
                             {{ $org['deskripsi'] }}
                         </p>
                     </div>
 
                     <!-- BAGIAN BAWAH: Koordinator, WhatsApp Koordinator (jika ada), Tombol Lihat Anggota -->
-                    <div class="mt-auto pt-3 sm:pt-3.5 border-t border-black/5 dark:border-white/5 flex flex-col gap-2.5 sm:gap-3">
+                    <div class="mt-auto pt-2.5 sm:pt-3.5 border-t border-black/5 dark:border-white/5 flex flex-col gap-2.5 sm:gap-3">
                         @if($hasKoordinator || $hasJadwal)
-                        <div class="grid grid-cols-2 gap-3 items-center">
+                        <div class="flex items-center justify-between gap-2">
                             @if($hasKoordinator)
-                            <div>
+                            <div class="min-w-0 flex-1">
                                 <p class="text-[10px] sm:text-xs uppercase tracking-widest font-semibold text-slate-400 dark:text-slate-500 mb-0.5">Koordinator</p>
                                 <p class="text-xs sm:text-sm font-medium truncate" style="color:var(--text-primary)">{{ $koordinator }}</p>
+                            </div>
+                            @elseif($hasJadwal)
+                            <div class="min-w-0 flex-1">
+                                <p class="text-[10px] sm:text-xs uppercase tracking-widest font-semibold text-slate-400 dark:text-slate-500 mb-0.5">Jadwal Rutin</p>
+                                <p class="text-xs sm:text-sm font-medium truncate" style="color:var(--text-primary)">{{ $jadwal }}</p>
                             </div>
                             @endif
 
                             @if(!empty($waKoordinator))
-                            <div class="text-right">
+                            <div class="shrink-0">
                                 <a href="https://wa.me/{{ $waKoordinator }}" target="_blank" rel="noopener noreferrer"
-                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 transition-colors">
+                                   class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 transition-colors"
+                                   aria-label="Hubungi Koordinator {{ $org['nama'] }} via WhatsApp">
                                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                                     <span>WhatsApp</span>
                                 </a>
-                            </div>
-                            @elseif($hasJadwal)
-                            <div>
-                                <p class="text-[10px] sm:text-xs uppercase tracking-widest font-semibold text-slate-400 dark:text-slate-500 mb-0.5">Jadwal Rutin</p>
-                                <p class="text-xs sm:text-sm font-medium" style="color:var(--text-primary)">{{ $jadwal }}</p>
                             </div>
                             @endif
                         </div>
@@ -281,6 +313,16 @@
                     </div>
                 </div>
                 @endforeach
+                <!-- Ruang pengganjal ujung kanan mobile agar kartu terakhir tidak mepet layar -->
+                <div class="shrink-0 w-2 md:hidden" aria-hidden="true"></div>
+            </div>
+
+            <!-- Petunjuk geser di layar mobile -->
+            <div class="flex items-center justify-center gap-1.5 mt-2.5 text-[11px] text-slate-500 dark:text-slate-400 md:hidden select-none pointer-events-none" aria-hidden="true">
+                <svg class="w-3.5 h-3.5 animate-pulse text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+                <span>Geser kartu untuk melihat banom lainnya</span>
             </div>
         </div>
 

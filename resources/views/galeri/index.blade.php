@@ -126,10 +126,10 @@
 
                 <!-- GRID FOTO: Dinamis dan rapi untuk data sedikit (1-3 foto) maupun banyak (30+ foto) -->
                 <div :class="{
-                        'max-w-xl mx-auto': filtered.length === 1,
-                        'grid grid-cols-2 sm:grid-cols-2 max-w-3xl mx-auto gap-3 sm:gap-6': filtered.length === 2,
-                        'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6': filtered.length === 3,
-                        'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6': filtered.length >= 4
+                        'grid grid-cols-1 max-w-xl mx-auto': filtered.length === 1,
+                        'grid grid-cols-2 max-w-3xl mx-auto gap-2.5 sm:gap-6': filtered.length === 2,
+                        'grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6': filtered.length === 3,
+                        'grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6': filtered.length >= 4
                      }"
                      class="w-full transition-all duration-300"
                      x-show="filtered.length > 0">
@@ -138,21 +138,21 @@
                                 'sm:col-span-2 lg:col-span-2 lg:row-span-2': idx === 0 && filtered.length >= 4,
                                 'col-span-1': idx !== 0 || filtered.length < 4
                              }"
-                             class="w-full">
+                             class="w-full min-w-0">
                             <a href="javascript:void(0)" 
                                @click.prevent="openLb(idx, $event.currentTarget)"
                                x-data="{ imgLoaded: false }"
                                :class="{
-                                   'aspect-[4/3] sm:aspect-[16/9] lg:aspect-auto h-full min-h-[260px] sm:min-h-[340px] lg:min-h-[460px]': idx === 0 && filtered.length >= 4,
+                                   'aspect-[4/3] sm:aspect-[16/9] lg:aspect-auto sm:h-full sm:min-h-[340px] lg:min-h-[460px]': idx === 0 && filtered.length >= 4,
                                    'aspect-[4/3]': idx !== 0 || filtered.length < 4
                                }"
-                               class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#063323] via-[#031d14] to-[#010e09] border border-black/10 dark:border-white/10 shadow-sm hover:shadow-xl hover:border-emerald-500/40 transition-all duration-300 hover:-translate-y-1 motion-reduce:hover:translate-y-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#070D09] w-full block">
+                               class="group relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#063323] via-[#031d14] to-[#010e09] border border-black/10 dark:border-white/10 shadow-sm hover:shadow-xl hover:border-emerald-500/40 transition-all duration-300 hover:-translate-y-1 motion-reduce:hover:translate-y-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-[#070D09] w-full block">
                                 
                                 <!-- Placeholder shimmer / skeleton loading saat memuat: gradien hijau tua dengan ikon kamera -->
                                 <div x-show="!imgLoaded" 
                                      class="absolute inset-0 bg-gradient-to-br from-[#064e3b] via-[#032d21] to-[#011a12] animate-pulse flex items-center justify-center z-0">
-                                    <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                                        <svg class="w-7 h-7 text-emerald-400/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                                        <svg class="w-5 h-5 sm:w-7 sm:h-7 text-emerald-400/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         </svg>
@@ -165,32 +165,32 @@
                                      :aria-label="item.title || 'Dokumentasi NU Kalisari'"
                                      @load="imgLoaded = true"
                                      x-on:error="imgLoaded = true"
-                                     class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:group-hover:scale-100 motion-reduce:transition-none"
+                                     class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:group-hover:scale-100 motion-reduce:transition-none"
                                      :class="imgLoaded ? 'opacity-100' : 'opacity-0'"
                                      loading="lazy">
 
                                 <!-- Badge kategori di pojok kiri atas -->
-                                <div class="absolute top-3 left-3 z-20 pointer-events-none">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wider uppercase bg-black/65 backdrop-blur-md text-emerald-300 border border-emerald-500/30 shadow-sm" x-text="item.category"></span>
+                                <div class="absolute top-2 left-2 sm:top-3 sm:left-3 z-20 pointer-events-none">
+                                    <span class="inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-semibold tracking-wide uppercase bg-black/65 backdrop-blur-md text-emerald-300 border border-emerald-500/30 shadow-sm truncate max-w-[100px] sm:max-w-none" x-text="item.category"></span>
                                 </div>
 
-                                <!-- Ikon perbesar muncul di pojok kanan atas saat hover -->
-                                <div class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100 z-20 pointer-events-none shadow-md">
+                                <!-- Ikon perbesar muncul di pojok kanan atas saat hover (desktop) -->
+                                <div class="hidden sm:flex absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md text-white items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100 z-20 pointer-events-none shadow-md">
                                     <svg class="w-4 h-4 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
                                     </svg>
                                 </div>
 
                                 <!-- Caption overlay: gradien gelap di bawah untuk teks, tanggal dan judul di bawah -->
-                                <div class="absolute inset-0 flex flex-col justify-end p-4 sm:p-5 text-left pointer-events-none z-10"
-                                     style="background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0) 100%);">
-                                    <div class="flex items-center gap-1.5 text-xs text-white/80 mb-1" x-show="item.date">
-                                        <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="absolute inset-0 flex flex-col justify-end p-2.5 sm:p-5 text-left pointer-events-none z-10"
+                                     style="background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%);">
+                                    <div class="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-white/80 mb-0.5 sm:mb-1" x-show="item.date">
+                                        <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
-                                        <span x-text="item.date" class="font-normal"></span>
+                                        <span x-text="item.date" class="font-normal truncate"></span>
                                     </div>
-                                    <h3 class="text-white font-serif text-lg sm:text-xl font-medium leading-snug line-clamp-2 transition-transform duration-300 group-hover:-translate-y-0.5" 
+                                    <h3 class="text-white font-serif text-xs sm:text-xl font-medium leading-tight sm:leading-snug line-clamp-2 transition-transform duration-300 group-hover:-translate-y-0.5" 
                                         :class="{ 'sm:text-2xl lg:text-3xl': idx === 0 && filtered.length >= 4 }"
                                         x-text="item.title"></h3>
                                 </div>
