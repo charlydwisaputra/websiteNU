@@ -52,20 +52,25 @@ class GaleriController extends Controller
             'title' => 'required|string|max:255',
             'category' => 'nullable|string|in:Muslimat,Fatayat,GP Ansor,IPNU,IPPNU,PMII,Lainnya',
             'description' => 'nullable|string|max:1000',
-            'images' => 'required|array|min:1|max:20',
+            'images' => 'required_without:photo|array|min:1|max:20',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
         $photoPaths = [];
-        foreach ($request->file('images') as $file) {
-            $photoPaths[] = $file->store('galeri', 'public');
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $photoPaths[] = $file->store('galeri', 'public');
+            }
+        } elseif ($request->hasFile('photo')) {
+            $photoPaths[] = $request->file('photo')->store('galeri', 'public');
         }
 
         Galeri::create([
             'title' => $request->title,
             'category' => $request->category,
             'description' => $request->description,
-            'photo' => $photoPaths[0],  // cover = foto pertama
+            'photo' => $photoPaths[0] ?? null,  // cover = foto pertama
             'photos' => $photoPaths,     // semua foto
         ]);
 
@@ -90,6 +95,7 @@ class GaleriController extends Controller
             'title' => 'required|string|max:255',
             'category' => 'nullable|string|in:Muslimat,Fatayat,GP Ansor,IPNU,IPPNU,PMII,Lainnya',
             'description' => 'nullable|string|max:1000',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'new_images' => 'nullable|array|max:20',
             'new_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
             'delete_photos' => 'nullable|array',
@@ -107,6 +113,19 @@ class GaleriController extends Controller
                 Storage::disk('public')->delete($path);
             }
             $existingPhotos = array_filter($existingPhotos, fn ($img) => $img !== $path);
+        }
+
+        // Support parameter 'photo' langsung (ganti foto utama / single upload test)
+        if ($request->hasFile('photo')) {
+            if ($galeri->photo && Storage::disk('public')->exists($galeri->photo)) {
+                Storage::disk('public')->delete($galeri->photo);
+            }
+            $newSinglePath = $request->file('photo')->store('galeri', 'public');
+            if (! empty($existingPhotos)) {
+                $existingPhotos[0] = $newSinglePath;
+            } else {
+                $existingPhotos = [$newSinglePath];
+            }
         }
 
         // Tambah foto baru

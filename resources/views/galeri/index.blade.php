@@ -31,21 +31,25 @@
 
     @php
         $galeriItems = $galeris->map(function($g) {
-            $cover = $g->cover;
-            if ($cover && !str_starts_with($cover, 'http')) {
-                $photoUrl = asset('storage/' . ltrim($cover, '/'));
-            } elseif (!$cover) {
-                $photoUrl = asset('storage/galeri/placeholder.svg');
-            } else {
-                $photoUrl = $cover;
+            $rawPhotos = $g->all_photos;
+            $photoUrls = collect($rawPhotos)->map(function($p) {
+                if ($p && !str_starts_with($p, 'http')) {
+                    return asset('storage/' . ltrim($p, '/'));
+                }
+                return $p ?: asset('storage/galeri/placeholder.svg');
+            })->values()->all();
+
+            if (empty($photoUrls)) {
+                $photoUrls = [asset('storage/galeri/placeholder.svg')];
             }
 
             return [
                 'id'          => $g->id,
                 'title'       => $g->title ?? 'Dokumentasi Kegiatan',
                 'category'    => $g->category ?: 'Umum',
-                'photo'       => $photoUrl,
-                'photo_count' => count($g->all_photos),
+                'photo'       => $photoUrls[0],
+                'photos'      => $photoUrls,
+                'photo_count' => count($photoUrls),
                 'description' => $g->description ?? null,
                 'date'        => optional($g->created_at)->isoFormat('D MMM Y') ?? '',
             ];
@@ -177,8 +181,18 @@
                                     <span class="inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-semibold tracking-wide uppercase bg-black/65 backdrop-blur-md text-emerald-300 border border-emerald-500/30 shadow-sm truncate max-w-[100px] sm:max-w-none" x-text="item.category"></span>
                                 </div>
 
-                                <!-- Ikon perbesar muncul di pojok kanan atas saat hover (desktop) -->
-                                <div class="hidden sm:flex absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md text-white items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100 z-20 pointer-events-none shadow-md">
+                                <!-- Badge jumlah foto jika album berisi lebih dari 1 foto -->
+                                <div x-show="item.photo_count > 1" class="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 pointer-events-none">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-[11px] font-semibold bg-black/65 backdrop-blur-md text-white border border-white/20 shadow-sm">
+                                        <svg class="w-3 h-3 text-emerald-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        <span x-text="item.photo_count"></span>
+                                    </span>
+                                </div>
+
+                                <!-- Ikon perbesar muncul di pojok kanan atas saat hover (desktop) jika hanya 1 foto -->
+                                <div x-show="item.photo_count <= 1" class="hidden sm:flex absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md text-white items-center justify-center border border-white/20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100 z-20 pointer-events-none shadow-md">
                                     <svg class="w-4 h-4 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
                                     </svg>
@@ -307,11 +321,11 @@
             </button>
 
             <!-- Image Wrap -->
-            <div id="lb-img-wrap" class="pointer-events-auto relative max-h-[72vh] sm:max-h-[76vh] max-w-full flex items-center justify-center rounded-xl overflow-hidden shadow-2xl">
+            <div id="lb-img-wrap" class="pointer-events-auto relative max-h-[64vh] sm:max-h-[70vh] max-w-full flex items-center justify-center rounded-xl overflow-hidden shadow-2xl">
                 <img id="lb-img" 
                      src="" 
                      alt="" 
-                     class="max-h-[72vh] sm:max-h-[76vh] w-auto max-w-full object-contain rounded-xl select-none"
+                     class="max-h-[64vh] sm:max-h-[70vh] w-auto max-w-full object-contain rounded-xl select-none"
                      draggable="false">
             </div>
 
@@ -326,6 +340,9 @@
             </button>
         </div>
 
+        <!-- Thumbnail Strip untuk foto dalam album -->
+        <div id="lb-thumbs-wrap" class="pointer-events-auto w-full max-w-2xl px-4 py-1 flex items-center justify-center gap-1.5 sm:gap-2 overflow-x-auto z-50"></div>
+
         <!-- Caption di Bagian Bawah Lightbox: kategori · tanggal, judul serif, dan deskripsi (bila ada) -->
         <div class="w-full max-w-3xl text-center z-50 pb-1 pointer-events-auto">
             <div class="flex items-center justify-center gap-2 mb-1 text-xs uppercase tracking-wider font-semibold text-white/80">
@@ -335,8 +352,22 @@
             </div>
             <h2 id="lb-title" class="font-serif text-lg sm:text-2xl font-medium text-white leading-snug line-clamp-2 px-4"></h2>
             <!-- Deskripsi tambahan bila ada -->
-            <p id="lb-desc" class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto mt-1.5 px-4 leading-relaxed line-clamp-3 font-light" style="display:none;"></p>
-            <p class="text-[11px] text-white/40 mt-1.5 md:hidden select-none">Geser layar ke kiri atau kanan untuk berpindah foto</p>
+            <p id="lb-desc" class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto mt-1 px-4 leading-relaxed line-clamp-3 font-light" style="display:none;"></p>
+            
+            <!-- Navigasi Antar Album / Dokumentasi -->
+            <div id="lb-album-nav" class="flex items-center justify-center gap-2 sm:gap-3 mt-2 text-xs text-slate-300">
+                <button id="lb-album-prev" type="button" aria-label="Dokumentasi sebelumnya" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white/90 transition-all cursor-pointer border border-white/10 min-h-[36px]">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    <span class="text-[11px] sm:text-xs">Album Sebelumnya</span>
+                </button>
+                <span id="lb-album-indicator" class="text-[11px] text-white/50 font-medium px-1"></span>
+                <button id="lb-album-next" type="button" aria-label="Dokumentasi selanjutnya" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white/90 transition-all cursor-pointer border border-white/10 min-h-[36px]">
+                    <span class="text-[11px] sm:text-xs">Album Berikutnya</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+
+            <p id="lb-swipe-hint" class="text-[11px] text-white/40 mt-1 md:hidden select-none">Geser layar ke kiri atau kanan untuk berpindah foto</p>
         </div>
     </div>
 
@@ -405,7 +436,7 @@
 
             openLb(idx, triggerEl) {
                 window._lbItems = this.filtered;
-                window._lbOpen(idx, triggerEl);
+                window._lbOpen(idx, 0, triggerEl);
             },
 
             init() {
@@ -417,40 +448,52 @@
 
     <script>
     (function () {
-        const lb        = document.getElementById('nu-lightbox');
-        const imgEl     = document.getElementById('lb-img');
-        const titleEl   = document.getElementById('lb-title');
-        const descEl    = document.getElementById('lb-desc');
-        const catEl     = document.getElementById('lb-cat');
-        const topCatEl  = document.getElementById('lb-top-cat');
-        const dateEl    = document.getElementById('lb-date');
-        const counterEl = document.getElementById('lb-counter');
-        const wrapEl    = document.getElementById('lb-img-wrap');
-        const prevBtn   = document.getElementById('lb-prev');
-        const nextBtn   = document.getElementById('lb-next');
-        const closeBtn  = document.getElementById('lb-close');
-        let cur = 0;
+        const lb             = document.getElementById('nu-lightbox');
+        const imgEl          = document.getElementById('lb-img');
+        const titleEl        = document.getElementById('lb-title');
+        const descEl         = document.getElementById('lb-desc');
+        const catEl          = document.getElementById('lb-cat');
+        const topCatEl       = document.getElementById('lb-top-cat');
+        const dateEl         = document.getElementById('lb-date');
+        const counterEl      = document.getElementById('lb-counter');
+        const wrapEl         = document.getElementById('lb-img-wrap');
+        const prevBtn        = document.getElementById('lb-prev');
+        const nextBtn        = document.getElementById('lb-next');
+        const closeBtn       = document.getElementById('lb-close');
+        const thumbsWrap     = document.getElementById('lb-thumbs-wrap');
+        const albumNavWrap   = document.getElementById('lb-album-nav');
+        const albumPrevBtn   = document.getElementById('lb-album-prev');
+        const albumNextBtn   = document.getElementById('lb-album-next');
+        const albumIndicator = document.getElementById('lb-album-indicator');
+        const swipeHint      = document.getElementById('lb-swipe-hint');
+
+        let curAlbum = 0;
+        let curPhoto = 0;
         let lastActiveElement = null;
         let isOpen = false;
         let isHistoryPushed = false;
 
-        function show(idx) {
+        function show(albumIdx, photoIdx) {
             const items = window._lbItems || [];
             if (!items.length) return;
-            cur = Math.max(0, Math.min(idx, items.length - 1));
-            const it = items[cur];
+            curAlbum = Math.max(0, Math.min(albumIdx, items.length - 1));
+            const album = items[curAlbum];
+            const photos = (album.photos && album.photos.length) ? album.photos : [album.photo];
+            curPhoto = Math.max(0, Math.min(photoIdx !== undefined ? photoIdx : 0, photos.length - 1));
 
-            imgEl.src             = it.photo;
-            imgEl.alt             = it.title || 'Dokumentasi NU Kalisari';
-            titleEl.textContent   = it.title || '';
-            catEl.textContent     = it.category || '';
-            if (topCatEl) topCatEl.textContent = it.category || '';
-            dateEl.textContent    = it.date || '';
-            counterEl.textContent = (cur + 1) + ' / ' + items.length;
+            imgEl.src           = photos[curPhoto];
+            imgEl.alt           = (album.title || 'Dokumentasi NU Kalisari') + ' - Foto ' + (curPhoto + 1);
+            titleEl.textContent = album.title || '';
+            catEl.textContent   = album.category || 'Umum';
+            if (topCatEl) topCatEl.textContent = album.category || 'Umum';
+            dateEl.textContent  = album.date || '';
+
+            // Counter: Foto 1 / 10
+            counterEl.textContent = (curPhoto + 1) + ' / ' + photos.length;
 
             if (descEl) {
-                if (it.description && it.description.trim()) {
-                    descEl.textContent = it.description.trim();
+                if (album.description && album.description.trim()) {
+                    descEl.textContent = album.description.trim();
                     descEl.style.display = 'block';
                 } else {
                     descEl.textContent = '';
@@ -458,15 +501,74 @@
                 }
             }
 
+            // Tombol Navigasi Foto (Kiri/Kanan pada foto)
             if (prevBtn) {
-                prevBtn.style.opacity = cur === 0 ? '0.25' : '1';
-                prevBtn.style.pointerEvents = cur === 0 ? 'none' : 'auto';
-                prevBtn.setAttribute('aria-disabled', cur === 0 ? 'true' : 'false');
+                prevBtn.style.display = photos.length > 1 ? 'flex' : 'none';
+                prevBtn.style.opacity = curPhoto === 0 ? '0.25' : '1';
+                prevBtn.style.pointerEvents = curPhoto === 0 ? 'none' : 'auto';
+                prevBtn.setAttribute('aria-disabled', curPhoto === 0 ? 'true' : 'false');
             }
             if (nextBtn) {
-                nextBtn.style.opacity = cur >= items.length - 1 ? '0.25' : '1';
-                nextBtn.style.pointerEvents = cur >= items.length - 1 ? 'none' : 'auto';
-                nextBtn.setAttribute('aria-disabled', cur >= items.length - 1 ? 'true' : 'false');
+                nextBtn.style.display = photos.length > 1 ? 'flex' : 'none';
+                nextBtn.style.opacity = curPhoto >= photos.length - 1 ? '0.25' : '1';
+                nextBtn.style.pointerEvents = curPhoto >= photos.length - 1 ? 'none' : 'auto';
+                nextBtn.setAttribute('aria-disabled', curPhoto >= photos.length - 1 ? 'true' : 'false');
+            }
+
+            // Thumbnail strip untuk foto album
+            if (thumbsWrap) {
+                if (photos.length > 1) {
+                    thumbsWrap.style.display = 'flex';
+                    thumbsWrap.innerHTML = '';
+                    photos.forEach((pUrl, pIdx) => {
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.setAttribute('aria-label', 'Lihat foto ' + (pIdx + 1));
+                        const isActive = pIdx === curPhoto;
+                        btn.className = 'w-9 h-9 sm:w-11 sm:h-11 rounded-lg overflow-hidden border-2 transition-all cursor-pointer shrink-0 ' +
+                            (isActive ? 'border-emerald-400 scale-105 shadow-md ring-2 ring-emerald-400/40 opacity-100' : 'border-white/20 opacity-50 hover:opacity-85');
+                        btn.innerHTML = `<img src="${pUrl}" class="w-full h-full object-cover" alt="" loading="lazy">`;
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            show(curAlbum, pIdx);
+                        });
+                        thumbsWrap.appendChild(btn);
+                    });
+                    const activeThumb = thumbsWrap.children[curPhoto];
+                    if (activeThumb && typeof activeThumb.scrollIntoView === 'function') {
+                        activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }
+                } else {
+                    thumbsWrap.style.display = 'none';
+                    thumbsWrap.innerHTML = '';
+                }
+            }
+
+            // Swipe hint untuk mobile
+            if (swipeHint) {
+                swipeHint.style.display = photos.length > 1 ? 'block' : 'none';
+            }
+
+            // Navigasi Antar Album / Dokumentasi
+            if (albumNavWrap) {
+                if (items.length > 1) {
+                    albumNavWrap.style.display = 'flex';
+                    if (albumIndicator) {
+                        albumIndicator.textContent = 'Album ' + (curAlbum + 1) + ' dari ' + items.length;
+                    }
+                    if (albumPrevBtn) {
+                        albumPrevBtn.style.opacity = curAlbum === 0 ? '0.3' : '1';
+                        albumPrevBtn.style.pointerEvents = curAlbum === 0 ? 'none' : 'auto';
+                        albumPrevBtn.setAttribute('aria-disabled', curAlbum === 0 ? 'true' : 'false');
+                    }
+                    if (albumNextBtn) {
+                        albumNextBtn.style.opacity = curAlbum >= items.length - 1 ? '0.3' : '1';
+                        albumNextBtn.style.pointerEvents = curAlbum >= items.length - 1 ? 'none' : 'auto';
+                        albumNextBtn.setAttribute('aria-disabled', curAlbum >= items.length - 1 ? 'true' : 'false');
+                    }
+                } else {
+                    albumNavWrap.style.display = 'none';
+                }
             }
 
             if (wrapEl) {
@@ -475,19 +577,23 @@
                 wrapEl.classList.add('lb-enter');
             }
 
-            // Preload foto sebelum dan sesudahnya
-            if (cur > 0 && items[cur - 1] && items[cur - 1].photo) {
+            // Preload foto sebelum dan sesudahnya dalam album ini
+            if (curPhoto > 0 && photos[curPhoto - 1]) {
                 const prevImg = new Image();
-                prevImg.src = items[cur - 1].photo;
+                prevImg.src = photos[curPhoto - 1];
             }
-            if (cur < items.length - 1 && items[cur + 1] && items[cur + 1].photo) {
+            if (curPhoto < photos.length - 1 && photos[curPhoto + 1]) {
                 const nextImg = new Image();
-                nextImg.src = items[cur + 1].photo;
+                nextImg.src = photos[curPhoto + 1];
             }
         }
 
-        window._lbOpen = function(idx, triggerEl) {
+        window._lbOpen = function(albumIdx, photoIdx, triggerEl) {
             if (!lb) return;
+            if (typeof photoIdx === 'object' && photoIdx !== null && triggerEl === undefined) {
+                triggerEl = photoIdx;
+                photoIdx = 0;
+            }
             lastActiveElement = triggerEl || document.activeElement;
             isOpen = true;
             lb.classList.remove('opacity-0', 'pointer-events-none');
@@ -503,7 +609,7 @@
                 }
             } catch (e) {}
 
-            show(idx);
+            show(albumIdx, photoIdx || 0);
 
             setTimeout(() => {
                 if (closeBtn) closeBtn.focus();
@@ -551,15 +657,31 @@
         if (prevBtn) {
             prevBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                if (cur > 0) show(cur - 1);
+                if (curPhoto > 0) show(curAlbum, curPhoto - 1);
             });
         }
 
         if (nextBtn) {
             nextBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                const n = (window._lbItems || []).length;
-                if (cur < n - 1) show(cur + 1);
+                const album = (window._lbItems || [])[curAlbum];
+                const photos = (album && album.photos) ? album.photos : [];
+                if (curPhoto < photos.length - 1) show(curAlbum, curPhoto + 1);
+            });
+        }
+
+        if (albumPrevBtn) {
+            albumPrevBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (curAlbum > 0) show(curAlbum - 1, 0);
+            });
+        }
+
+        if (albumNextBtn) {
+            albumNextBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const items = window._lbItems || [];
+                if (curAlbum < items.length - 1) show(curAlbum + 1, 0);
             });
         }
 
@@ -570,34 +692,37 @@
                                   e.target.closest('#lb-prev') || 
                                   e.target.closest('#lb-next') || 
                                   e.target.closest('#lb-close') ||
-                                  e.target.closest('#lb-counter-wrap');
+                                  e.target.closest('#lb-counter-wrap') ||
+                                  e.target.closest('#lb-thumbs-wrap') ||
+                                  e.target.closest('#lb-album-nav');
                 if (!isControl) {
                     closeLb(false);
                 }
             });
         }
 
-        // Keyboard navigasi: Esc tutup, ← → pindah foto, dan Focus trap
+        // Keyboard navigasi: Esc tutup, ← → pindah foto dalam album, dan Focus trap
         document.addEventListener('keydown', function(e) {
             if (!lb || !isOpen) return;
-            const items = window._lbItems || [];
+            const album = (window._lbItems || [])[curAlbum];
+            const photos = (album && album.photos) ? album.photos : [];
             if (e.key === 'Escape') {
                 e.preventDefault();
                 closeLb(false);
                 return;
             }
-            if (e.key === 'ArrowLeft' && cur > 0) {
+            if (e.key === 'ArrowLeft' && curPhoto > 0) {
                 e.preventDefault();
-                show(cur - 1);
+                show(curAlbum, curPhoto - 1);
                 return;
             }
-            if (e.key === 'ArrowRight' && cur < items.length - 1) {
+            if (e.key === 'ArrowRight' && curPhoto < photos.length - 1) {
                 e.preventDefault();
-                show(cur + 1);
+                show(curAlbum, curPhoto + 1);
                 return;
             }
             if (e.key === 'Tab') {
-                const focusable = [closeBtn, prevBtn, nextBtn].filter(el => el && el.style.pointerEvents !== 'none' && el.offsetParent !== null);
+                const focusable = [closeBtn, prevBtn, nextBtn, albumPrevBtn, albumNextBtn].filter(el => el && el.style.pointerEvents !== 'none' && el.offsetParent !== null);
                 if (focusable.length === 0) return;
                 const first = focusable[0];
                 const last = focusable[focusable.length - 1];
@@ -615,7 +740,7 @@
             }
         });
 
-        // Touch swipe navigasi pada mobile (swipe kiri = next, swipe kanan = prev)
+        // Touch swipe navigasi pada mobile (swipe kiri = next foto, swipe kanan = prev foto)
         let touchStartX = 0;
         let touchStartY = 0;
 
@@ -635,13 +760,14 @@
 
                 // Threshold geser horizontal minimal 40px dan lebih dominan dibanding vertikal
                 if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
-                    const items = window._lbItems || [];
+                    const album = (window._lbItems || [])[curAlbum];
+                    const photos = (album && album.photos) ? album.photos : [];
                     if (diffX < 0) {
                         // Geser ke kiri -> Foto berikutnya
-                        if (cur < items.length - 1) show(cur + 1);
+                        if (curPhoto < photos.length - 1) show(curAlbum, curPhoto + 1);
                     } else {
                         // Geser ke kanan -> Foto sebelumnya
-                        if (cur > 0) show(cur - 1);
+                        if (curPhoto > 0) show(curAlbum, curPhoto - 1);
                     }
                 }
             }
