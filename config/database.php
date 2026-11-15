@@ -92,9 +92,9 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
 
-            // Supabase custom schema
-            'search_path' => env('DB_SCHEMA', 'laravel'),
-
+            /// Supabase custom schema
+            'search_path' => 'public',
+            
             // Require encrypted database connection
             'sslmode' => env('DB_SSLMODE', 'require'),
 
